@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 380" font-family="'Segoe UI','Microsoft YaHei',system-ui,sans-serif">
+  <!-- background card -->
+  <rect x="1" y="1" width="878" height="378" rx="18" fill="#ffffff" stroke="#e8e6e1"/>
+
+  <!-- header -->
+  <text x="440" y="42" text-anchor="middle" font-family="Consolas,'Courier New',monospace" font-size="14" font-weight="bold" fill="#A02C2C" letter-spacing="5">MULTI-AGENT FRAMEWORK / HARNESS</text>
+  <text x="440" y="66" text-anchor="middle" font-size="13" font-weight="bold" fill="#1a1a1a">2026 年五篇代表性论文 · 中文导读</text>
+  <text x="440" y="86" text-anchor="middle" font-size="11" fill="#8a8a86">VMAO · AdaptOrch · NLAH · Meta-Harness · MUSE</text>
+  <rect x="412" y="96" width="56" height="3.5" rx="1.75" fill="#A02C2C"/>
+
+  <!-- left column -->
+  <rect x="36" y="118" width="224" height="88" rx="12" fill="#fcfcfb" stroke="#d8d6d2"/>
+  <text x="52" y="142" font-family="Consolas,'Courier New',monospace" font-size="10" fill="#8a8a86" letter-spacing="2">FRAMEWORK × 2</text>
+  <text x="52" y="167" font-size="12.5" font-weight="bold" fill="#1a1a1a">VMAO · 验证式多智能体编排</text>
+  <text x="52" y="189" font-size="12.5" font-weight="bold" fill="#1a1a1a">AdaptOrch · 拓扑自适应编排</text>
+
+  <rect x="36" y="222" width="224" height="112" rx="12" fill="#fcfcfb" stroke="#d8d6d2"/>
+  <text x="52" y="246" font-family="Consolas,'Courier New',monospace" font-size="10" fill="#8a8a86" letter-spacing="2">AGENT HARNESS × 3</text>
+  <text x="52" y="271" font-size="12.5" font-weight="bold" fill="#1a1a1a">NLAH · 自然语言策略文档</text>
+  <text x="52" y="293" font-size="12.5" font-weight="bold" fill="#1a1a1a">Meta-Harness · 自动搜索优化</text>
+  <text x="52" y="315" font-size="12.5" font-weight="bold" fill="#1a1a1a">MUSE · 多模态统一黑盒</text>
+
+  <!-- arrow 1 -->
+  <line x1="266" y1="226" x2="288" y2="226" stroke="#1a1a1a" stroke-width="1.6"/>
+  <polygon points="288,221.5 296,226 288,230.5" fill="#1a1a1a"/>
+
+  <!-- center -->
+  <rect x="300" y="118" width="280" height="216" rx="14" fill="#ffffff" stroke="#A02C2C" stroke-width="1.5"/>
+  <text x="440" y="144" text-anchor="middle" font-family="Consolas,'Courier New',monospace" font-size="10" fill="#8a8a86" letter-spacing="2">THE 2026 SHIFT</text>
+  <text x="440" y="170" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#1a1a1a">模型性能趋同</text>
+  <text x="440" y="192" text-anchor="middle" font-size="15" font-weight="bold" fill="#A02C2C">外围结构设计主导性能</text>
+  <rect x="352" y="208" width="176" height="64" rx="10" fill="#faf3f3" stroke="#A02C2C" stroke-dasharray="4 3"/>
+  <text x="440" y="226" text-anchor="middle" font-family="Consolas,'Courier New',monospace" font-size="10.5" font-weight="bold" fill="#A02C2C" letter-spacing="2">HARNESS</text>
+  <circle cx="440" cy="250" r="15" fill="#A02C2C"/>
+  <text x="440" y="254" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#ffffff">LLM</text>
+  <text x="440" y="302" text-anchor="middle" font-family="Consolas,'Courier New',monospace" font-size="12" fill="#3d3d3d">Var(τ) / Var(M) ≥ Ω(1/ε²)</text>
+  <text x="440" y="322" text-anchor="middle" font-size="10" fill="#8a8a86">AdaptOrch · 性能趋同缩放定律</text>
+
+  <!-- arrow 2 -->
+  <line x1="588" y1="226" x2="610" y2="226" stroke="#1a1a1a" stroke-width="1.6"/>
+  <polygon points="610,221.5 618,226 610,230.5" fill="#1a1a1a"/>
+
+  <!-- right column -->
+  <rect x="622" y="118" width="222" height="62" rx="12" fill="#fcfcfb" stroke="#d8d6d2"/>
+  <text x="640" y="156" font-family="Consolas,'Courier New',monospace" font-size="17" font-weight="bold" fill="#A02C2C">+35%</text>
+  <text x="716" y="143" font-size="12" font-weight="bold" fill="#1a1a1a">VMAO 答案完整性</text>
+  <text x="716" y="162" font-size="10.5" fill="#8a8a86">3.1 → 4.2(1–5 分)</text>
+
+  <rect x="622" y="194" width="222" height="62" rx="12" fill="#fcfcfb" stroke="#d8d6d2"/>
+  <text x="640" y="232" font-family="Consolas,'Courier New',monospace" font-size="17" font-weight="bold" fill="#A02C2C">+23%</text>
+  <text x="716" y="219" font-size="12" font-weight="bold" fill="#1a1a1a">AdaptOrch 拓扑收益</text>
+  <text x="716" y="238" font-size="10.5" fill="#8a8a86">同一批模型 · SWE-bench</text>
+
+  <rect x="622" y="270" width="222" height="62" rx="12" fill="#fcfcfb" stroke="#d8d6d2"/>
+  <text x="640" y="308" font-family="Consolas,'Courier New',monospace" font-size="17" font-weight="bold" fill="#A02C2C">No.1</text>
+  <text x="716" y="295" font-size="12" font-weight="bold" fill="#1a1a1a">Meta-Harness TB2 榜首</text>
+  <text x="716" y="314" font-size="10.5" fill="#8a8a86">自动发现的 harness · Haiku 4.5</text>
+
+  <!-- footer -->
+  <text x="440" y="362" text-anchor="middle" font-family="Consolas,'Courier New',monospace" font-size="10.5" fill="#8a8a86" letter-spacing="1">arXiv · 2603.11445 / 2602.16873 / 2603.25723 / 2603.28052 / 2606.03005</text>
+</svg>
