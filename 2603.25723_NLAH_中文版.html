@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Natural-Language Agent Harnesses（中文版）</title>
+<style>
+  :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fff; margin:0; line-height:2.0; font-size:15.5px; }
+  .wrap { max-width:780px; margin:0 auto; padding:72px 24px 90px; }
+  .eyebrow { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:12px; letter-spacing:3px; }
+  h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:25px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
+  .zh { font-size:19px; font-weight:700; margin-bottom:10px; }
+  .meta { color:var(--soft); font-size:13.5px; margin:0 0 14px; }
+  .links a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; margin-right:18px; }
+  .links a:hover { text-decoration:underline; }
+  .tldr { font-size:16.5px; margin:34px 0 0; padding-bottom:34px; border-bottom:1px solid var(--line); }
+  .tldr b { color:var(--red); }
+  h2 { font-size:21px; font-weight:800; margin:56px 0 0; }
+  .hline { width:42px; height:3px; background:var(--red); border-radius:2px; margin:8px 0 24px; }
+  p { color:var(--gray); margin:0 0 14px; }
+  ul { color:var(--gray); padding-left:22px; margin:0 0 14px; }
+  li { margin:8px 0; }
+  .contrib { margin:0 0 26px; }
+  .contrib h3 { font-size:16px; margin:0 0 6px; }
+  .contrib h3 .no { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:13px; margin-right:10px; }
+  .contrib h3 .core { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:11px; letter-spacing:1.5px; border:1px solid var(--red); border-radius:99px; padding:1px 8px; margin-left:10px; vertical-align:2px; font-weight:600; }
+  .contrib p { margin:0; }
+  .chart { display:flex; gap:46px; justify-content:center; flex-wrap:wrap; margin:30px 0 10px; }
+  .panel { text-align:center; }
+  .ptitle { font-family:"IBM Plex Mono",Consolas,monospace; font-size:12px; letter-spacing:1px; color:var(--soft); margin-bottom:18px; }
+  .bars { display:flex; align-items:flex-end; gap:14px; height:200px; }
+  .barwrap { display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%; }
+  .bar { width:40px; border-radius:4px 4px 0 0; position:relative; }
+  .bar.red { background:var(--red); } .bar.sage { background:var(--sage); }
+  .bar .v { position:absolute; top:-24px; left:50%; transform:translateX(-50%); font-weight:700; font-size:13px; white-space:nowrap; color:var(--ink); }
+  .bar.red .v { color:var(--red); }
+  .blabel { margin-top:8px; font-size:11.5px; color:var(--soft); width:74px; text-align:center; line-height:1.4; }
+  .nav { display:flex; justify-content:space-between; margin-top:64px; padding-top:22px; border-top:1px solid var(--line); }
+  .nav a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; }
+  footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:34px; font-family:"IBM Plex Mono",Consolas,monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="eyebrow">PAPER 03 · AGENT HARNESS</div>
+<h1>Natural-Language Agent Harnesses</h1>
+<div class="zh">把 harness 策略写成可执行的自然语言文档（NLAH + IHR）</div>
+<p class="meta">Linyue Pan, Hai-Tao Zheng 等 · 清华大学深研院 &amp; 哈工大（深圳）· arXiv 2603.25723</p>
+<div class="links"><a href="https://github.com/1parado/multi-agent-article/raw/main/2603.25723_Natural-Language-Agent-Harnesses.pdf">PDF</a><a href="https://arxiv.org/abs/2603.25723">arXiv</a><a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">目录</a></div>
+
+<div class="tldr">agent 的 harness 对性能影响巨大，但策略逻辑通常埋在紧耦合的控制器代码里，难检查、难比较、难迁移、难消融。论文把 harness 的<b>策略层</b>提炼成可编辑的自然语言文档（NLAH），交给共享运行时（IHR）解释执行——自然语言管策略，代码只保留必须精确的机制。三套基准上任务表现与代码 harness 相当，策略文档从几万 token 缩到几千 token，且可逐模块做科学消融。</div>
+
+<h2>解决什么问题</h2>
+<div class="hline"></div>
+<p>现代 LLM agent 已是多步执行系统：用工具、维护状态、从失败恢复、验证中间结果、委派子任务——这些行为由外部 harness 组织，而 harness 的选择可在同一基准上造成巨大性能差异。问题在于 <b>harness 不是一个干净的研究对象</b>：一份代码 harness 往往把提示词、工具适配器、解析规则、验证脚本、重试逻辑、上下文策略和基准特定假设混在一个控制器里。</p>
+<p>于是「小小改一处 harness」可能同时改变调用边界、工具中介、状态载体、验证门和停止语义——harness 难以审查、移植、对比和消融，尽管 harness 模式本身才是系统中可复用的部分。</p>
+
+<h2>创新点</h2>
+<div class="hline"></div>
+<div class="contrib">
+  <h3><span class="no">01</span>NLAH：自然语言 Harness 文档</h3>
+  <p>把 run 级 harness 策略写成可编辑文档，规定阶段（检查→计划→编辑→验证→恢复→收尾）、角色契约、状态规则、验证规则与停止条件。写作原则：先写任务契约；阶段与机制分离；状态与证据显式化；模块边界可消融；用可执行语言（「委派前先写状态文件」而非「小心谨慎」）。它超越 AGENTS.md / SKILL.md 这类工具级说明——描述的是整个任务运行的生命周期。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">02</span>IHR：智能 Harness 运行时<span class="core">CORE</span></h3>
+  <p>跨 harness 共享的运行时，把 NLAH 解释成可审计的 agent 调用、父子交接、状态更新、验证门与工件契约。四层架构：base agent（只有 LLM 循环 + 终端）→ 运行时策略 → NLAH（可替换策略文档）→ 脚本/适配器（跑测试、解析、沙箱等精确代码）。IHR 刻意很薄——不是某个基准的专用控制器，而是给自然语言策略一个共同执行基底。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">03</span>自然语言 / 代码边界</h3>
+  <p>自然语言承载策略：任务分解、角色契约、证据纪律、重试逻辑、状态交接、验证策略；代码承载精确机制：工具执行、解析、沙箱、日志、确定性验证器。作者明确不主张「自然语言取代全部控制器代码」，而是把 harness 中最可审查的一层从不透明实现逻辑中解放出来。</p>
+</div>
+
+<h2>关键结果</h2>
+<div class="hline"></div>
+<p>同一 harness 思想的三种实现对比：原生代码 harness、同一 NLAH 文本当普通提示词用（Prompt）、NLAH 交由 IHR 执行。统一使用 Codex CLI（gpt-5.4-mini）：</p>
+<div class="chart">
+  <div class="panel">
+    <div class="ptitle">SWE-BENCH VERIFIED</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:84%"><span class="v">67.0</span></div><div class="blabel">代码</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:96%"><span class="v">77.0</span></div><div class="blabel">Prompt</div></div>
+      <div class="barwrap"><div class="bar red" style="height:91%"><span class="v">73.0</span></div><div class="blabel">NLAH</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">TERMINAL-BENCH 2.0</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:55%"><span class="v">36.0</span></div><div class="blabel">代码</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:88%"><span class="v">57.3</span></div><div class="blabel">Prompt</div></div>
+      <div class="barwrap"><div class="bar red" style="height:83%"><span class="v">53.9</span></div><div class="blabel">NLAH</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">OSWORLD</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:86%"><span class="v">47.1</span></div><div class="blabel">代码</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:87%"><span class="v">47.9</span></div><div class="blabel">Prompt</div></div>
+      <div class="barwrap"><div class="bar red" style="height:84%"><span class="v">46.3</span></div><div class="blabel">NLAH</div></div>
+    </div>
+  </div>
+</div>
+<ul>
+  <li><b>表示层收益</b>：可读策略从 60.1K token 的代码材料缩到 2.9K 的 NLAH（Live-SWE），从 10.5K 缩到 0.8K（MHTBA）——策略层从实现细节中剥离，可直接审查。</li>
+  <li><b>跨模型移植诊断（重要发现）</b>：为 Claude Opus 4.6 精调的代码工件移植到 GPT 后，89 个样本中 66 个超时，其中 21 个任务其实已完成——精确的两步完成门协议与 GPT 行为不兼容（模型回答 DONE 而不再调用完成工具，循环空转至超时）。<b>为某模型挖出的代码 harness 会编码对该模型行为的隐含假设，比它所实现的自然语言策略更脆弱</b>。</li>
+  <li><b>机制落地</b>：工件契约遵守率 1.00/0.96、工具调用成功率 0.93、失败后继续运行 0.99；主要短板是父子交接（信息交接召回率从 1.00 降到 0.32/0.55）。</li>
+  <li><b>模块消融</b>：最有效的是收紧状态与验收纪律的模块——文件后备状态（OSWorld +13.9）、自我进化（SWE +5.8）、证据支撑回答（两边 +2.8）；多候选搜索让 agent 调用从 1.1 涨到 5.7，SWE 上反而 −1.6——<b>更多搜索不自动等于更好的 harness 设计</b>。</li>
+</ul>
+
+<h2>意义与局限</h2>
+<div class="hline"></div>
+<ul>
+  <li><b>意义</b>：harness 从「模型周围的偶然性胶水」变成科学表示对象——可检索、组合、变异、优化的文本对象。即使基座模型变强，仍需要任务结构、状态纪律和验收标准，run 级策略层的价值不会消失。</li>
+  <li><b>局限</b>：自然语言解释有不确定性与模型依赖；生产系统应把安全、权限、评估和关键解析逻辑留在代码里；原型运行时的交接损失是明确的改进方向。</li>
+</ul>
+
+<div class="nav"><a href="https://github.com/1parado/multi-agent-article/blob/main/2602.16873_AdaptOrch_中文版.html">← AdaptOrch</a><a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">目录</a><a href="https://github.com/1parado/multi-agent-article/blob/main/2603.28052_Meta-Harness_中文版.html">Meta-Harness →</a></div>
+<footer>NLAH · arXiv 2603.25723</footer>
+</div>
+</body>
+</html>

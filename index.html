@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Agent Framework / Harness Papers 2026</title>
+<style>
+  :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fff; margin:0; line-height:2.0; font-size:15.5px; }
+  .mono { font-family:"IBM Plex Mono",Consolas,"Courier New",monospace; }
+  .wrap { max-width:780px; margin:0 auto; padding:72px 24px 90px; }
+
+  .eyebrow { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:12px; letter-spacing:3px; }
+  h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:29px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
+  .sub { font-size:19px; font-weight:700; margin-bottom:10px; }
+  .intro { color:var(--gray); margin:6px 0 0; }
+
+  .tldr { font-size:16.5px; color:var(--ink); margin:36px 0 0; padding-bottom:34px; border-bottom:1px solid var(--line); }
+  .tldr b { color:var(--red); }
+
+  h2 { font-size:21px; font-weight:800; margin:56px 0 0; }
+  .hline { width:42px; height:3px; background:var(--red); border-radius:2px; margin:8px 0 26px; }
+
+  .paper { padding:22px 0; border-bottom:1px solid var(--line); }
+  .paper:last-child { border-bottom:none; }
+  .paper .idx { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:12px; letter-spacing:2px; }
+  .paper h3 { margin:6px 0 2px; font-size:18px; }
+  .paper h3 a { color:inherit; text-decoration:none; }
+  .paper h3 a:hover { color:var(--red); }
+  .paper .en { font-family:"IBM Plex Mono",Consolas,monospace; font-size:12px; color:var(--soft); }
+  .paper p { color:var(--gray); font-size:14.5px; margin:10px 0 8px; }
+  .paper a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; margin-right:16px; }
+  .paper a:hover { text-decoration:underline; }
+
+  table.cmp { width:100%; border-collapse:collapse; font-size:14px; }
+  table.cmp th { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11.5px; letter-spacing:1.5px; color:var(--red); text-align:left; border-bottom:2px solid var(--red); padding:10px 14px 10px 0; font-weight:600; }
+  table.cmp td { border-bottom:1px solid var(--line); padding:14px 14px 14px 0; vertical-align:top; color:var(--gray); }
+  table.cmp td b { color:var(--ink); }
+  table.cmp tr:last-child td { border-bottom:none; }
+
+  .trend { margin:0 0 26px; }
+  .trend h3 { font-size:16px; color:var(--red); margin:0 0 6px; }
+  .trend p { margin:0; color:var(--gray); font-size:14.5px; }
+
+  footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:70px; font-family:"IBM Plex Mono",Consolas,monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="eyebrow">PAPER DIGEST · 2026</div>
+<h1>Multi-Agent Framework / Harness</h1>
+<div class="sub">2026 年五篇代表性论文 · 中文编译版</div>
+<p class="intro">5 篇经核验的 arXiv 论文（2 篇多智能体编排框架 + 3 篇 agent harness），PDF 与中文版均在本目录。</p>
+
+<div class="tldr">
+  <b>multi-agent framework</b>：协调多个 LLM agent 协作的结构——怎么拆任务、怎么并行、怎么合并。<br>
+  <b>agent harness</b>：包裹在模型外围的执行系统——决定模型每步看到什么、用什么工具、何时验证、何时停止。<br>
+  2026 年的共同主题：模型能力趋同后，<b>模型之外的结构设计成为新的性能主战场</b>。
+</div>
+
+<h2>五篇论文</h2>
+<div class="hline"></div>
+
+<div class="paper">
+  <div class="idx">01 · MULTI-AGENT FRAMEWORK</div>
+  <h3><a href="https://github.com/1parado/multi-agent-article/blob/main/2603.11445_VMAO_中文版.html">VMAO：验证式多智能体编排</a></h3>
+  <div class="en">arXiv 2603.11445 · AWS + HSBC · ICLR 2026 Workshop</div>
+  <p>把「验证」提升为编排层的一等协调信号：DAG 分解并行执行，独立 LLM 检查员评估完整性，发现缺口自动重规划补漏。市场研究查询完整性 3.1→4.2、来源质量 2.6→4.1。</p>
+  <a href="https://github.com/1parado/multi-agent-article/blob/main/2603.11445_VMAO_中文版.html">中文版</a><a href="https://github.com/1parado/multi-agent-article/raw/main/2603.11445_VMAO_Verified-Multi-Agent-Orchestration.pdf">PDF</a>
+</div>
+
+<div class="paper">
+  <div class="idx">02 · MULTI-AGENT FRAMEWORK</div>
+  <h3><a href="https://github.com/1parado/multi-agent-article/blob/main/2602.16873_AdaptOrch_中文版.html">AdaptOrch：任务自适应拓扑编排</a></h3>
+  <div class="en">arXiv 2602.16873 · 韩国国民大学</div>
+  <p>证明「模型趋同时拓扑比选模型重要」（缩放定律 Ω(1/ε²)），给出线性时间路由算法，按任务 DAG 结构自动在并行/顺序/分层/混合四种拓扑中选型。同款模型提升 12–23%。</p>
+  <a href="https://github.com/1parado/multi-agent-article/blob/main/2602.16873_AdaptOrch_中文版.html">中文版</a><a href="https://github.com/1parado/multi-agent-article/raw/main/2602.16873_AdaptOrch_Task-Adaptive-Multi-Agent-Orchestration.pdf">PDF</a>
+</div>
+
+<div class="paper">
+  <div class="idx">03 · AGENT HARNESS</div>
+  <h3><a href="https://github.com/1parado/multi-agent-article/blob/main/2603.25723_NLAH_中文版.html">NLAH：自然语言 Agent Harness</a></h3>
+  <div class="en">arXiv 2603.25723 · 清华深研院 + 哈工大（深圳）</div>
+  <p>把埋在控制器代码里的 harness 策略外化为可编辑的自然语言文档，由共享运行时解释执行；自然语言管策略，代码管精确机制。策略层 60K→2.9K token，任务表现与代码 harness 相当。</p>
+  <a href="https://github.com/1parado/multi-agent-article/blob/main/2603.25723_NLAH_中文版.html">中文版</a><a href="https://github.com/1parado/multi-agent-article/raw/main/2603.25723_Natural-Language-Agent-Harnesses.pdf">PDF</a>
+</div>
+
+<div class="paper">
+  <div class="idx">04 · AGENT HARNESS</div>
+  <h3><a href="https://github.com/1parado/multi-agent-article/blob/main/2603.28052_Meta-Harness_中文版.html">Meta-Harness：自动搜索最优 harness</a></h3>
+  <div class="en">arXiv 2603.28052 · 斯坦福 + MIT + KRAFTON</div>
+  <p>「用 harness 优化 harness」：coding agent 通过文件系统按需翻阅全部历史候选的源码、分数与执行轨迹，自动发现超越人类手工设计的 harness，TerminalBench-2 Haiku 榜第一。</p>
+  <a href="https://github.com/1parado/multi-agent-article/blob/main/2603.28052_Meta-Harness_中文版.html">中文版</a><a href="https://github.com/1parado/multi-agent-article/raw/main/2603.28052_Meta-Harness_End-to-End-Optimization-of-Model-Harnesses.pdf">PDF</a>
+</div>
+
+<div class="paper">
+  <div class="idx">05 · AGENT HARNESS · 多模态</div>
+  <h3><a href="https://github.com/1parado/multi-agent-article/blob/main/2606.03005_MUSE_中文版.html">MUSE：面向多模态大模型的统一 Harness</a></h3>
+  <div class="en">arXiv 2606.03005 · 东北大学 + 北京大学</div>
+  <p>首个面向冻结多模态大模型的统一 harness：感知工具 + 确定性验证器 + 修复循环，模型完全黑盒。GPT-4o 找字任务 3%→21%——许多「模型不行」其实是「harness 不行」。</p>
+  <a href="https://github.com/1parado/multi-agent-article/blob/main/2606.03005_MUSE_中文版.html">中文版</a><a href="https://github.com/1parado/multi-agent-article/raw/main/2606.03005_MUSE_Unified-Agentic-Harness-for-MLLMs.pdf">PDF</a>
+</div>
+
+<h2>横向对比</h2>
+<div class="hline"></div>
+<table class="cmp">
+  <tr><th style="width:15%;">PAPER</th><th style="width:38%;">解决什么问题</th><th style="width:47%;">核心创新点</th></tr>
+  <tr>
+    <td><b>VMAO</b></td>
+    <td>多 agent 系统缺乏有原则的质量验证，无法无人监督地保证结果完整，也没有「何时停止迭代」的机制</td>
+    <td>子问题 DAG 分解 + 依赖感知并行执行；编排层 LLM 验证器驱动的自适应重规划（重试保留先前结果）；五种可配置停止条件</td>
+  </tr>
+  <tr>
+    <td><b>AdaptOrch</b></td>
+    <td>模型趋同后选模型收益递减；现有框架拓扑固定，「给定任务该用哪种编排拓扑」无算法答案</td>
+    <td>性能趋同缩放定律 Var(拓扑)/Var(模型) ≥ Ω(1/ε²)；按 DAG 并行宽度、关键路径、耦合密度线性时间路由到四种拓扑；可证明终止的自适应合成协议</td>
+  </tr>
+  <tr>
+    <td><b>NLAH</b></td>
+    <td>harness 策略埋在紧耦合控制器代码里，难检查、难比较、难迁移、难消融</td>
+    <td>自然语言文档承载 run 级 harness 策略；共享运行时解释为 agent 调用、交接、验证门与工件契约；自然语言管策略、代码管精确机制</td>
+  </tr>
+  <tr>
+    <td><b>Meta-Harness</b></td>
+    <td>换 harness 可差 6 倍但仍靠手工打磨；现有文本优化器只看标量分数/压缩摘要，无法追溯下游失败到早期决策</td>
+    <td>coding agent 经文件系统按需翻阅全部历史源码/分数/执行轨迹（单次评估诊断信息达 10M token）；极简外循环，诊断权完全交给 agent</td>
+  </tr>
+  <tr>
+    <td><b>MUSE</b></td>
+    <td>MLLM 在人类轻松的视觉任务上失败；主流靠重训练，但闭源模型无法微调、训练管线昂贵易过时</td>
+    <td>面向冻结 MLLM 的统一多模态 harness（严格黑盒）；统一任务表示 + 外置确定性验证器 + 感知工具注册表；验证器引导的修复循环</td>
+  </tr>
+</table>
+
+<h2>共同趋势</h2>
+<div class="hline"></div>
+<div class="trend">
+  <h3>1 · 性能瓶颈正在从模型转移到模型外围</h3>
+  <p>AdaptOrch 给出「模型趋同 → 编排主导」的定量证明；MUSE 证明多数多模态失败是 harness 层缺陷；Meta-Harness 实测 harness 差异可达 6 倍。</p>
+</div>
+<div class="trend">
+  <h3>2 · 「验证」是被反复确认的最有价值组件</h3>
+  <p>VMAO 的编排层验证器带来 +35% 完整性；MUSE 的外置确定性验证器是修复循环的地基；Meta-Harness 证明验证信号必须以原始执行轨迹形式供给优化器。共同原则：把生成与评估解耦，用模型外的信号判定成败。</p>
+</div>
+<div class="trend">
+  <h3>3 · 更多调用 ≠ 更好，结构与纪律才是关键</h3>
+  <p>MUSE 的等预算自一致性对照几乎无提升；NLAH 的多候选搜索分支翻倍却拖累成绩；VMAO 收益主要来自「重试 + 保留结果」而非盲目加子问题。</p>
+</div>
+<div class="trend">
+  <h3>4 · 行为无关的策略层迁移更稳</h3>
+  <p>NLAH 观察到为某模型精调的代码 harness 移植到另一模型时系统性失败；Meta-Harness 的单一发现 harness 在 5 个未参与搜索的模型上保持增益；MUSE 在 4 个模型上收益一致。</p>
+</div>
+
+<h2>建议阅读顺序</h2>
+<div class="hline"></div>
+<p style="color:var(--gray);">先读 <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2603.28052_Meta-Harness_中文版.html">Meta-Harness</a>（harness 是什么、为什么重要）→ <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2603.25723_NLAH_中文版.html">NLAH</a>（harness 的表示与工程边界）→ <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2606.03005_MUSE_中文版.html">MUSE</a>（多模态落地）→ <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2602.16873_AdaptOrch_中文版.html">AdaptOrch</a>（理论 + 路由算法）→ <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2603.11445_VMAO_中文版.html">VMAO</a>（工程化编排系统）。</p>
+
+</div>
+</body>
+</html>

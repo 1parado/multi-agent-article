@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdaptOrch: Task-Adaptive Multi-Agent Orchestration（中文版）</title>
+<style>
+  :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fff; margin:0; line-height:2.0; font-size:15.5px; }
+  .wrap { max-width:780px; margin:0 auto; padding:72px 24px 90px; }
+  .eyebrow { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:12px; letter-spacing:3px; }
+  h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:29px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
+  .zh { font-size:19px; font-weight:700; margin-bottom:10px; }
+  .meta { color:var(--soft); font-size:13.5px; margin:0 0 14px; }
+  .links a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; margin-right:18px; }
+  .links a:hover { text-decoration:underline; }
+  .tldr { font-size:16.5px; margin:34px 0 0; padding-bottom:34px; border-bottom:1px solid var(--line); }
+  .tldr b { color:var(--red); }
+  h2 { font-size:21px; font-weight:800; margin:56px 0 0; }
+  .hline { width:42px; height:3px; background:var(--red); border-radius:2px; margin:8px 0 24px; }
+  p { color:var(--gray); margin:0 0 14px; }
+  ul { color:var(--gray); padding-left:22px; margin:0 0 14px; }
+  li { margin:8px 0; }
+  .contrib { margin:0 0 26px; }
+  .contrib h3 { font-size:16px; margin:0 0 6px; }
+  .contrib h3 .no { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:13px; margin-right:10px; }
+  .contrib h3 .core { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:11px; letter-spacing:1.5px; border:1px solid var(--red); border-radius:99px; padding:1px 8px; margin-left:10px; vertical-align:2px; font-weight:600; }
+  .contrib p { margin:0; }
+  .formula { font-family:"Cambria Math",Georgia,serif; font-size:18px; color:var(--ink); margin:6px 0 18px; }
+  .formula .rd { color:var(--red); font-weight:700; }
+  .chart { display:flex; gap:46px; justify-content:center; flex-wrap:wrap; margin:30px 0 10px; }
+  .panel { text-align:center; }
+  .ptitle { font-family:"IBM Plex Mono",Consolas,monospace; font-size:12px; letter-spacing:1px; color:var(--soft); margin-bottom:18px; }
+  .bars { display:flex; align-items:flex-end; gap:14px; height:200px; }
+  .barwrap { display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%; }
+  .bar { width:40px; border-radius:4px 4px 0 0; position:relative; }
+  .bar.red { background:var(--red); } .bar.sage { background:var(--sage); }
+  .bar .v { position:absolute; top:-24px; left:50%; transform:translateX(-50%); font-weight:700; font-size:13px; white-space:nowrap; color:var(--ink); }
+  .bar.red .v { color:var(--red); }
+  .blabel { margin-top:8px; font-size:11.5px; color:var(--soft); width:76px; text-align:center; line-height:1.4; }
+  .nav { display:flex; justify-content:space-between; margin-top:64px; padding-top:22px; border-top:1px solid var(--line); }
+  .nav a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; }
+  footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:34px; font-family:"IBM Plex Mono",Consolas,monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="eyebrow">PAPER 02 · MULTI-AGENT FRAMEWORK</div>
+<h1>AdaptOrch</h1>
+<div class="zh">LLM 性能趋同时代的任务自适应多智能体编排</div>
+<p class="meta">Geunbin Yu · 韩国国民大学 · arXiv 2602.16873</p>
+<div class="links"><a href="https://github.com/1parado/multi-agent-article/raw/main/2602.16873_AdaptOrch_Task-Adaptive-Multi-Agent-Orchestration.pdf">PDF</a><a href="https://arxiv.org/abs/2602.16873">arXiv</a><a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">目录</a></div>
+
+<div class="tldr">当各家大模型的基准分数挤进 2–5% 的窄带，「选哪个模型」不再重要，<b>「怎么编排」才是主导性能的杠杆</b>。AdaptOrch 给出这条论断的缩放定律证明，以及一个线性时间算法：分析任务 DAG 的结构特征，自动在并行 / 顺序 / 分层 / 混合四种编排拓扑中选型——同款模型下比静态拓扑基线提升 12–23%。</div>
+
+<h2>解决什么问题</h2>
+<div class="hline"></div>
+<p>2026 年初的模型格局出现悖论：GPT-4o、Claude 3.5 Sonnet、Gemini 2.0、Llama 3.3 70B、Qwen 2.5 72B 在 MMLU、HumanEval、MATH 上的分数聚在 2–5% 区间内（论文实测 MMLU 上 ε≈0.024）。模型选择的边际收益递减，而系统层面的编排结构开始主导结果。</p>
+<p>现有编排方案都不做拓扑自适应：</p>
+<ul>
+  <li><b>静态框架</b>（MCP、LangGraph、CrewAI、AutoGen）：定义固定的执行拓扑，拓扑靠人工设计，不随任务变化。</li>
+  <li><b>路由式系统</b>（Mixture-of-Agents、LLM-Blender）：动态选模型或混合输出，但 agent 协调的结构拓扑不动。</li>
+</ul>
+<p>实践界已感受到差距：Claude Code 的 Agent Teams、OpenCode 的并行子 agent 架构能把数小时顺序工作压缩到分钟级，但「怎么拆任务、选什么拓扑」仍留给用户——拓扑选择问题在算法层面悬而未决。</p>
+
+<h2>创新点</h2>
+<div class="hline"></div>
+<div class="contrib">
+  <h3><span class="no">01</span>性能趋同缩放定律<span class="core">THEORY</span></h3>
+  <p class="formula">Var<sub>τ</sub> / Var<sub>M</sub> ≥ <span class="rd">Ω(1/ε²)</span></p>
+  <p>当模型完全趋同（ε→0）且任务可并行时，编排拓扑带来的性能方差相对模型选择发散到无穷。以典型编码任务参数（并行宽度 ω≈3.4、耦合 γ≈0.35、ε≈0.05）估算方差比约 48.7——编排设计是与模型缩放正交的一等优化目标。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">02</span>拓扑路由算法（线性时间）<span class="core">CORE</span></h3>
+  <p>把任务分解成带依赖与耦合强度标注的 DAG，提取三个结构属性：并行宽度 ω（最大反链）、关键路径深度 δ、耦合密度 γ，按决策规则在 O(|V|+|E|) 内路由到四种规范拓扑——τP 并行（无边全并发）、τS 顺序（ω=1）、τH 分层（高耦合+子任务多）、τX 混合（层内并行、层间串行）。路由开销 &lt;50ms。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">03</span>自适应合成协议（可证明终止）</h3>
+  <p>并行输出合并时用嵌入余弦相似度做一致性评分；不一致则交仲裁 agent，仍失败就调高耦合估计重路由（每次 +0.2），γ 超阈值必然转入有单一仲裁者的分层拓扑——至多 5 轮迭代保证终止，实测 94% 任务 2 轮内收敛。</p>
+</div>
+
+<h2>关键结果</h2>
+<div class="hline"></div>
+<p>用 5 个 ε-趋同模型（GPT-4o-mini、Claude 3.5 Haiku、Gemini 2.0 Flash、Llama 3.3 70B、Qwen 2.5 72B）验证——所有方法同一批模型，唯一变量是编排方式：</p>
+<div class="chart">
+  <div class="panel">
+    <div class="ptitle">SWE-BENCH VERIFIED</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:71%"><span class="v">42.8</span></div><div class="blabel">最强单模型</div></div>
+      <div class="barwrap"><div class="bar red" style="height:88%"><span class="v">52.6</span></div><div class="blabel">AdaptOrch</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">GPQA DIAMOND</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:77%"><span class="v">46.2</span></div><div class="blabel">最强单模型</div></div>
+      <div class="barwrap"><div class="bar red" style="height:89%"><span class="v">53.1</span></div><div class="blabel">AdaptOrch</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">HOTPOTQA (F1)</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:80%"><span class="v">68.3</span></div><div class="blabel">最强单模型</div></div>
+      <div class="barwrap"><div class="bar red" style="height:90%"><span class="v">76.4</span></div><div class="blabel">AdaptOrch</div></div>
+    </div>
+  </div>
+</div>
+<ul>
+  <li>三个基准分别提升 <b>+22.9% / +14.9% / +11.9%</b>；混合拓扑整体被选中 49.7%——多数任务同时含可并行与必须串行的部分。</li>
+  <li><b>拓扑错配可能有害</b>：静态全并行在 GPQA 上（44.1）反而低于最强单模型（46.2）——推理任务耦合高，盲目并行会丢上下文。</li>
+  <li>与计算量对齐的 Self-MoA 自一致性基线相比，剩余 11% 的一致差距来自拓扑感知的非均匀算力分配；消融显示合成协议贡献最大（去掉 −5.5），其后是自适应路由（−2.8）。</li>
+</ul>
+
+<h2>局限</h2>
+<div class="hline"></div>
+<ul>
+  <li>分解质量依赖分解器模型；耦合估计是离散四档（0 / 0.3 / 0.7 / 1.0），较粗糙。</li>
+  <li>对单步原子任务编排没有增益——编排收益与任务可分解性成正比；创意写作、多模态场景待验证。</li>
+  <li>落地友好：可直接映射到 Claude Code Agent Teams、LangGraph、OpenCode + MCP 等现有基础设施。</li>
+</ul>
+
+<div class="nav"><a href="https://github.com/1parado/multi-agent-article/blob/main/2603.11445_VMAO_中文版.html">← VMAO</a><a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">目录</a><a href="https://github.com/1parado/multi-agent-article/blob/main/2603.25723_NLAH_中文版.html">NLAH →</a></div>
+<footer>AdaptOrch · arXiv 2602.16873</footer>
+</div>
+</body>
+</html>

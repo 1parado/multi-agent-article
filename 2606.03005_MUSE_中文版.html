@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MUSE: A Unified Agentic Harness for MLLMs（中文版）</title>
+<style>
+  :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fff; margin:0; line-height:2.0; font-size:15.5px; }
+  .wrap { max-width:780px; margin:0 auto; padding:72px 24px 90px; }
+  .eyebrow { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:12px; letter-spacing:3px; }
+  h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:29px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
+  .zh { font-size:19px; font-weight:700; margin-bottom:10px; }
+  .meta { color:var(--soft); font-size:13.5px; margin:0 0 14px; }
+  .links a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; margin-right:18px; }
+  .links a:hover { text-decoration:underline; }
+  .tldr { font-size:16.5px; margin:34px 0 0; padding-bottom:34px; border-bottom:1px solid var(--line); }
+  .tldr b { color:var(--red); }
+  h2 { font-size:21px; font-weight:800; margin:56px 0 0; }
+  .hline { width:42px; height:3px; background:var(--red); border-radius:2px; margin:8px 0 24px; }
+  p { color:var(--gray); margin:0 0 14px; }
+  ul { color:var(--gray); padding-left:22px; margin:0 0 14px; }
+  li { margin:8px 0; }
+  .contrib { margin:0 0 26px; }
+  .contrib h3 { font-size:16px; margin:0 0 6px; }
+  .contrib h3 .no { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:13px; margin-right:10px; }
+  .contrib h3 .core { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:11px; letter-spacing:1.5px; border:1px solid var(--red); border-radius:99px; padding:1px 8px; margin-left:10px; vertical-align:2px; font-weight:600; }
+  .contrib p { margin:0; }
+  .chart { display:flex; gap:44px; justify-content:center; flex-wrap:wrap; margin:30px 0 10px; }
+  .panel { text-align:center; }
+  .ptitle { font-family:"IBM Plex Mono",Consolas,monospace; font-size:12px; letter-spacing:1px; color:var(--soft); margin-bottom:18px; }
+  .bars { display:flex; align-items:flex-end; gap:14px; height:200px; }
+  .barwrap { display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%; }
+  .bar { width:40px; border-radius:4px 4px 0 0; position:relative; }
+  .bar.red { background:var(--red); } .bar.sage { background:var(--sage); }
+  .bar .v { position:absolute; top:-24px; left:50%; transform:translateX(-50%); font-weight:700; font-size:13px; white-space:nowrap; color:var(--ink); }
+  .bar.red .v { color:var(--red); }
+  .blabel { margin-top:8px; font-size:11.5px; color:var(--soft); width:74px; text-align:center; line-height:1.4; }
+  .nav { display:flex; justify-content:space-between; margin-top:64px; padding-top:22px; border-top:1px solid var(--line); }
+  .nav a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; }
+  footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:34px; font-family:"IBM Plex Mono",Consolas,monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="eyebrow">PAPER 05 · AGENT HARNESS · MULTIMODAL</div>
+<h1>MUSE</h1>
+<div class="zh">面向多模态大模型（MLLM）的统一 Agentic Harness</div>
+<p class="meta">Jianglin Lu, Yun Fu 等 · 东北大学 &amp; 北京大学 · arXiv 2606.03005</p>
+<div class="links"><a href="https://github.com/1parado/multi-agent-article/raw/main/2606.03005_MUSE_Unified-Agentic-Harness-for-MLLMs.pdf">PDF</a><a href="https://arxiv.org/abs/2606.03005">arXiv</a><a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">目录</a></div>
+
+<div class="tldr">多模态大模型会在人类一眼就会的任务上翻车——从截图走迷宫、挑对拼图块、在几百个相似字符里找目标字。主流思路是重新训练模型，MUSE 反其道而行：<b>模型完全冻结、严格黑盒</b>，在外面套一层模块化 harness——感知工具（OCR 等）、结构化解析、确定性验证器、验证器引导的修复循环。GPT-4o 在找字任务上从 3% 提到 21%，证明许多「模型不行」其实是<b>「harness 不行」</b>。</div>
+
+<h2>解决什么问题</h2>
+<div class="hline"></div>
+<p>MLLM 已能统一图像理解、对话与推理，但在人类轻松完成的任务上仍有惊人失败：补全拼图缺角、在网格迷宫里规划合法路径、在密集字符网格中定位目标汉字。主流研究都在改模型本身——合成视觉推理数据、视觉思维链监督、强化学习自验证——但这些方法本质是<b>模型中心优化</b>：要么需要访问模型参数，要么依赖昂贵的重训练管线。实践中最强的商业 MLLM 是闭源的，开源权重也迭代飞快，专用训练管线维护成本高且很快过时。</p>
+<p>论文主张一个互补且正交的方向：<b>改模型周围的 harness，不改模型</b>。文本 agent 领域已有 Meta-Harness、AutoHarness 等 harness 优化工作，但全部局限在纯文本任务；把 harness 范式迁移到多模态并不平凡——视觉输入带来感知脆弱性，输出可能需要对照几何/空间结构验证，工具调用必须作用于视觉上下文而非裸文本。</p>
+
+<h2>创新点</h2>
+<div class="hline"></div>
+<div class="contrib">
+  <h3><span class="no">01</span>首个面向冻结 MLLM 的统一多模态 harness</h3>
+  <p>严格黑盒设定：底座模型绝不微调、蒸馏或更新参数，全部收益来自 harness 层。与 Meta-Harness 的「搜索式」优化互补，MUSE 走<b>设计驱动</b>路线：针对多模态基准中经验观察到的失败模式，系统性构造一个单一 harness。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">02</span>模块化管线，一套抽象覆盖全流程<span class="core">CORE</span></h3>
+  <p>统一任务表示（每个数据集经适配器归一成同一 record 模式）+ 任务钩子（绑定答案抽取、修复策略与工具需求，新增基准只需注册）+ <b>外置确定性验证器</b>（正确性判定从模型外部化到 harness；每次拒绝按失败分类：格式违规 / 任务逻辑错误 / 证据缺口）+ 模拟器验证（导航任务在模拟器执行动作序列，拼图任务按边界 L1 像素失配评分，能区分「看起来都对」的候选）+ 感知工具注册表（缩放、旋转、OCR、嵌入等按任务声明调用）。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">03</span>验证器引导的修复循环</h3>
+  <p>初始候选被拒后进入至多 K 轮修复：原始上下文加失败转录（按序编号、引用模型输出、模拟器反馈与语法错误区分）再调模型，附失败摘要（错误类型计数、最新验证器信号、基于内容指纹的重复输出标志，防止模型在同一个错误承诺上打转）。验证器一通过立即短路退出，简单题只花一次调用成本。与自我批评不同，MUSE 用外置验证器把生成与评估解耦。</p>
+</div>
+
+<h2>关键结果</h2>
+<div class="hline"></div>
+<p>4 个冻结前沿模型（GPT-4o、GPT-5.4、Claude Haiku 4.5、Opus 4.7）× 4 个异构基准（VSP-Grid 迷宫导航、BLINK-Jigsaw 拼图、CoMT 多模态推理、TIR-Bench 找字）全部一致提升。下图是找字任务（正确数 / 100）：</p>
+<div class="chart">
+  <div class="panel">
+    <div class="ptitle">GPT-4O</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:12%"><span class="v">3</span></div><div class="blabel">BASE</div></div>
+      <div class="barwrap"><div class="bar red" style="height:84%"><span class="v">21</span></div><div class="blabel">MUSE</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">GPT-5.4</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:43%"><span class="v">30</span></div><div class="blabel">BASE</div></div>
+      <div class="barwrap"><div class="bar red" style="height:89%"><span class="v">62</span></div><div class="blabel">MUSE</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">HAIKU 4.5</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:13%"><span class="v">5</span></div><div class="blabel">BASE</div></div>
+      <div class="barwrap"><div class="bar red" style="height:88%"><span class="v">35</span></div><div class="blabel">MUSE</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">OPUS 4.7</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:35%"><span class="v">23</span></div><div class="blabel">BASE</div></div>
+      <div class="barwrap"><div class="bar red" style="height:91%"><span class="v">59</span></div><div class="blabel">MUSE</div></div>
+    </div>
+  </div>
+</div>
+<ul>
+  <li><b>迷宫导航</b>：GPT-4o Level3 0.65→0.89，Opus 4.7 Level3 0.82→0.97；修复后的路径更直接、少绕路与摇摆。<b>多模态推理</b>：四个模型分别 +74 / +75 / +38 / +36。</li>
+  <li><b>计算量对照排除解释</b>：给 BASE 等量调用预算做自一致性多数投票，性能几乎不变甚至下降（GPT-5.4 找字 30→28）——收益来自结构化 harness，不是多调几次模型。</li>
+  <li><b>核心洞察</b>：许多 MLLM 失败源于 harness 层面的短板（信息组织、验证缺失、输出格式失控），而非模型根本能力缺陷。剩余瓶颈是密集视觉场景中的持续性错误定位——错误真源于感知极限时，harness 能缓解但无法根除。</li>
+</ul>
+
+<h2>意义与局限</h2>
+<div class="hline"></div>
+<ul>
+  <li><b>意义</b>：把「agentic 多模态 harness」确立为关键但被忽视的设计维度，为模型中心优化之外提供正交路径；对闭源模型尤其现实——不用等训练管线，套 harness 就能白拿收益。</li>
+  <li><b>局限</b>：设计驱动的 harness 依赖对失败模式的先验观察，任务扩展需注册新的适配器/钩子/验证器；修复循环增加调用成本（由验证器短路机制控制）。</li>
+</ul>
+
+<div class="nav"><a href="https://github.com/1parado/multi-agent-article/blob/main/2603.28052_Meta-Harness_中文版.html">← Meta-Harness</a><a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">目录</a></div>
+<footer>MUSE · arXiv 2606.03005</footer>
+</div>
+</body>
+</html>

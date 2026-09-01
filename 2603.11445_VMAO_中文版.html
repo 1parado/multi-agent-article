@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VMAO: Verified Multi-Agent Orchestration（中文版）</title>
+<style>
+  :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fff; margin:0; line-height:2.0; font-size:15.5px; }
+  .wrap { max-width:780px; margin:0 auto; padding:72px 24px 90px; }
+  .eyebrow { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:12px; letter-spacing:3px; }
+  h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:29px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
+  .zh { font-size:19px; font-weight:700; margin-bottom:10px; }
+  .meta { color:var(--soft); font-size:13.5px; margin:0 0 14px; }
+  .links a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; margin-right:18px; }
+  .links a:hover { text-decoration:underline; }
+  .tldr { font-size:16.5px; margin:34px 0 0; padding-bottom:34px; border-bottom:1px solid var(--line); }
+  .tldr b { color:var(--red); }
+  h2 { font-size:21px; font-weight:800; margin:56px 0 0; }
+  .hline { width:42px; height:3px; background:var(--red); border-radius:2px; margin:8px 0 24px; }
+  p { color:var(--gray); margin:0 0 14px; }
+  ul { color:var(--gray); padding-left:22px; margin:0 0 14px; }
+  li { margin:8px 0; }
+  .contrib { margin:0 0 26px; }
+  .contrib h3 { font-size:16px; margin:0 0 6px; }
+  .contrib h3 .no { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:13px; margin-right:10px; }
+  .contrib h3 .core { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:11px; letter-spacing:1.5px; border:1px solid var(--red); border-radius:99px; padding:1px 8px; margin-left:10px; vertical-align:2px; font-weight:600; }
+  .contrib p { margin:0; }
+  .chart { display:flex; gap:46px; justify-content:center; flex-wrap:wrap; margin:30px 0 10px; }
+  .panel { text-align:center; }
+  .ptitle { font-family:"IBM Plex Mono",Consolas,monospace; font-size:12px; letter-spacing:1px; color:var(--soft); margin-bottom:18px; }
+  .bars { display:flex; align-items:flex-end; gap:14px; height:200px; }
+  .barwrap { display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%; }
+  .bar { width:40px; border-radius:4px 4px 0 0; position:relative; }
+  .bar.red { background:var(--red); } .bar.sage { background:var(--sage); }
+  .bar .v { position:absolute; top:-24px; left:50%; transform:translateX(-50%); font-weight:700; font-size:13px; white-space:nowrap; color:var(--ink); }
+  .bar.red .v { color:var(--red); }
+  .blabel { margin-top:8px; font-size:11.5px; color:var(--soft); width:74px; text-align:center; line-height:1.4; }
+  .nav { display:flex; justify-content:space-between; margin-top:64px; padding-top:22px; border-top:1px solid var(--line); }
+  .nav a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; }
+  footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:34px; font-family:"IBM Plex Mono",Consolas,monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="eyebrow">PAPER 01 · MULTI-AGENT FRAMEWORK</div>
+<h1>VMAO</h1>
+<div class="zh">验证式多智能体编排：计划-执行-验证-重规划</div>
+<p class="meta">Xing Zhang 等 · AWS 生成式 AI 创新中心 &amp; 汇丰银行 · ICLR 2026 Workshop · arXiv 2603.11445</p>
+<div class="links"><a href="https://github.com/1parado/multi-agent-article/raw/main/2603.11445_VMAO_Verified-Multi-Agent-Orchestration.pdf">PDF</a><a href="https://arxiv.org/abs/2603.11445">arXiv</a><a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">目录</a></div>
+
+<div class="tldr">VMAO 把「验证」从单个 agent 的自省提升为<b>编排层的一等协调信号</b>：先把复杂问题拆成子问题 DAG 并行执行，再由独立的大模型检查员评估结果完整性，发现缺口就自动重规划补漏，直到满足可配置的停止条件才合成最终答案。</div>
+
+<h2>解决什么问题</h2>
+<div class="hline"></div>
+<p>市场研究这类真实场景需要从异构信息源（内部数据库、财报、新闻、竞品报告）收集数据，动用金融、运营、竞争分析等多种专长，再交叉引用并解决矛盾——传统人工研究需要 2–4 周。多智能体系统理论上可以加速，但现有框架有三大缺口：</p>
+<ul>
+  <li><b>缺乏结构化分解</b>：辩论式、角色扮演式框架能提升推理质量，但没有把任务显式拆解，也没有机制确认「问题是否答完整了」。</li>
+  <li><b>缺乏有原则的质量验证</b>：AutoGen、MetaGPT 等提供灵活交互，但输出是否可靠仍需人盯着，无法满足生产环境「无人值守也要可靠」的要求。</li>
+  <li><b>缺乏「何时停止」的机制</b>：多轮迭代何时收敛、何时合成最终答案，没有显式的质量-成本权衡手段。</li>
+</ul>
+<p>此前 Self-Refine、Reflexion 等自我改进方法都作用在单条回复层面；缺的是<b>编排层验证</b>——评估多个 agent 的集体结果是否充分回答了原始查询，并在发现缺口时触发针对性重规划。</p>
+
+<h2>创新点</h2>
+<div class="hline"></div>
+<div class="contrib">
+  <h3><span class="no">01</span>DAG 分解 + 依赖感知并行执行</h3>
+  <p>QueryPlanner 把复杂查询拆成带字段（agent 类型 / 依赖 / 优先级 / 上下文继承 / 验证标准）的子问题 DAG；DAGExecutor 迭代挑出「依赖已满足」的子问题按优先级并行执行（默认并发 3），依赖子问题自动把上游结果注入提示词。每个执行带 600 秒超时与工具调用限额。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">02</span>验证驱动的自适应重规划<span class="core">CORE</span></h3>
+  <p>独立 LLM 验证器（刻意用与执行模型不同的更强模型，降低自我评估偏差）对每条结果给出状态、完整性分数、缺失方面、矛盾点与处置建议。发现缺口时自动重试低分子问题——<b>保留并合并先前结果</b>，渐进精化不返工——或新增子问题补漏。验证器与单个 agent 实现解耦，成为编排层的通用协调信号。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">03</span>五种可配置停止条件</h3>
+  <p>完整性阈值（80% 子问题已答）、高置信提前停、收益递减（提升 &lt; 5%）、token 预算（100 万）、最大迭代轮数（3 轮），任一满足即进入合成；结果集过大时按 agent 类型分组浓缩再整合，保证带引用的最终答案。</p>
+</div>
+
+<h2>关键结果</h2>
+<div class="hline"></div>
+<p>实现基于 LangGraph + AWS Bedrock，执行用 Claude Sonnet 4.5、验证用 Opus 4.5，agent 经 MCP 访问 8 个微服务共 42 个工具。在 25 个专家策划的市场研究查询上对比（评分 1–5，LLM 评 + 人工复核）：</p>
+<div class="chart">
+  <div class="panel">
+    <div class="ptitle">答案完整性</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:62%"><span class="v">3.1</span></div><div class="blabel">单 Agent</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:70%"><span class="v">3.5</span></div><div class="blabel">静态流水线</div></div>
+      <div class="barwrap"><div class="bar red" style="height:84%"><span class="v">4.2</span></div><div class="blabel">VMAO</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">来源质量</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:52%"><span class="v">2.6</span></div><div class="blabel">单 Agent</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:64%"><span class="v">3.2</span></div><div class="blabel">静态流水线</div></div>
+      <div class="barwrap"><div class="bar red" style="height:82%"><span class="v">4.1</span></div><div class="blabel">VMAO</div></div>
+    </div>
+  </div>
+</div>
+<ul>
+  <li>完整性 <b>+35%</b>、来源质量 <b>+58%</b>；开放式战略查询提升最大（+53%）——验证重规划最有价值的场景，正是「查询空间难以预先完整刻画」的场景。</li>
+  <li><b>反直觉发现</b>：大多数重规划动作是重试不完整的子问题而非新增——执行方差（工具失败、检索不足）比初始分解不当是更大的缺口来源。</li>
+  <li>代价是 8.5 倍 token（850K vs 100K），作者认为由质量提升合理化，且所有阈值可调。</li>
+</ul>
+
+<h2>局限</h2>
+<div class="hline"></div>
+<ul>
+  <li>验证器评估的是完整性而非准确性：能确认「论断存在且有来源」，无法独立核实真伪；子问题问歪时可能接受来源可靠但不相关的答案。</li>
+  <li>评测集仅 25 个查询；评审与执行模型同属 Claude 家族；静态流水线基线把验证与重规划捆绑测试，缺少组件级消融。</li>
+</ul>
+
+<div class="nav"><a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">← 目录</a><a href="https://github.com/1parado/multi-agent-article/blob/main/2602.16873_AdaptOrch_中文版.html">下一篇：AdaptOrch →</a></div>
+<footer>VMAO · arXiv 2603.11445</footer>
+</div>
+</body>
+</html>

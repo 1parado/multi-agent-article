@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meta-Harness: End-to-End Optimization of Model Harnesses（中文版）</title>
+<style>
+  :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fff; margin:0; line-height:2.0; font-size:15.5px; }
+  .wrap { max-width:780px; margin:0 auto; padding:72px 24px 90px; }
+  .eyebrow { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:12px; letter-spacing:3px; }
+  h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:29px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
+  .zh { font-size:19px; font-weight:700; margin-bottom:10px; }
+  .meta { color:var(--soft); font-size:13.5px; margin:0 0 14px; }
+  .links a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; margin-right:18px; }
+  .links a:hover { text-decoration:underline; }
+  .tldr { font-size:16.5px; margin:34px 0 0; padding-bottom:34px; border-bottom:1px solid var(--line); }
+  .tldr b { color:var(--red); }
+  h2 { font-size:21px; font-weight:800; margin:56px 0 0; }
+  .hline { width:42px; height:3px; background:var(--red); border-radius:2px; margin:8px 0 24px; }
+  p { color:var(--gray); margin:0 0 14px; }
+  ul { color:var(--gray); padding-left:22px; margin:0 0 14px; }
+  li { margin:8px 0; }
+  .contrib { margin:0 0 26px; }
+  .contrib h3 { font-size:16px; margin:0 0 6px; }
+  .contrib h3 .no { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:13px; margin-right:10px; }
+  .contrib h3 .core { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:11px; letter-spacing:1.5px; border:1px solid var(--red); border-radius:99px; padding:1px 8px; margin-left:10px; vertical-align:2px; font-weight:600; }
+  .contrib p { margin:0; }
+  .chart { display:flex; gap:44px; justify-content:center; flex-wrap:wrap; margin:30px 0 10px; }
+  .panel { text-align:center; }
+  .ptitle { font-family:"IBM Plex Mono",Consolas,monospace; font-size:12px; letter-spacing:1px; color:var(--soft); margin-bottom:18px; }
+  .bars { display:flex; align-items:flex-end; gap:14px; height:200px; }
+  .barwrap { display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%; }
+  .bar { width:40px; border-radius:4px 4px 0 0; position:relative; }
+  .bar.red { background:var(--red); } .bar.sage { background:var(--sage); }
+  .bar .v { position:absolute; top:-24px; left:50%; transform:translateX(-50%); font-weight:700; font-size:13px; white-space:nowrap; color:var(--ink); }
+  .bar.red .v { color:var(--red); }
+  .blabel { margin-top:8px; font-size:11.5px; color:var(--soft); width:78px; text-align:center; line-height:1.4; }
+  .nav { display:flex; justify-content:space-between; margin-top:64px; padding-top:22px; border-top:1px solid var(--line); }
+  .nav a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; }
+  footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:34px; font-family:"IBM Plex Mono",Consolas,monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="eyebrow">PAPER 04 · AGENT HARNESS</div>
+<h1>Meta-Harness</h1>
+<div class="zh">模型 Harness 的端到端自动优化</div>
+<p class="meta">Yoonho Lee, Chelsea Finn 等 · 斯坦福 &amp; MIT &amp; KRAFTON · arXiv 2603.28052</p>
+<div class="links"><a href="https://github.com/1parado/multi-agent-article/raw/main/2603.28052_Meta-Harness_End-to-End-Optimization-of-Model-Harnesses.pdf">PDF</a><a href="https://arxiv.org/abs/2603.28052">arXiv</a><a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">目录</a></div>
+
+<div class="tldr">固定模型换 harness 能拉开 6 倍的性能差距，但 harness 仍靠工程师手工打磨，而现有文本优化器只喂标量分数或压缩摘要，根本不够诊断 harness 问题。Meta-Harness 用一个 coding agent 做「优化 harness 的 harness」：<b>通过文件系统按需翻阅所有历史候选的源码、分数和完整执行轨迹</b>，在文本分类、数学推理和 TerminalBench-2 上自动发现超越人类手工设计的 harness。</div>
+
+<h2>解决什么问题</h2>
+<div class="hline"></div>
+<p>LLM 系统的性能不只取决于模型权重，还取决于 <b>harness</b>——决定存什么、检索什么、把什么呈现给模型的代码。同一基准上不同 harness 可造成 6 倍差距，这催生了「harness 工程」，但它仍是手工作坊式循环：工程师看失败案例、调整启发式、迭代少数几个设计。论文问：这个过程能否自动化？</p>
+<p>自然的起点是文本优化器（OPRO、TextGrad、AlphaEvolve、GEPA、TTT-Discover 等），但它们与 harness 工程严重错配，因为反馈被过度压缩：</p>
+<ul>
+  <li>只条件于当前候选，或只看标量分数，或把反馈限制在短模板 / LLM 摘要里；</li>
+  <li>每步优化可用的上下文只有约 100–30,000 token，而 harness 是<b>长时程</b>的——「存什么、何时取、怎么呈现」的一个决定可能在很多推理步之后才显效，压缩反馈恰恰抹掉了把下游失败追溯到早期 harness 决策所需的信息。</li>
+</ul>
+
+<h2>创新点</h2>
+<div class="hline"></div>
+<div class="contrib">
+  <h3><span class="no">01</span>文件系统作反馈通道的 agentic 搜索<span class="core">CORE</span></h3>
+  <p>提议者本身是 coding agent（Claude Code + Opus-4.6）。每个候选 harness 评估后，其源码、分数、执行轨迹全部写入文件系统；提议者通过 grep / cat 等终端操作<b>选择性检索</b>，而不是把历史塞进单个提示词——实测最重设置下每轮中位读 82 个文件、引用 20+ 个先前候选。单个评估可产生最多 <b>10,000,000 token</b> 的诊断信息，比以往文本优化器的反馈预算约高三个数量级。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">02</span>极简外循环：诊断权交给 agent</h3>
+  <p>不依赖固定脚手架、候选归档或持久记忆机制，也没有硬编码的父代选择规则：提议者自由检查任何历史 harness 及其轨迹，自行决定诊断哪些失败模式、做局部修改还是整体重写。这让 Meta-Harness 能随 coding agent 变强而自动变强；提议者永远看不到测试集结果。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">03</span>代码空间搜索的先验优势</h3>
+  <p>harness 优化发生在代码空间：检索、记忆、提示构造逻辑的小改动会在很多步之后才起效，局部搜索启发式不适配。把 harness 表示为程序带来天然正则化——coding 模型倾向提出连贯算法而非脆弱的硬编码补丁；且代码空间的过拟合肉眼可查（脆弱的 if-链、硬编码映射），这是权重空间过拟合不具备的可检查性。</p>
+</div>
+
+<h2>关键结果</h2>
+<div class="hline"></div>
+<p>三个任务域：在线文本分类（GPT-OSS-120B 分类器）、检索增强数学推理（200 道 IMO 级问题）、agentic 编码（TerminalBench-2）：</p>
+<div class="chart">
+  <div class="panel">
+    <div class="ptitle">文本分类 · 中位准确率</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:59%"><span class="v">32.6</span></div><div class="blabel">GEPA</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:71%"><span class="v">39.1</span></div><div class="blabel">OpenEvolve</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:73%"><span class="v">40.9</span></div><div class="blabel">ACE</div></div>
+      <div class="barwrap"><div class="bar red" style="height:88%"><span class="v">48.6</span></div><div class="blabel">Meta-Harness</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">提议者接口消融</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:63%"><span class="v">34.6</span></div><div class="blabel">仅分数</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:63%"><span class="v">34.9</span></div><div class="blabel">分数+摘要</div></div>
+      <div class="barwrap"><div class="bar red" style="height:91%"><span class="v">50.0</span></div><div class="blabel">完整接口</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">TERMINALBENCH-2 · HAIKU 4.5</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:71%"><span class="v">28.3</span></div><div class="blabel">Terminus-2</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:89%"><span class="v">35.5</span></div><div class="blabel">Goose</div></div>
+      <div class="barwrap"><div class="bar red" style="height:94%"><span class="v">37.6</span></div><div class="blabel">Meta-Harness</div></div>
+    </div>
+  </div>
+</div>
+<ul>
+  <li><b>文本分类</b>：48.6%，超 SOTA 手工 harness ACE +7.7 分，且上下文只用了 11.4K token（ACE 要 50.8K）——精度与上下文双优；用 1/10 的评估次数追平 OpenEvolve / TTT-Discover，最终反超 10+ 分。</li>
+  <li><b>关键消融——原始执行轨迹是命门</b>：仅分数中位 34.6、分数+摘要 34.9、完整接口 <b>50.0</b>；完整接口的中位候选都好于前两者的最佳候选——摘要补不回被压缩掉的诊断信号。</li>
+  <li><b>OOD 泛化</b>：9 个搜索期未见的数据集上平均 73.1%，仍为最优（ACE 70.2%）。</li>
+  <li><b>数学推理</b>：单一发现 harness 在 5 个从未参与搜索的模型上平均 +4.7 分（vs 无检索），且在纯 BM25 词法检索栈上实现。</li>
+  <li><b>TerminalBench-2</b>：Opus 4.6 达 76.4%（超手工精调的 Terminus-KIRA 74.7%）；Haiku 4.5 达 37.6%，所有 Haiku 4.5 agent 中第 1。</li>
+</ul>
+
+<h2>局限</h2>
+<div class="hline"></div>
+<ul>
+  <li>harness 与模型解耦搜索（模型冻结），未来方向是两者协同演化；只用了一个提议者（Claude Code）做实验。</li>
+  <li>一次搜索数小时即可完成，产出的策略可读、可跨模型复用——一旦搜索空间可访问，通用 agent 就能超过手工设计。</li>
+</ul>
+
+<div class="nav"><a href="https://github.com/1parado/multi-agent-article/blob/main/2603.25723_NLAH_中文版.html">← NLAH</a><a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">目录</a><a href="https://github.com/1parado/multi-agent-article/blob/main/2606.03005_MUSE_中文版.html">MUSE →</a></div>
+<footer>Meta-Harness · arXiv 2603.28052</footer>
+</div>
+</body>
+</html>
