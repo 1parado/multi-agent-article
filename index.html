@@ -51,8 +51,8 @@
 
 <div class="eyebrow">PAPER DIGEST · 2026</div>
 <h1>Multi-Agent Framework / Harness</h1>
-<div class="sub">2026 年五篇代表性论文 · 中文编译版</div>
-<p class="intro">5 篇经核验的 arXiv 论文（2 篇多智能体编排框架 + 3 篇 agent harness），PDF 与中文版均在本目录。</p>
+<div class="sub">2026 年代表性论文 · 中文编译版</div>
+<p class="intro">8 篇经核验的 arXiv 论文（多智能体编排 / harness / 自生成 / 安全），PDF 与中文版均在本目录。</p>
 
 <div class="tldr">
   <b>multi-agent framework</b>：协调多个 LLM agent 协作的结构——怎么拆任务、怎么并行、怎么合并。<br>
@@ -60,7 +60,7 @@
   2026 年的共同主题：模型能力趋同后，<b>模型之外的结构设计成为新的性能主战场</b>。
 </div>
 
-<h2>五篇论文</h2>
+<h2>论文列表</h2>
 <div class="hline"></div>
 
 <div class="paper">
@@ -103,6 +103,30 @@
   <a href="https://github.com/1parado/multi-agent-article/blob/main/2606.03005_MUSE_中文版.html">中文版</a><a href="https://github.com/1parado/multi-agent-article/raw/main/2606.03005_MUSE_Unified-Agentic-Harness-for-MLLMs.pdf">PDF</a>
 </div>
 
+<div class="paper">
+  <div class="idx">06 · MULTI-AGENT · ACTIVATION</div>
+  <h3><a href="https://github.com/1parado/multi-agent-article/blob/main/2608.27338_MoRe_中文版.html">MoRe：用角色混合把 MAS 协同压进单次推理</a></h3>
+  <div class="en">arXiv 2608.27338 · UIUC + Amazon · 2026-08</div>
+  <p>把多种角色学成可组合的激活引导向量（codebook），查询感知路由器在单次前向中动态混合。性能逼近 MAS，token 成本约降 20×——多视角不必依赖多轮文本通信。</p>
+  <a href="https://github.com/1parado/multi-agent-article/blob/main/2608.27338_MoRe_中文版.html">中文版</a><a href="https://github.com/1parado/multi-agent-article/raw/main/2608.27338_MoRe_Mixture_of_Roles.pdf">PDF</a>
+</div>
+
+<div class="paper">
+  <div class="idx">07 · MULTI-AGENT · SECURITY SoK</div>
+  <h3><a href="https://github.com/1parado/multi-agent-article/blob/main/2609.00595_SoK_中文版.html">SoK：安全的智能体也可能一起失败</a></h3>
+  <div class="en">arXiv 2609.00595 · 2026-09 · 21 pages</div>
+  <p>对 197 篇工作做执行中心分析，提出 A-I-R 攻击框架与五部分防御契约；审计 44 项评测。核心主张：真正的 MAS 安全效应必须在交互路径上被证明。</p>
+  <a href="https://github.com/1parado/multi-agent-article/blob/main/2609.00595_SoK_中文版.html">中文版</a><a href="https://github.com/1parado/multi-agent-article/raw/main/2609.00595_SoK_Security_Multi-Agent.pdf">PDF</a>
+</div>
+
+<div class="paper">
+  <div class="idx">08 · MULTI-AGENT · SELF-GENERATIVE</div>
+  <h3><a href="https://github.com/1parado/multi-agent-article/blob/main/2509.24323_MAS2_中文版.html">MAS²：自生成、自配置、自纠偏的多智能体系统</a></h3>
+  <div class="en">arXiv 2509.24323 · ICLR 2026 Poster</div>
+  <p>用 generator–implementer–rectifier 三元 meta-agent 递归定制目标 MAS，运行中纠偏。七项基准相对 SOTA 最高约 +19.6%，处在成本–性能 Pareto 前沿。</p>
+  <a href="https://github.com/1parado/multi-agent-article/blob/main/2509.24323_MAS2_中文版.html">中文版</a><a href="https://github.com/1parado/multi-agent-article/raw/main/2509.24323_MAS2_Self-Generative.pdf">PDF</a>
+</div>
+
 <h2>横向对比</h2>
 <div class="hline"></div>
 <table class="cmp">
@@ -132,6 +156,21 @@
     <td>MLLM 在人类轻松的视觉任务上失败；主流靠重训练，但闭源模型无法微调、训练管线昂贵易过时</td>
     <td>面向冻结 MLLM 的统一多模态 harness（严格黑盒）；统一任务表示 + 外置确定性验证器 + 感知工具注册表；验证器引导的修复循环</td>
   </tr>
+  <tr>
+    <td><b>MoRe</b></td>
+    <td>MAS 多轮文本协同成本高；单智能体固定角色无法动态多视角</td>
+    <td>角色 codebook + 查询感知路由器；激活空间混合；SFT 课程 + GRPO；单次推理逼近 MAS，约 20× 更省 token</td>
+  </tr>
+  <tr>
+    <td><b>SoK</b></td>
+    <td>局部安全检查无法覆盖跨主体交互导致的系统级失败；攻击与评测碎片化</td>
+    <td>197 篇执行中心分析；A-I-R 框架；五部分防御契约；强调路径闭合与恢复；44 项评测审计</td>
+  </tr>
+  <tr>
+    <td><b>MAS²</b></td>
+    <td>自动 MAS 多为「生成一次就部署」，动态环境易崩</td>
+    <td>Generator–Implementer–Rectifier 三元 meta-MAS；Collaborative Tree Optimization；运行时纠偏；最高约 +19.6%</td>
+  </tr>
 </table>
 
 <h2>共同趋势</h2>
@@ -155,7 +194,7 @@
 
 <h2>建议阅读顺序</h2>
 <div class="hline"></div>
-<p style="color:var(--gray);">先读 <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2603.28052_Meta-Harness_中文版.html">Meta-Harness</a>（harness 是什么、为什么重要）→ <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2603.25723_NLAH_中文版.html">NLAH</a>（harness 的表示与工程边界）→ <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2606.03005_MUSE_中文版.html">MUSE</a>（多模态落地）→ <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2602.16873_AdaptOrch_中文版.html">AdaptOrch</a>（理论 + 路由算法）→ <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2603.11445_VMAO_中文版.html">VMAO</a>（工程化编排系统）。</p>
+<p style="color:var(--gray);">先读 <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2603.28052_Meta-Harness_中文版.html">Meta-Harness</a>（harness 是什么）→ <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2603.25723_NLAH_中文版.html">NLAH</a> / <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2606.03005_MUSE_中文版.html">MUSE</a>（harness 工程）→ <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2602.16873_AdaptOrch_中文版.html">AdaptOrch</a> / <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2603.11445_VMAO_中文版.html">VMAO</a>（编排）→ <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2509.24323_MAS2_中文版.html">MAS²</a>（自生成）→ <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2608.27338_MoRe_中文版.html">MoRe</a>（激活空间协同）→ <a style="color:var(--red);font-weight:600;text-decoration:none;" href="https://github.com/1parado/multi-agent-article/blob/main/2609.00595_SoK_中文版.html">SoK</a>（安全系统化）。</p>
 
 </div>
 </body>
