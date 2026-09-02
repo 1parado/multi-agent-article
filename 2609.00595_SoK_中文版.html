@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoK: When Safe Agents Fail Together（中文版）</title>
+<style>
+  :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fff; margin:0; line-height:2.0; font-size:15.5px; }
+  .wrap { max-width:780px; margin:0 auto; padding:72px 24px 90px; }
+  .eyebrow { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:12px; letter-spacing:3px; }
+  h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:26px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
+  .zh { font-size:19px; font-weight:700; margin-bottom:10px; }
+  .meta { color:var(--soft); font-size:13.5px; margin:0 0 14px; }
+  .links a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; margin-right:18px; }
+  .links a:hover { text-decoration:underline; }
+  .tldr { font-size:16.5px; margin:34px 0 0; padding-bottom:34px; border-bottom:1px solid var(--line); }
+  .tldr b { color:var(--red); }
+  h2 { font-size:21px; font-weight:800; margin:56px 0 0; }
+  .hline { width:42px; height:3px; background:var(--red); border-radius:2px; margin:8px 0 24px; }
+  p { color:var(--gray); margin:0 0 14px; }
+  ul { color:var(--gray); padding-left:22px; margin:0 0 14px; }
+  li { margin:8px 0; }
+  .contrib { margin:0 0 26px; }
+  .contrib h3 { font-size:16px; margin:0 0 6px; }
+  .contrib h3 .no { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:13px; margin-right:10px; }
+  .contrib h3 .core { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:11px; letter-spacing:1.5px; border:1px solid var(--red); border-radius:99px; padding:1px 8px; margin-left:10px; vertical-align:2px; font-weight:600; }
+  .contrib p { margin:0; }
+  .nav { margin-top:56px; padding-top:24px; border-top:1px solid var(--line); display:flex; justify-content:space-between; font-size:14px; }
+  .nav a { color:var(--red); text-decoration:none; font-weight:600; }
+  footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:50px; font-family:"IBM Plex Mono",Consolas,monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="eyebrow">MULTI-AGENT · SECURITY SoK</div>
+<h1>SoK: When Safe Agents Fail Together</h1>
+<div class="zh">安全的智能体也可能一起失败：多智能体 LLM 系统的安全系统化</div>
+<div class="meta">arXiv 2609.00595 · 2026-09-01 · 21 pages</div>
+<div class="links">
+  <a href="https://arxiv.org/abs/2609.00595">arXiv</a>
+  <a href="https://github.com/1parado/multi-agent-article/raw/main/2609.00595_SoK_Security_Multi-Agent.pdf">PDF</a>
+</div>
+
+<div class="tldr">
+  <b>一句话</b>：多智能体系统在主体边界之间传递信息、状态、决策与权限，局部安全检查无法覆盖的系统级失败会因此产生。本文对 <b>197</b> 篇工作做执行中心分析，提出 <b>A-I-R</b> 攻击框架与五部分防御契约，并审计 44 项评测工作，推动「交互感知」的 MAS 安全观。
+</div>
+
+<h2>要解决什么问题</h2>
+<div class="hline"></div>
+<p>单智能体安全研究已积累大量防御与评测，但一旦多个 LLM agent 协作，攻击面从「模型内部」扩展到「交互接口与信任边界」。信息、状态、决策与权威跨主体流动时，局部安全检查可能全部通过，系统整体仍失败——「安全的智能体一起失败」。</p>
+<p>现有工作往往把「用了多个 agent」直接等同于「存在真正的多智能体安全效应」，缺少以执行为中心的统一视角，导致攻击机制碎片化、防御难以比较、评测无法隔离交互效应。</p>
+
+<h2>创新点</h2>
+<div class="hline"></div>
+<div class="contrib">
+  <h3><span class="no">01</span>执行中心的系统化梳理<span class="core">CORE</span></h3>
+  <p>覆盖六类交互接口、四种对手位置、七类系统级风险、八条反复出现的攻击路径；强调必须端到端追踪攻击路径，而不是只看局部模块是否「安全」。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">02</span>A-I-R 攻击组织框架</h3>
+  <p>按 <b>Adversary position</b>（对手位置）→ <b>Interaction interface</b>（交互接口）→ <b>Resulting system-level risk</b>（系统级风险）组织攻击，把分散机制统一到同一坐标系，便于比较与复用。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">03</span>五部分防御契约</h3>
+  <p>路径目标、观测、干预、信任边界、恢复。作者特别指出：路径闭合（path closure）与恢复（recovery）是当前最薄弱、也最关键的挑战。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">04</span>评测审计与开放问题</h3>
+  <p>审计 44 项评测与基准工作，指出需更好隔离交互效应、设计可比较可诊断指标、支持跨 MAS 设计复用，以及评估开放系统运行。</p>
+</div>
+
+<h2>主要结论</h2>
+<div class="hline"></div>
+<ul>
+  <li><b>交互感知</b>：真正的 MAS 安全效应必须在交互路径上被证明，而不能从「多 agent」标签直接推出。</li>
+  <li>防御应回答：是否闭合了具体攻击路径？信任边界是否被正确放置？失败后能否恢复？</li>
+  <li>评测应引入适当的反事实对照，区分「多智能体设定」与「多智能体特有安全效应」。</li>
+</ul>
+
+<h2>局限与展望</h2>
+<div class="hline"></div>
+<ul>
+  <li>作为 SoK，侧重框架与分类而非提出新攻击/防御算法；具体防御方案的可落地性仍依赖后续工作。</li>
+  <li>开放系统、跨组织协作、长期运行下的路径演化等场景仍是评测空白。</li>
+</ul>
+
+<div class="nav">
+  <a href="https://github.com/1parado/multi-agent-article/blob/main/2608.27338_MoRe_中文版.html">← 上一篇：MoRe</a>
+  <a href="https://github.com/1parado/multi-agent-article/blob/main/2509.24323_MAS2_中文版.html">下一篇：MAS² →</a>
+</div>
+<footer>SoK · arXiv 2609.00595</footer>
+</div>
+</body>
+</html>

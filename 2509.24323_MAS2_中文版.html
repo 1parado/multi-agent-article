@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAS²: Self-Generative Multi-Agent Systems（中文版）</title>
+<style>
+  :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fff; margin:0; line-height:2.0; font-size:15.5px; }
+  .wrap { max-width:780px; margin:0 auto; padding:72px 24px 90px; }
+  .eyebrow { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:12px; letter-spacing:3px; }
+  h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:28px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
+  .zh { font-size:19px; font-weight:700; margin-bottom:10px; }
+  .meta { color:var(--soft); font-size:13.5px; margin:0 0 14px; }
+  .links a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; margin-right:18px; }
+  .links a:hover { text-decoration:underline; }
+  .tldr { font-size:16.5px; margin:34px 0 0; padding-bottom:34px; border-bottom:1px solid var(--line); }
+  .tldr b { color:var(--red); }
+  h2 { font-size:21px; font-weight:800; margin:56px 0 0; }
+  .hline { width:42px; height:3px; background:var(--red); border-radius:2px; margin:8px 0 24px; }
+  p { color:var(--gray); margin:0 0 14px; }
+  ul { color:var(--gray); padding-left:22px; margin:0 0 14px; }
+  li { margin:8px 0; }
+  .contrib { margin:0 0 26px; }
+  .contrib h3 { font-size:16px; margin:0 0 6px; }
+  .contrib h3 .no { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:13px; margin-right:10px; }
+  .contrib h3 .core { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:11px; letter-spacing:1.5px; border:1px solid var(--red); border-radius:99px; padding:1px 8px; margin-left:10px; vertical-align:2px; font-weight:600; }
+  .contrib p { margin:0; }
+  .nav { margin-top:56px; padding-top:24px; border-top:1px solid var(--line); display:flex; justify-content:space-between; font-size:14px; }
+  .nav a { color:var(--red); text-decoration:none; font-weight:600; }
+  footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:50px; font-family:"IBM Plex Mono",Consolas,monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="eyebrow">MULTI-AGENT · SELF-GENERATIVE</div>
+<h1>MAS²: Self-Generative Multi-Agent Systems</h1>
+<div class="zh">自生成、自配置、自纠偏的多智能体系统</div>
+<div class="meta">arXiv 2509.24323 · ICLR 2026 Poster · NTU / ZJU / NUS 等</div>
+<div class="links">
+  <a href="https://arxiv.org/abs/2509.24323">arXiv</a>
+  <a href="https://github.com/1parado/multi-agent-article/raw/main/2509.24323_MAS2_Self-Generative.pdf">PDF</a>
+  <a href="https://github.com/yeyeyeah2/MAS2">Code</a>
+</div>
+
+<div class="tldr">
+  <b>一句话</b>：多数自动 MAS 仍是「生成一次就部署」，面对动态环境易崩。MAS² 用 <b>generator–implementer–rectifier</b> 三元 meta-agent 递归地为任务定制多智能体系统，并在运行中纠偏；七项基准上相对 SOTA 最高约 <b>+19.6%</b>，且处在成本–性能 Pareto 前沿。
+</div>
+
+<h2>要解决什么问题</h2>
+<div class="hline"></div>
+<p>MAS 设计经历了手工配置 → 部分自动化（拓扑/路由）→ 全自动生成。近期基于 LLM 自身生成 MAS 的工作（如 MAS-GPT、ScoreFlow、FlowReasoner）仍多采用「generate-once-and-deploy」：为任务实例化一次系统后固定执行，无法应对工具崩溃、网络失败、中间结果错误等真实动态。</p>
+<p>外部优化模块（贝叶斯、MCTS、GNN）又受限于预定义算子搜索空间，架构创新有限。需要一种能在运行中持续生成、配置并修正目标 MAS 的范式。</p>
+
+<h2>创新点</h2>
+<div class="hline"></div>
+<div class="contrib">
+  <h3><span class="no">01</span>MAS² 范式：用 MAS 生成 MAS<span class="core">CORE</span></h3>
+  <p>递归自生成：一个 meta 级多智能体团队，为不同问题自主设计专用多智能体系统，突破「一次生成、终身部署」的刚性。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">02</span>Generator–Implementer–Rectifier 三元组</h3>
+  <p><b>Generator</b> 产出高层工作流模板；<b>Implementer</b> 为每步填入具体 LLM 骨干与配置；<b>Rectifier</b> 监控执行与环境反馈，实时纠偏。三者分工明确、可分别特化。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">03</span>Collaborative Tree Optimization (CTO)</h3>
+  <p>三 agent 协作扩展决策树（多种 MAS 配置与执行路径），终端环境反馈经路径信用传播回传到各角色，得到角色特异偏好数据，再用相对奖励对齐算法分别训练。</p>
+</div>
+
+<h2>关键结果</h2>
+<div class="hline"></div>
+<p>在多跳检索（HotpotQA 等）、代码（HumanEval）、数学（MATH）等七项基准上对比手工 MAS（DyLAN、MedPrompt、LLM-Debate 等）与自动 MAS（ScoreFlow、MaAS、AFlow 等）：</p>
+<ul>
+  <li>复杂场景（深度研究、代码生成）相对 SOTA 最高约 <b>+19.6%</b>；HotpotQA 89.3%（相对 DyLAN +8.5%）；HumanEval 97.0%（相对 AFlow +4.1%）。</li>
+  <li>跨骨干泛化：换用未见过的 LLM 仍可带来最高约 <b>+15.1%</b> 提升。</li>
+  <li>成本–性能上处于 Pareto 前沿，并非单纯堆 token。</li>
+</ul>
+
+<h2>局限</h2>
+<div class="hline"></div>
+<ul>
+  <li>Meta-agent 本身的训练与搜索仍有计算开销；极短任务上可能「杀鸡用牛刀」。</li>
+  <li>纠偏依赖可观测的执行反馈；黑盒工具或延迟反馈场景下效果受限。</li>
+  <li>决策树扩展与信用分配的设计选择对最终性能敏感，迁移到全新领域需重新校准。</li>
+</ul>
+
+<div class="nav">
+  <a href="https://github.com/1parado/multi-agent-article/blob/main/2609.00595_SoK_中文版.html">← 上一篇：SoK</a>
+  <a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">目录 →</a>
+</div>
+<footer>MAS² · arXiv 2509.24323 · ICLR 2026</footer>
+</div>
+</body>
+</html>

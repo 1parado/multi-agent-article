@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoRe: Mixture of Roles（中文版）</title>
+<style>
+  :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fff; margin:0; line-height:2.0; font-size:15.5px; }
+  .wrap { max-width:780px; margin:0 auto; padding:72px 24px 90px; }
+  .eyebrow { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:12px; letter-spacing:3px; }
+  h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:29px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
+  .zh { font-size:19px; font-weight:700; margin-bottom:10px; }
+  .meta { color:var(--soft); font-size:13.5px; margin:0 0 14px; }
+  .links a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; margin-right:18px; }
+  .links a:hover { text-decoration:underline; }
+  .tldr { font-size:16.5px; margin:34px 0 0; padding-bottom:34px; border-bottom:1px solid var(--line); }
+  .tldr b { color:var(--red); }
+  h2 { font-size:21px; font-weight:800; margin:56px 0 0; }
+  .hline { width:42px; height:3px; background:var(--red); border-radius:2px; margin:8px 0 24px; }
+  p { color:var(--gray); margin:0 0 14px; }
+  ul { color:var(--gray); padding-left:22px; margin:0 0 14px; }
+  li { margin:8px 0; }
+  .contrib { margin:0 0 26px; }
+  .contrib h3 { font-size:16px; margin:0 0 6px; }
+  .contrib h3 .no { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:13px; margin-right:10px; }
+  .contrib h3 .core { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:11px; letter-spacing:1.5px; border:1px solid var(--red); border-radius:99px; padding:1px 8px; margin-left:10px; vertical-align:2px; font-weight:600; }
+  .contrib p { margin:0; }
+  .nav { margin-top:56px; padding-top:24px; border-top:1px solid var(--line); display:flex; justify-content:space-between; font-size:14px; }
+  .nav a { color:var(--red); text-decoration:none; font-weight:600; }
+  footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:50px; font-family:"IBM Plex Mono",Consolas,monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="eyebrow">MULTI-AGENT · ACTIVATION STEERING</div>
+<h1>MoRe: Mixture of Roles</h1>
+<div class="zh">用「角色混合」把多智能体协同压缩进单次推理</div>
+<div class="meta">arXiv 2608.27338 · UIUC + Amazon · 2026-08-27</div>
+<div class="links">
+  <a href="https://arxiv.org/abs/2608.27338">arXiv</a>
+  <a href="https://github.com/1parado/multi-agent-article/raw/main/2608.27338_MoRe_Mixture_of_Roles.pdf">PDF</a>
+</div>
+
+<div class="tldr">
+  <b>一句话</b>：MAS 靠多轮文本通信融合多种角色视角，成本高；MoRe 把多种「角色」学成可组合的激活引导向量（codebook），用查询感知路由器在单次前向中动态混合，性能逼近 MAS，token 成本约降 <b>20×</b>。
+</div>
+
+<h2>要解决什么问题</h2>
+<div class="hline"></div>
+<p>专业化是 LLM 成功的关键路径之一：单智能体常用固定 persona 或 steering vector，但只能施加一种固定特化；多智能体系统（MAS）通过多角色文本辩论/协作实现动态多视角，却依赖多轮交互，上下文膨胀、推理成本随 agent 数与轮数线性上升，还可能因长上下文损害推理质量。</p>
+<p>核心矛盾：<b>要动态多视角，就要多轮文本协同；要低成本，就只能固定单一角色</b>。MoRe 问的是：能否在<b>单次推理</b>里获得动态多视角专业化？</p>
+
+<h2>创新点</h2>
+<div class="hline"></div>
+<div class="contrib">
+  <h3><span class="no">01</span>Specialization Codebook + 查询感知路由<span class="core">CORE</span></h3>
+  <p>学习一组可端到端优化的 steering vector（每个对应一种潜在角色），再由轻量路由器按查询生成混合权重，得到查询特异的组合向量 <b>v_Q</b>，在中间层对输入末 token 做激活引导。特化发生在激活空间，而非文本空间。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">02</span>三阶段 SFT 课程 + GRPO 后训练</h3>
+  <p>骨干 LLM 全程冻结。SFT 用课程让 composer 学会基本路由；GRPO 把策略定义在候选角色空间上，用相对奖励探索更好的角色协同轨迹，信用分配更清晰。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">03</span>单轮、单智能体的多视角推理</h3>
+  <p>彻底去掉 MAS 的多轮文本通信开销：同一模型、一次前向即可融合多种角色视角，实现「One Model, Many Minds」。</p>
+</div>
+
+<h2>关键结果</h2>
+<div class="hline"></div>
+<p>骨干为 Llama-3.1-8B-Instruct 与 Qwen3-8B。对比单智能体特化（CAA、ActAdd、Prompt FT、IRIS 等）与 MAS（LLM Debate、AutoGen、AgentVerse、DyLAN）基线，覆盖 MMLU、TriviaQA、MATH、GSM8K、MedQA 等推理与性格相关基准。</p>
+<ul>
+  <li>相对单智能体基线平均准确率约 <b>+2.2%</b>。</li>
+  <li>与 MAS 性能相当，同时 token 成本约降低 <b>20×</b>。</li>
+  <li>说明：多视角增益主要来自「角色混合」本身，而非必须依赖昂贵的多轮文本交互。</li>
+</ul>
+
+<h2>局限</h2>
+<div class="hline"></div>
+<ul>
+  <li>依赖对中间层激活的干预，部署需模型可注入 hook；黑盒 API 场景难以直接使用。</li>
+  <li>角色 codebook 规模与路由质量受训练数据与课程设计影响，跨领域泛化仍需更多验证。</li>
+  <li>当前实验以 8B 级模型为主，更大规模模型上的增益与稳定性有待报告。</li>
+</ul>
+
+<div class="nav">
+  <a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">← 目录</a>
+  <a href="https://github.com/1parado/multi-agent-article/blob/main/2609.00595_SoK_中文版.html">下一篇：SoK 安全 →</a>
+</div>
+<footer>MoRe · arXiv 2608.27338</footer>
+</div>
+</body>
+</html>
