@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Symphony-Coord: Adaptive Routing for Multi-Agent LLM Systems（中文版）</title>
+<style>
+  :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fff; margin:0; line-height:2.0; font-size:15.5px; }
+  .wrap { max-width:780px; margin:0 auto; padding:72px 24px 90px; }
+  .eyebrow { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:12px; letter-spacing:3px; }
+  h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:29px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
+  .zh { font-size:19px; font-weight:700; margin-bottom:10px; }
+  .meta { color:var(--soft); font-size:13.5px; margin:0 0 14px; }
+  .links a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; margin-right:18px; }
+  .links a:hover { text-decoration:underline; }
+  .tldr { font-size:16.5px; margin:34px 0 0; padding-bottom:34px; border-bottom:1px solid var(--line); }
+  .tldr b { color:var(--red); }
+  h2 { font-size:21px; font-weight:800; margin:56px 0 0; }
+  .hline { width:42px; height:3px; background:var(--red); border-radius:2px; margin:8px 0 24px; }
+  p { color:var(--gray); margin:0 0 14px; }
+  ul { color:var(--gray); padding-left:22px; margin:0 0 14px; }
+  li { margin:8px 0; }
+  .contrib { margin:0 0 26px; }
+  .contrib h3 { font-size:16px; margin:0 0 6px; }
+  .contrib h3 .no { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:13px; margin-right:10px; }
+  .contrib h3 .core { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:11px; letter-spacing:1.5px; border:1px solid var(--red); border-radius:99px; padding:1px 8px; margin-left:10px; vertical-align:2px; font-weight:600; }
+  .contrib p { margin:0; }
+  .chart { display:flex; gap:46px; justify-content:center; flex-wrap:wrap; margin:30px 0 10px; }
+  .panel { text-align:center; }
+  .ptitle { font-family:"IBM Plex Mono",Consolas,monospace; font-size:12px; letter-spacing:1px; color:var(--soft); margin-bottom:18px; }
+  .bars { display:flex; align-items:flex-end; gap:14px; height:200px; }
+  .barwrap { display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%; }
+  .bar { width:40px; border-radius:4px 4px 0 0; position:relative; }
+  .bar.red { background:var(--red); } .bar.sage { background:var(--sage); }
+  .bar .v { position:absolute; top:-24px; left:50%; transform:translateX(-50%); font-weight:700; font-size:13px; white-space:nowrap; color:var(--ink); }
+  .bar.red .v { color:var(--red); }
+  .blabel { margin-top:8px; font-size:11.5px; color:var(--soft); width:74px; text-align:center; line-height:1.4; }
+  .nav { display:flex; justify-content:space-between; margin-top:64px; padding-top:22px; border-top:1px solid var(--line); }
+  .nav a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; }
+  footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:34px; font-family:"IBM Plex Mono",Consolas,monospace; }
+</style>
+<style>
+  /* ---- heading TOC widget (spec: AGENT.md) ---- */
+  #toc-btn { position:fixed; right:20px; bottom:28px; z-index:1000; width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:#fff; color:var(--red); font-size:20px; line-height:1; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.12); opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; transform:translateY(8px); }
+  #toc-btn.show { opacity:1; pointer-events:auto; transform:none; }
+  #toc-btn.on { background:var(--red); color:#fff; border-color:var(--red); }
+  #toc-panel { position:fixed; right:20px; bottom:80px; z-index:1000; min-width:200px; max-width:320px; max-height:62vh; overflow-y:auto; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 6px 24px rgba(0,0,0,.14); padding:12px 6px 8px; display:none; }
+  #toc-panel.open { display:block; }
+  #toc-panel .toc-title { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:var(--red); padding:0 12px 8px; border-bottom:1px solid var(--line); }
+  #toc-panel a { display:block; color:var(--gray); text-decoration:none; font-size:13.5px; line-height:1.6; padding:6px 12px; border-radius:6px; }
+  #toc-panel a:hover { background:#f6f5f3; color:var(--red); }
+  #toc-panel a.t1 { font-weight:700; color:var(--ink); }
+  #toc-panel a.t2 { padding-left:24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="eyebrow">PAPER 10 · MULTI-AGENT · DECENTRALIZED</div>
+<h1>Symphony-Coord</h1>
+<div class="zh">把 agent 选择变成在线老虎机：去中心化、无预定义角色的涌现式协调</div>
+<p class="meta">Zhaoyang Guan 等 · NUS + NYU + Gradient 等 · arXiv 2602.00966 · 2026-02（v2 2026-05）</p>
+<div class="links"><a href="https://arxiv.org/pdf/2602.00966.pdf">PDF</a><a href="https://arxiv.org/abs/2602.00966">arXiv</a><a href="index.html">目录</a></div>
+
+<div class="tldr">现有多智能体协调依赖静态角色分配和中心化控制器，agent 池一大就路由低效、适应性差、故障恢复脆弱。Symphony-Coord 把 agent 选择建模为<b>在线上下文多臂老虎机问题</b>：两阶段动态 Beacon 协议先轻量筛出 Top-L 候选，再用 LinUCB 选择器按任务与 agent 状态路由，角色专长从交互反馈中<b>涌现</b>而非人工预定义。理论上给出次线性 regret 界；实验中在分布偏移与 agent 失效下表现出自愈能力。</div>
+
+<h2>解决什么问题</h2>
+<div class="hline"></div>
+<p>AutoGen、CrewAI 类框架靠显式编排结构（manager/controller 模式）协调 agent，即便走去中心化路线，多数系统仍用静态预定义角色。这带来三大问题：agent 池与任务分布持续演化时路由低效；任务–角色映射固定导致适应性差；高能力 agent 退化或不可用时缺乏快速替换机制。缺的是一套<b>不预设角色、能从反馈中持续学习、可自愈</b>的协调机制。</p>
+
+<h2>创新点</h2>
+<div class="hline"></div>
+<div class="contrib">
+  <h3><span class="no">01</span>两阶段动态 Beacon 协议<span class="core">CORE</span></h3>
+  <p>Stage 1 轻量预筛：对每个 agent 计算复合分数（任务–agent 嵌入相似度 + 历史成功率 + 短期可靠性），取 Top-L（默认 3）构成候选集，剪枝决策空间、控制通信开销。Stage 2 在候选集内用 LinUCB 上下文选择器路由：上下文向量含相似度、当前负载、归一化延迟、历史声誉、可用性标志，UCB 分数 = 利用 + 探索，岭回归估计器在线更新。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">02</span>延迟 post-vote 反馈的信用分配</h3>
+  <p>奖励在 P 次独立执行 + 多数投票确定最终答案后才构造：基础有效性 + 赢家奖励 + 延迟惩罚。未解决的 action 保留在 pending 队列，奖励就绪前不进入回归估计器，防止投票信息篡改历史记录。论文同时坦承赢家奖励是「一致性代理信号而非正确性 oracle」——多 agent 共享相同偏差时可能强化共同错误，需 verifier 门控与多样性监控缓解。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">03</span>次线性 regret 理论保证</h3>
+  <p>在候选条件线性 bandit 假设下，证明期望 regret 为 O(d·√T)：平均每轮次优性 O(d/√T)，长期平均任务质量趋近「每轮都选最优 agent」的 oracle。另给出 M 个变点的非平稳扩展 O(d·√((M+1)T))。作者明确区分：贡献不是新 bandit 算法，而是「能力感知筛选 + 上下文选择 + 反馈驱动路由专业化」的集成。</p>
+</div>
+
+<h2>关键结果</h2>
+<div class="hline"></div>
+<p>在 GSM8K / BBH / MedicalQA 上对比单 agent 与 MetaGPT、AFLOW、GPTSwarm 等多智能体基线（骨干 DeepSeek-V3、GPT-5-nano 等）。MedicalQA 消融最能说明问题：</p>
+<div class="chart">
+  <div class="panel">
+    <div class="ptitle">MedicalQA 消融（准确率 %）</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:59%"><span class="v">51.0</span></div><div class="blabel">单 Agent</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:64%"><span class="v">55.0</span></div><div class="blabel">朴素投票</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:85%"><span class="v">73.0</span></div><div class="blabel">仅 UCB</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:92%"><span class="v">79.0</span></div><div class="blabel">Top-L+UCB</div></div>
+      <div class="barwrap"><div class="bar red" style="height:100%"><span class="v">86.0</span></div><div class="blabel">完整系统</div></div>
+    </div>
+  </div>
+</div>
+<ul>
+  <li>每个骨干下平均准确率最高，超出最强竞争者 1.0–4.7 分；对单 agent 基线最高提升 33 分（MedicalQA）。同预算对照证明提升来自「筛选 + 学习路由 + 子任务感知执行」的互补，而非堆测试时算力。</li>
+  <li><b>可扩展性</b>：agent 池从 5 扩到 100 保持稳定（N=20 最佳）；N=100 时路由开销仍低于 100ms（基线达数百毫秒）；DeepSeek 上延迟比 AutoGen 低 31.5%，token 比 MetaGPT 低 26%。</li>
+  <li><b>自愈</b>：Stage 1 的可靠性项聚合近期超时/错误/可用性——平均分高但近期退化的 agent 不会主导预筛；探索机制避免反复把任务派给退化 agent；worker 失效被局部化在其子任务内，可在反馈后绕开路由。</li>
+</ul>
+
+<h2>局限</h2>
+<div class="hline"></div>
+<ul>
+  <li>共识奖励偏差：多数投票在 agent 共享错误模式时可能误导路由学习「共同但错误」的答案。</li>
+  <li>延迟 post-vote 反馈的形式化 regret 分析留作未来工作，当前只有启发式的「陈旧项」分解；regret 保证依赖最优 agent 未被 Top-L 过滤掉。</li>
+  <li>去中心化是有界的任务局部协调，路由平面仍是集中式组件，可能成为扩展瓶颈。</li>
+</ul>
+
+<div class="nav"><a href="2601.04861_OI-MAS_中文版.html">← 上一篇：OI-MAS</a><a href="index.html">目录</a><a href="2609.01736_HEART_中文版.html">下一篇：HEART →</a></div>
+<footer>Symphony-Coord · arXiv 2602.00966</footer>
+</div>
+<script>
+/* ---- heading TOC widget (spec: AGENT.md) ---- */
+(function () {
+  var heads = [].slice.call(document.querySelectorAll(".wrap h1, .wrap h2"));
+  if (heads.length < 2) return;
+  heads.forEach(function (h, i) { if (!h.id) h.id = "h-" + (i + 1); });
+  var btn = document.createElement("button");
+  btn.id = "toc-btn"; btn.type = "button"; btn.title = "文章目录"; btn.innerHTML = "&#9776;";
+  var panel = document.createElement("nav");
+  panel.id = "toc-panel"; panel.setAttribute("aria-label", "文章目录");
+  var html = '<div class="toc-title">CONTENTS</div>';
+  heads.forEach(function (h) {
+    html += '<a href="#' + h.id + '" class="' + (h.tagName === "H1" ? "t1" : "t2") + '">' + h.textContent + "</a>";
+  });
+  panel.innerHTML = html;
+  document.body.appendChild(btn);
+  document.body.appendChild(panel);
+  function close() { panel.classList.remove("open"); btn.classList.remove("on"); }
+  btn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    panel.classList.toggle("open"); btn.classList.toggle("on");
+  });
+  panel.addEventListener("click", function (e) {
+    var a = e.target.closest("a");
+    if (!a) return;
+    e.preventDefault();
+    var t = document.getElementById(a.getAttribute("href").slice(1));
+    if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+    close();
+  });
+  document.addEventListener("click", function (e) {
+    if (!panel.contains(e.target) && e.target !== btn) close();
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+  function onScroll() {
+    var show = window.scrollY > 180;
+    btn.classList.toggle("show", show);
+    if (!show) close();
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+</body>
+</html>

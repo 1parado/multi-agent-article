@@ -42,7 +42,10 @@ PDF 链接规则：本目录存在对应 PDF 文件的用相对路径；不存�
 | 05 | 2606.03005_MUSE_中文版.html | Meta-Harness | MoRe |
 | 06 | 2608.27338_MoRe_中文版.html | MUSE | SoK |
 | 07 | 2609.00595_SoK_中文版.html | MoRe | MAS² |
-| 08 | 2509.24323_MAS2_中文版.html | SoK | —（只有目录） |
+| 08 | 2509.24323_MAS2_中文版.html | SoK | OI-MAS |
+| 09 | 2601.04861_OI-MAS_中文版.html | MAS² | Symphony-Coord |
+| 10 | 2602.00966_Symphony-Coord_中文版.html | OI-MAS | HEART |
+| 11 | 2609.01736_HEART_中文版.html | Symphony-Coord | —（只有目录） |
 
 标准模板（首篇无「上一篇」、末篇无「下一篇」，但必须有「目录」）：
 

@@ -3,7 +3,7 @@
 
   # Multi-Agent Framework / Harness · 2026 论文导读
 
-  **八篇 2026 年 multi-agent 代表性论文 · 中文摘要 + 原文 PDF**
+  **11 篇 2026 年 multi-agent 代表性论文 · 中文摘要 + 原文 PDF**
 
   [📖 在线阅读](https://github.com/1parado/multi-agent-article/blob/main/index.html)
 </div>
@@ -18,7 +18,7 @@
 - **agent harness** —— 包裹在模型外围的执行系统：决定模型每一步看到什么、用什么工具、状态存哪里、何时验证、何时停止；
 - **自生成 / 安全** —— 系统能否为自己设计系统、以及多主体交互下的系统级安全。
 
-本仓库收录 2026 年线上具代表性的 **8 篇论文**，每篇提供中文摘要页（解决什么问题 → 创新点 → 关键结果 → 局限）与原文 PDF。
+本仓库收录 2026 年线上具代表性的 **11 篇论文**，每篇提供中文摘要页（解决什么问题 → 创新点 → 关键结果 → 局限）与原文 PDF。
 
 ## 论文一览
 
@@ -32,6 +32,9 @@
 | 06 | **MoRe** 角色混合（激活空间协同） | UIUC + Amazon · 2026-08 | 把多种角色学成 codebook，查询感知路由器在单次前向中混合；性能逼近 MAS，token 约降 20× | [中文版](https://github.com/1parado/multi-agent-article/blob/main/2608.27338_MoRe_中文版.html) · [PDF](https://github.com/1parado/multi-agent-article/raw/main/2608.27338_MoRe_Mixture_of_Roles.pdf) · [arXiv](https://arxiv.org/abs/2608.27338) |
 | 07 | **SoK** 多智能体安全系统化 | 2026-09 | 197 篇执行中心分析；A-I-R 攻击框架 + 五部分防御契约；审计 44 项评测 | [中文版](https://github.com/1parado/multi-agent-article/blob/main/2609.00595_SoK_中文版.html) · [PDF](https://github.com/1parado/multi-agent-article/raw/main/2609.00595_SoK_Security_Multi-Agent.pdf) · [arXiv](https://arxiv.org/abs/2609.00595) |
 | 08 | **MAS²** 自生成多智能体系统 | NTU 等 · ICLR 2026 | Generator–Implementer–Rectifier 递归定制目标 MAS 并运行时纠偏；最高约 +19.6% | [中文版](https://github.com/1parado/multi-agent-article/blob/main/2509.24323_MAS2_中文版.html) · [PDF](https://github.com/1parado/multi-agent-article/raw/main/2509.24323_MAS2_Self-Generative.pdf) · [arXiv](https://arxiv.org/abs/2509.24323) |
+| 09 | **OI-MAS** 跨多尺度模型置信感知路由 | 哈尔滨工业大学 · 2026-01 | 角色与模型规模两级状态依赖动态路由；置信度作为成本惩罚权重；准确率最高 +12.88%，成本最高 −79.78% | [中文版](https://github.com/1parado/multi-agent-article/blob/main/2601.04861_OI-MAS_中文版.html) · [PDF](https://arxiv.org/pdf/2601.04861.pdf) · [arXiv](https://arxiv.org/abs/2601.04861) |
+| 10 | **Symphony-Coord** 去中心化涌现协调 | NUS + NYU + Gradient 等 · 2026-02 | agent 选择 = 在线上下文多臂老虎机；Beacon 筛选 + LinUCB 路由；次线性 regret 界，agent 失效下自愈 | [中文版](https://github.com/1parado/multi-agent-article/blob/main/2602.00966_Symphony-Coord_中文版.html) · [PDF](https://arxiv.org/pdf/2602.00966.pdf) · [arXiv](https://arxiv.org/abs/2602.00966) |
+| 11 | **HEART** 自然语言工具原语 Harness | 2026-09 | Tool Primitive 用 LLM 包装工具、自然语言为接口；ToolFace 检索 25,519 个函数；8B 骨干超商用模型 6%、成本最高 −85%、免疫 prompt injection | [中文版](https://github.com/1parado/multi-agent-article/blob/main/2609.01736_HEART_中文版.html) · [PDF](https://arxiv.org/pdf/2609.01736.pdf) · [arXiv](https://arxiv.org/abs/2609.01736) |
 
 ## 共同趋势
 
@@ -42,7 +45,7 @@
 
 ## 建议阅读顺序
 
-**Meta-Harness**（harness 是什么）→ **NLAH** / **MUSE**（harness 工程）→ **AdaptOrch** / **VMAO**（编排）→ **MAS²**（自生成）→ **MoRe**（激活空间协同）→ **SoK**（安全系统化）
+**Meta-Harness**（harness 是什么）→ **NLAH** / **MUSE**（harness 工程）→ **AdaptOrch** / **VMAO**（编排）→ **MAS²**（自生成）→ **MoRe**（激活空间协同）→ **SoK**（安全系统化）→ **OI-MAS** / **Symphony-Coord**（路由与去中心化协调）→ **HEART**（工具使用 harness）
 
 ## 仓库结构
 
@@ -59,6 +62,9 @@
 ├── 2608.27338_MoRe_中文版.html
 ├── 2609.00595_SoK_中文版.html
 ├── 2509.24323_MAS2_中文版.html
+├── 2601.04861_OI-MAS_中文版.html
+├── 2602.00966_Symphony-Coord_中文版.html
+├── 2609.01736_HEART_中文版.html
 └── *.pdf
 ```
 

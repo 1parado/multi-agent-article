@@ -45,7 +45,7 @@
 <div class="eyebrow">PAPER DIGEST · 2026</div>
 <h1>Multi-Agent Framework / Harness</h1>
 <div class="sub">2026 年代表性论文 · 中文编译版</div>
-<p class="intro">8 篇经核验的 arXiv 论文（多智能体编排 / harness / 自生成 / 安全），PDF 与中文版均在本目录。</p>
+<p class="intro">11 篇经核验的 arXiv 论文（多智能体编排 / harness / 自生成 / 安全），PDF 与中文版均在本目录。</p>
 
 <div class="tldr">
   <b>multi-agent framework</b>：协调多个 LLM agent 协作的结构——怎么拆任务、怎么并行、怎么合并。<br>
@@ -120,6 +120,30 @@
   <a href="2509.24323_MAS2_中文版.html">中文版</a><a href="https://arxiv.org/pdf/2509.24323.pdf">PDF</a>
 </div>
 
+<div class="paper">
+  <div class="idx">09 · MULTI-AGENT · MODEL ROUTING</div>
+  <h3><a href="2601.04861_OI-MAS_中文版.html">OI-MAS：跨多尺度模型的置信感知路由</a></h3>
+  <div class="en">arXiv 2601.04861 · 哈尔滨工业大学 · 2026-01</div>
+  <p>把「选 agent 角色」和「选模型规模」统一为状态依赖的两级动态路由，用校准后的模型置信度作为成本惩罚的自适应权重。五基准准确率最高 +12.88%，成本最高 −79.78%。</p>
+  <a href="2601.04861_OI-MAS_中文版.html">中文版</a><a href="https://arxiv.org/pdf/2601.04861.pdf">PDF</a>
+</div>
+
+<div class="paper">
+  <div class="idx">10 · MULTI-AGENT · DECENTRALIZED</div>
+  <h3><a href="2602.00966_Symphony-Coord_中文版.html">Symphony-Coord：去中心化的涌现式协调</a></h3>
+  <div class="en">arXiv 2602.00966 · NUS + NYU + Gradient 等 · 2026-02</div>
+  <p>把 agent 选择建模为在线上下文多臂老虎机：Beacon 协议先筛 Top-L 候选，LinUCB 按任务与 agent 状态路由，角色专长从交互反馈中涌现。次线性 regret 理论保证，agent 失效下可自愈。</p>
+  <a href="2602.00966_Symphony-Coord_中文版.html">中文版</a><a href="https://arxiv.org/pdf/2602.00966.pdf">PDF</a>
+</div>
+
+<div class="paper">
+  <div class="idx">11 · AGENT HARNESS · TOOL USE</div>
+  <h3><a href="2609.01736_HEART_中文版.html">HEART：自然语言工具原语 + 2.5 万函数仓库</a></h3>
+  <div class="en">arXiv 2609.01736 · 2026-09</div>
+  <p>让工具适配模型而非相反：Tool Primitive 用 LLM 包装工具、以自然语言为接口，ToolFace 语义检索 25,519 个函数，Planner–Router–Verifier 闭环恢复。8B 骨干超三个商用模型 6%、成本最高降 85%，且结构上免疫 prompt injection。</p>
+  <a href="2609.01736_HEART_中文版.html">中文版</a><a href="https://arxiv.org/pdf/2609.01736.pdf">PDF</a>
+</div>
+
 <h2>横向对比</h2>
 <div class="hline"></div>
 <table class="cmp">
@@ -132,6 +156,9 @@
   <tr><td><b>MoRe</b></td><td>MAS 多轮文本成本高</td><td>角色 codebook 激活混合；约 20× 更省 token</td></tr>
   <tr><td><b>SoK</b></td><td>局部安全检查覆盖不了跨主体失败</td><td>A-I-R 框架 + 五部分防御契约；路径闭合与恢复</td></tr>
   <tr><td><b>MAS²</b></td><td>自动 MAS 多为生成一次就部署</td><td>Generator–Implementer–Rectifier；运行时纠偏</td></tr>
+  <tr><td><b>OI-MAS</b></td><td>所有角色配同一大模型造成算力浪费</td><td>状态依赖角色+模型两级路由；置信度加权成本惩罚</td></tr>
+  <tr><td><b>Symphony-Coord</b></td><td>静态角色 + 中心化控制难以扩展与自愈</td><td>Beacon 筛选 + LinUCB 在线路由；次线性 regret 界</td></tr>
+  <tr><td><b>HEART</b></td><td>schema 调用脆弱、大工具目录性能崩塌</td><td>自然语言工具原语 + 2.5 万函数检索 + 验证恢复闭环</td></tr>
 </table>
 
 <h2>共同趋势</h2>
@@ -143,7 +170,7 @@
 
 <h2>建议阅读顺序</h2>
 <div class="hline"></div>
-<p style="color:var(--gray);">先读 <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2603.28052_Meta-Harness_中文版.html">Meta-Harness</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2603.25723_NLAH_中文版.html">NLAH</a> / <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2606.03005_MUSE_中文版.html">MUSE</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2602.16873_AdaptOrch_中文版.html">AdaptOrch</a> / <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2603.11445_VMAO_中文版.html">VMAO</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2509.24323_MAS2_中文版.html">MAS²</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2608.27338_MoRe_中文版.html">MoRe</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2609.00595_SoK_中文版.html">SoK</a>。</p>
+<p style="color:var(--gray);">先读 <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2603.28052_Meta-Harness_中文版.html">Meta-Harness</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2603.25723_NLAH_中文版.html">NLAH</a> / <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2606.03005_MUSE_中文版.html">MUSE</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2602.16873_AdaptOrch_中文版.html">AdaptOrch</a> / <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2603.11445_VMAO_中文版.html">VMAO</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2509.24323_MAS2_中文版.html">MAS²</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2608.27338_MoRe_中文版.html">MoRe</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2609.00595_SoK_中文版.html">SoK</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2601.04861_OI-MAS_中文版.html">OI-MAS</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2602.00966_Symphony-Coord_中文版.html">Symphony-Coord</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2609.01736_HEART_中文版.html">HEART</a>。</p>
 
 </div>
 </body>

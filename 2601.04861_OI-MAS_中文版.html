@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OI-MAS: Confidence-Aware Routing across Multi-Scale Models（中文版）</title>
+<style>
+  :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fff; margin:0; line-height:2.0; font-size:15.5px; }
+  .wrap { max-width:780px; margin:0 auto; padding:72px 24px 90px; }
+  .eyebrow { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:12px; letter-spacing:3px; }
+  h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:29px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
+  .zh { font-size:19px; font-weight:700; margin-bottom:10px; }
+  .meta { color:var(--soft); font-size:13.5px; margin:0 0 14px; }
+  .links a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; margin-right:18px; }
+  .links a:hover { text-decoration:underline; }
+  .tldr { font-size:16.5px; margin:34px 0 0; padding-bottom:34px; border-bottom:1px solid var(--line); }
+  .tldr b { color:var(--red); }
+  h2 { font-size:21px; font-weight:800; margin:56px 0 0; }
+  .hline { width:42px; height:3px; background:var(--red); border-radius:2px; margin:8px 0 24px; }
+  p { color:var(--gray); margin:0 0 14px; }
+  ul { color:var(--gray); padding-left:22px; margin:0 0 14px; }
+  li { margin:8px 0; }
+  .contrib { margin:0 0 26px; }
+  .contrib h3 { font-size:16px; margin:0 0 6px; }
+  .contrib h3 .no { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:13px; margin-right:10px; }
+  .contrib h3 .core { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:11px; letter-spacing:1.5px; border:1px solid var(--red); border-radius:99px; padding:1px 8px; margin-left:10px; vertical-align:2px; font-weight:600; }
+  .contrib p { margin:0; }
+  .chart { display:flex; gap:46px; justify-content:center; flex-wrap:wrap; margin:30px 0 10px; }
+  .panel { text-align:center; }
+  .ptitle { font-family:"IBM Plex Mono",Consolas,monospace; font-size:12px; letter-spacing:1px; color:var(--soft); margin-bottom:18px; }
+  .bars { display:flex; align-items:flex-end; gap:14px; height:200px; }
+  .barwrap { display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%; }
+  .bar { width:40px; border-radius:4px 4px 0 0; position:relative; }
+  .bar.red { background:var(--red); } .bar.sage { background:var(--sage); }
+  .bar .v { position:absolute; top:-24px; left:50%; transform:translateX(-50%); font-weight:700; font-size:13px; white-space:nowrap; color:var(--ink); }
+  .bar.red .v { color:var(--red); }
+  .blabel { margin-top:8px; font-size:11.5px; color:var(--soft); width:74px; text-align:center; line-height:1.4; }
+  .nav { display:flex; justify-content:space-between; margin-top:64px; padding-top:22px; border-top:1px solid var(--line); }
+  .nav a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; }
+  footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:34px; font-family:"IBM Plex Mono",Consolas,monospace; }
+</style>
+<style>
+  /* ---- heading TOC widget (spec: AGENT.md) ---- */
+  #toc-btn { position:fixed; right:20px; bottom:28px; z-index:1000; width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:#fff; color:var(--red); font-size:20px; line-height:1; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.12); opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; transform:translateY(8px); }
+  #toc-btn.show { opacity:1; pointer-events:auto; transform:none; }
+  #toc-btn.on { background:var(--red); color:#fff; border-color:var(--red); }
+  #toc-panel { position:fixed; right:20px; bottom:80px; z-index:1000; min-width:200px; max-width:320px; max-height:62vh; overflow-y:auto; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 6px 24px rgba(0,0,0,.14); padding:12px 6px 8px; display:none; }
+  #toc-panel.open { display:block; }
+  #toc-panel .toc-title { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:var(--red); padding:0 12px 8px; border-bottom:1px solid var(--line); }
+  #toc-panel a { display:block; color:var(--gray); text-decoration:none; font-size:13.5px; line-height:1.6; padding:6px 12px; border-radius:6px; }
+  #toc-panel a:hover { background:#f6f5f3; color:var(--red); }
+  #toc-panel a.t1 { font-weight:700; color:var(--ink); }
+  #toc-panel a.t2 { padding-left:24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="eyebrow">PAPER 09 · MULTI-AGENT · MODEL ROUTING</div>
+<h1>OI-MAS</h1>
+<div class="zh">跨多尺度模型的置信感知路由：像指挥家一样动态决定「谁上、用多强的模型」</div>
+<p class="meta">Jingbo Wang 等 · 哈尔滨工业大学 · arXiv 2601.04861 · 2026-01</p>
+<div class="links"><a href="https://arxiv.org/pdf/2601.04861.pdf">PDF</a><a href="https://arxiv.org/abs/2601.04861">arXiv</a><a href="index.html">目录</a></div>
+
+<div class="tldr">现有 MAS 给所有 agent 角色统一配上同一个大模型，但推理各阶段的认知需求并不相同。OI-MAS 把「选 agent 角色」和「选模型规模」统一成<b>状态依赖的两级动态路由</b>（Role Router + Model Router），并用校准后的<b>模型置信度作为成本惩罚的自适应权重</b>——置信度高就罚重（用小模型），置信度低就放松（允许升级大模型）。五个基准上准确率最高 +12.88%，成本最高 −79.78%。</div>
+
+<h2>解决什么问题</h2>
+<div class="hline"></div>
+<p>多智能体系统在复杂推理上优于单 agent，但普遍存在计算低效：框架通常给所有角色清一色部署同一规模的 LLM，忽略了「拆解、生成、批判、修订」各阶段对算力的需求差异。已有模型路由方法（如 MasRouter）在推理开始前就固定架构，无法随推理过程动态调整。缺的是一套<b>边推理、边决定「谁执行、用多强模型」</b>的在线机制。</p>
+
+<h2>创新点</h2>
+<div class="hline"></div>
+<div class="contrib">
+  <h3><span class="no">01</span>状态依赖的两级层次化路由（Conductor）<span class="core">CORE</span></h3>
+  <p>推理状态定义为 (查询, 当前上下文)，全过程最多 4 轮。第一级 Role Router 用 MiniLM 语义嵌入计算状态与各角色（Generator、Critique、Verifier、Programmer 等 9 种）的相似度，按累计概率阈值 θ=0.3 选出角色子集——可激活单个主导角色或多个互补角色，还内置 EarlyStop 角色直接终止冗余推理。第二级 Model Router 根据三元组 (查询, 上下文, 角色) 从异构模型池（Qwen2.5-3B/7B、Llama3.1-8B/70B）中选模型规模。角色规划与资源分配解耦。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">02</span>置信度加权的成本感知强化学习</h3>
+  <p>用生成序列的平均 token 对数概率作为置信度——它是状态复杂度的可靠代理。训练目标 = 稀疏正确性奖励 + 置信度加权的计算成本惩罚：置信度高 → 当前决策已足够 → 施加更强成本惩罚，防止不必要升级大模型；置信度低 → 放松约束，允许重路由到大模型或更丰富的角色组合。针对「对数概率跨模型不可比」问题，用模型专属归一化与几何平均 token 概率回退值平滑插值校准。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">03</span>路由行为可解释</h3>
+  <p>案例研究显示：问题越难，模型选择越偏向中大模型；生成类角色集中用最大模型，结构化角色（Programmer、Ensembler）集中在中型模型；Refiner 呈双峰分布——简单修订给最小模型，困难不一致才升级。路由确实学到了「按需分配」。</p>
+</div>
+
+<h2>关键结果</h2>
+<div class="hline"></div>
+<p>在 GSM8K / MATH / MedQA / GPQA / MBPP 五个基准上对比单模型与 LLM-Debate、GPTSwarm、AFlow、MaAS、MasRouter 等 MAS 基线：</p>
+<div class="chart">
+  <div class="panel">
+    <div class="ptitle">五基准平均准确率</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:86%"><span class="v">70.55</span></div><div class="blabel">MasRouter</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:90%"><span class="v">73.47</span></div><div class="blabel">MaAS Large</div></div>
+      <div class="barwrap"><div class="bar red" style="height:96%"><span class="v">78.23</span></div><div class="blabel">OI-MAS</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">GPQA 推理延迟（秒）</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:96%"><span class="v">39.31</span></div><div class="blabel">GPTSwarm</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:90%"><span class="v">36.82</span></div><div class="blabel">MasRouter</div></div>
+      <div class="barwrap"><div class="bar red" style="height:57%"><span class="v">23.12</span></div><div class="blabel">OI-MAS</div></div>
+    </div>
+  </div>
+</div>
+<ul>
+  <li>准确率最高提升 <b>12.88%</b>、成本最高降低 <b>79.78%</b>；相对 vanilla 模型提升 9.52–21.13%；vs MasRouter 平均 +7.68%，四个基准上胜出。</li>
+  <li><b>OOD 泛化</b>：仅在 MBPP 上训练、HumanEval 上测试，Pass@1 达 91.46%（超最强基线 MaAS 的 89.63%），成本不到次优基线的一半。</li>
+  <li>消融显示去掉置信度加权后性能显著下降（MedQA 78.99→76.47，MBPP 91.59→87.39）——该组件不仅省钱，对精度本身也关键。</li>
+</ul>
+
+<h2>局限</h2>
+<div class="hline"></div>
+<ul>
+  <li>未显式研究 agent memory 的表示与治理，可能影响长程连贯性与迭代协作可靠性。</li>
+  <li>性能–成本平衡不保证在高并发大规模部署下均匀成立。</li>
+  <li>安全性未作为设计目标：不安全工具调用、涌现行为、策略违规在 agent 间的传播未被处理。</li>
+</ul>
+
+<div class="nav"><a href="2509.24323_MAS2_中文版.html">← 上一篇：MAS²</a><a href="index.html">目录</a><a href="2602.00966_Symphony-Coord_中文版.html">下一篇：Symphony-Coord →</a></div>
+<footer>OI-MAS · arXiv 2601.04861</footer>
+</div>
+<script>
+/* ---- heading TOC widget (spec: AGENT.md) ---- */
+(function () {
+  var heads = [].slice.call(document.querySelectorAll(".wrap h1, .wrap h2"));
+  if (heads.length < 2) return;
+  heads.forEach(function (h, i) { if (!h.id) h.id = "h-" + (i + 1); });
+  var btn = document.createElement("button");
+  btn.id = "toc-btn"; btn.type = "button"; btn.title = "文章目录"; btn.innerHTML = "&#9776;";
+  var panel = document.createElement("nav");
+  panel.id = "toc-panel"; panel.setAttribute("aria-label", "文章目录");
+  var html = '<div class="toc-title">CONTENTS</div>';
+  heads.forEach(function (h) {
+    html += '<a href="#' + h.id + '" class="' + (h.tagName === "H1" ? "t1" : "t2") + '">' + h.textContent + "</a>";
+  });
+  panel.innerHTML = html;
+  document.body.appendChild(btn);
+  document.body.appendChild(panel);
+  function close() { panel.classList.remove("open"); btn.classList.remove("on"); }
+  btn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    panel.classList.toggle("open"); btn.classList.toggle("on");
+  });
+  panel.addEventListener("click", function (e) {
+    var a = e.target.closest("a");
+    if (!a) return;
+    e.preventDefault();
+    var t = document.getElementById(a.getAttribute("href").slice(1));
+    if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+    close();
+  });
+  document.addEventListener("click", function (e) {
+    if (!panel.contains(e.target) && e.target !== btn) close();
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+  function onScroll() {
+    var show = window.scrollY > 180;
+    btn.classList.toggle("show", show);
+    if (!show) close();
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+</body>
+</html>

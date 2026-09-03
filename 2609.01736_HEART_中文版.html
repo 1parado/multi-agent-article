@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HEART: Harness Engineering via Agent-Native Reusable Tool Primitives（中文版）</title>
+<style>
+  :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fff; margin:0; line-height:2.0; font-size:15.5px; }
+  .wrap { max-width:780px; margin:0 auto; padding:72px 24px 90px; }
+  .eyebrow { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:12px; letter-spacing:3px; }
+  h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:29px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
+  .zh { font-size:19px; font-weight:700; margin-bottom:10px; }
+  .meta { color:var(--soft); font-size:13.5px; margin:0 0 14px; }
+  .links a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; margin-right:18px; }
+  .links a:hover { text-decoration:underline; }
+  .tldr { font-size:16.5px; margin:34px 0 0; padding-bottom:34px; border-bottom:1px solid var(--line); }
+  .tldr b { color:var(--red); }
+  h2 { font-size:21px; font-weight:800; margin:56px 0 0; }
+  .hline { width:42px; height:3px; background:var(--red); border-radius:2px; margin:8px 0 24px; }
+  p { color:var(--gray); margin:0 0 14px; }
+  ul { color:var(--gray); padding-left:22px; margin:0 0 14px; }
+  li { margin:8px 0; }
+  .contrib { margin:0 0 26px; }
+  .contrib h3 { font-size:16px; margin:0 0 6px; }
+  .contrib h3 .no { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:13px; margin-right:10px; }
+  .contrib h3 .core { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:11px; letter-spacing:1.5px; border:1px solid var(--red); border-radius:99px; padding:1px 8px; margin-left:10px; vertical-align:2px; font-weight:600; }
+  .contrib p { margin:0; }
+  .chart { display:flex; gap:46px; justify-content:center; flex-wrap:wrap; margin:30px 0 10px; }
+  .panel { text-align:center; }
+  .ptitle { font-family:"IBM Plex Mono",Consolas,monospace; font-size:12px; letter-spacing:1px; color:var(--soft); margin-bottom:18px; }
+  .bars { display:flex; align-items:flex-end; gap:14px; height:200px; }
+  .barwrap { display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%; }
+  .bar { width:40px; border-radius:4px 4px 0 0; position:relative; }
+  .bar.red { background:var(--red); } .bar.sage { background:var(--sage); }
+  .bar .v { position:absolute; top:-24px; left:50%; transform:translateX(-50%); font-weight:700; font-size:13px; white-space:nowrap; color:var(--ink); }
+  .bar.red .v { color:var(--red); }
+  .blabel { margin-top:8px; font-size:11.5px; color:var(--soft); width:74px; text-align:center; line-height:1.4; }
+  .nav { display:flex; justify-content:space-between; margin-top:64px; padding-top:22px; border-top:1px solid var(--line); }
+  .nav a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; }
+  footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:34px; font-family:"IBM Plex Mono",Consolas,monospace; }
+</style>
+<style>
+  /* ---- heading TOC widget (spec: AGENT.md) ---- */
+  #toc-btn { position:fixed; right:20px; bottom:28px; z-index:1000; width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:#fff; color:var(--red); font-size:20px; line-height:1; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.12); opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; transform:translateY(8px); }
+  #toc-btn.show { opacity:1; pointer-events:auto; transform:none; }
+  #toc-btn.on { background:var(--red); color:#fff; border-color:var(--red); }
+  #toc-panel { position:fixed; right:20px; bottom:80px; z-index:1000; min-width:200px; max-width:320px; max-height:62vh; overflow-y:auto; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 6px 24px rgba(0,0,0,.14); padding:12px 6px 8px; display:none; }
+  #toc-panel.open { display:block; }
+  #toc-panel .toc-title { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:var(--red); padding:0 12px 8px; border-bottom:1px solid var(--line); }
+  #toc-panel a { display:block; color:var(--gray); text-decoration:none; font-size:13.5px; line-height:1.6; padding:6px 12px; border-radius:6px; }
+  #toc-panel a:hover { background:#f6f5f3; color:var(--red); }
+  #toc-panel a.t1 { font-weight:700; color:var(--ink); }
+  #toc-panel a.t2 { padding-left:24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="eyebrow">PAPER 11 · AGENT HARNESS · TOOL USE</div>
+<h1>HEART</h1>
+<div class="zh">让工具适配模型，而不是让模型适配工具：自然语言工具原语 + 2.5 万函数仓库</div>
+<p class="meta">Haibo Jin 等 · arXiv 2609.01736 · 2026-09</p>
+<div class="links"><a href="https://arxiv.org/pdf/2609.01736.pdf">PDF</a><a href="https://arxiv.org/abs/2609.01736">arXiv</a><a href="index.html">目录</a></div>
+
+<div class="tldr">LLM 工具调用有两大顽疾：工具输出类型与 API schema 不兼容导致多步多轮推理脆弱，工具目录一大性能就崩。HEART 的答案是<b>角色反转</b>：Tool Primitive 用 LLM 包装每个工具、以自然语言为调用接口，schema 解析全部在内部完成；ToolFace 仓库收纳 25,519 个函数，推理时语义检索按需取用；Planner–Router–Verifier 三 agent 流水线负责规划、分派与四标准验证。8B 骨干在五个基准上平均超 SFT 模型 10%、超 GPT-5.4 / Claude-4.6-Sonnet / Gemini-3.1-Pro 6%，API 成本最高降 85%——且<b>结构上免疫 prompt injection</b>。</div>
+
+<h2>解决什么问题</h2>
+<div class="hline"></div>
+<p>现有工具调用方法要求模型直接适配 API 语言：调用方要处理原始 schema、格式化参数、串接输出类型，多步嵌套调用一环断裂全盘皆输；工具目录从 8K 增至 120K token 时，准确率下降 7%–85%。SFT 微调路线在嵌套调用上几乎全灭（多个模型 Full Acc. 为 0）。缺的是把「工具使用」从模型能力问题转化为<b>harness 结构问题</b>的方案。</p>
+
+<h2>创新点</h2>
+<div class="hline"></div>
+<div class="contrib">
+  <h3><span class="no">01</span>Tool Primitives：自然语言作为工具接口<span class="core">CORE</span></h3>
+  <p>每个工具由共享基础 LLM（不同 schema 条件化）包装成 Primitive：接收自然语言请求，内部完成 schema 解析、参数绑定与执行。三个设计属性均有实验支撑——自然语言调用（消融后 ToolBench Pass Rate 75.1→16.1）、工具间 LLM-to-LLM 通信（NESTFUL 嵌套调用上 SFT 模型 Full Acc. 崩至 0.00、DeepSeek-V3 仅 0.09，HEART 达 0.44）、执行隔离（失败作为信号呈报 Verifier，错误可定位）。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">02</span>ToolFace：2.5 万函数的集中式工具仓库</h3>
+  <p>把工具存储与模型上下文<b>解耦</b>：25,519 个工具（ToolBench 16,464 个 live API、ACEBench 4,538 个双语 API、NESTFUL 数学/编码工具等）以 schema–function 对存储，推理时对 schema 描述符做语义检索、只取相关工具，上下文里无需枚举原始 API schema。</p>
+</div>
+<div class="contrib">
+  <h3><span class="no">03</span>Planner–Router–Verifier 反馈恢复闭环</h3>
+  <p>Planner 做意图分析 + 信息充分性检查，不足时先向用户定向澄清再规划 K 步调用序列；Router 负责每步参数映射与工具分派；Verifier 按<b>四个独立标准</b>（任务完成、参数一致性、执行有效性、约束满足）评估结果，任一失败即生成结构化诊断回传 Planner 再规划（预算 B=3）。五阶段流水线把工具调用变成可迭代、可恢复的结构化推理。</p>
+</div>
+
+<h2>关键结果</h2>
+<div class="hline"></div>
+<p>骨干为 Qwen3-8B（四个角色共用），在 ToolBench / NESTFUL / τ²-Bench / ACEBench / BFCLv4 五个基准上对比 SFT 模型与三个前沿商用模型。最直观的是 50 个真实世界任务：</p>
+<div class="chart">
+  <div class="panel">
+    <div class="ptitle">50 个真实任务完成率（%）</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:29%"><span class="v">22</span></div><div class="blabel">商用均值</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:29%"><span class="v">20</span></div><div class="blabel">GPT-5.4</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:32%"><span class="v">24</span></div><div class="blabel">Claude-4.6</div></div>
+      <div class="barwrap"><div class="bar red" style="height:100%"><span class="v">84</span></div><div class="blabel">HEART</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ptitle">ToolBench 平均 Pass（%）</div>
+    <div class="bars">
+      <div class="barwrap"><div class="bar sage" style="height:76%"><span class="v">67.3</span></div><div class="blabel">最强商用</div></div>
+      <div class="barwrap"><div class="bar sage" style="height:80%"><span class="v">71.9</span></div><div class="blabel">最强 SFT</div></div>
+      <div class="barwrap"><div class="bar red" style="height:89%"><span class="v">75.1</span></div><div class="blabel">HEART</div></div>
+    </div>
+  </div>
+</div>
+<ul>
+  <li>NESTFUL 嵌套调用五项指标全部第一（Full Acc. 0.44，超 GPT-5.4 +4~5%）；τ²-Bench 所有领域所有 Passₖ 最高，Telecom Pass₄ 提升超 50%——迭代再规划在长多轮交互中持续见效。</li>
+  <li><b>结构性安全</b>：工具 schema 存于 ToolFace、经 Primitive 调用，从不进入 LLM 输入 prompt——prompt injection 攻击下 ASR 为 0.0%，而三个商用模型高达 70–82%。</li>
+  <li><b>成本</b>：token 消耗虽高，但 8B 骨干使 API 成本比 GPT-5.4 最高降 7.4×；「推荐 vs 执行」的分野是真差距——商用模型能检索选项，无法代替用户执行操作。</li>
+</ul>
+
+<h2>局限</h2>
+<div class="hline"></div>
+<ul>
+  <li>多 agent 流水线 token 消耗与延迟偏高（Telecom 约 38s），延迟敏感场景需合并角色。</li>
+  <li>ToolFace 的 schema 依赖人工撰写保证接口质量，向新领域扩展需要人工整理，自动化 schema 生成是未来方向。</li>
+  <li>鲁棒性评估仅覆盖工具选择阶段的 prompt injection，被污染的工具输出等更广威胁模型未研究。</li>
+</ul>
+
+<div class="nav"><a href="2602.00966_Symphony-Coord_中文版.html">← 上一篇：Symphony-Coord</a><a href="index.html">目录</a></div>
+<footer>HEART · arXiv 2609.01736</footer>
+</div>
+<script>
+/* ---- heading TOC widget (spec: AGENT.md) ---- */
+(function () {
+  var heads = [].slice.call(document.querySelectorAll(".wrap h1, .wrap h2"));
+  if (heads.length < 2) return;
+  heads.forEach(function (h, i) { if (!h.id) h.id = "h-" + (i + 1); });
+  var btn = document.createElement("button");
+  btn.id = "toc-btn"; btn.type = "button"; btn.title = "文章目录"; btn.innerHTML = "&#9776;";
+  var panel = document.createElement("nav");
+  panel.id = "toc-panel"; panel.setAttribute("aria-label", "文章目录");
+  var html = '<div class="toc-title">CONTENTS</div>';
+  heads.forEach(function (h) {
+    html += '<a href="#' + h.id + '" class="' + (h.tagName === "H1" ? "t1" : "t2") + '">' + h.textContent + "</a>";
+  });
+  panel.innerHTML = html;
+  document.body.appendChild(btn);
+  document.body.appendChild(panel);
+  function close() { panel.classList.remove("open"); btn.classList.remove("on"); }
+  btn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    panel.classList.toggle("open"); btn.classList.toggle("on");
+  });
+  panel.addEventListener("click", function (e) {
+    var a = e.target.closest("a");
+    if (!a) return;
+    e.preventDefault();
+    var t = document.getElementById(a.getAttribute("href").slice(1));
+    if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+    close();
+  });
+  document.addEventListener("click", function (e) {
+    if (!panel.contains(e.target) && e.target !== btn) close();
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+  function onScroll() {
+    var show = window.scrollY > 180;
+    btn.classList.toggle("show", show);
+    if (!show) close();
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+</body>
+</html>
