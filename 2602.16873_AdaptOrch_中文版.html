@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
 <title>AdaptOrch: Task-Adaptive Multi-Agent Orchestration（中文版）</title>
 <style>
   :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
@@ -55,12 +59,27 @@
   #toc-panel a:hover { background:#f6f5f3; color:var(--red); }
   #toc-panel a.t1 { font-weight:700; color:var(--ink); }
   #toc-panel a.t2 { padding-left:24px; }
+  /* ---- v2 enhancements (spec: AGENT.md) ---- */
+  #pbar { position:fixed; top:0; left:0; height:3px; width:0; background:var(--red); z-index:1200; }
+  .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--cat,var(--red)); margin-right:8px; vertical-align:1px; }
+  .eyebrow { color:var(--cat,var(--red)); }
+  #toc-panel a.active { color:var(--red); background:#f6f5f3; font-weight:600; }
+  .bar { transition:height .9s cubic-bezier(.22,.7,.3,1); }
+  .barwrap:hover .bar { filter:brightness(1.1); }
+  .reveal { opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity:1; transform:none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } .bar { transition:none; } }
+  .tldr::first-letter { float:left; font-size:2.5em; line-height:.95; margin:4px 12px 0 0; font-weight:700; font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); }
+  .wrap { position:relative; }
+  .wm { position:absolute; top:56px; right:20px; font-family:"IBM Plex Mono",Consolas,monospace; font-size:58px; font-weight:700; letter-spacing:1px; color:var(--red); opacity:.06; user-select:none; pointer-events:none; white-space:nowrap; }
+  @media (max-width:700px) { .wm { display:none; } }
 </style>
 </head>
 <body>
 <div class="wrap">
+<div class="wm">arXiv 2602.16873</div>
 
-<div class="eyebrow">PAPER 02 · MULTI-AGENT FRAMEWORK</div>
+<div class="eyebrow" style="--cat:#A02C2C"><span class="dot"></span>PAPER 02 · MULTI-AGENT FRAMEWORK</div>
 <h1>AdaptOrch</h1>
 <div class="zh">LLM 性能趋同时代的任务自适应多智能体编排</div>
 <p class="meta">Geunbin Yu · 韩国国民大学 · arXiv 2602.16873</p>
@@ -138,47 +157,84 @@
 <footer>AdaptOrch · arXiv 2602.16873</footer>
 </div>
 <script>
-/* ---- heading TOC widget (spec: AGENT.md) ---- */
+/* ---- page enhancements v2 (spec: AGENT.md): TOC + scroll-spy + progress + reveal + bars ---- */
 (function () {
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* reading progress bar */
+  var pbar = document.createElement("div");
+  pbar.id = "pbar";
+  document.body.appendChild(pbar);
+
+  /* heading TOC */
   var heads = [].slice.call(document.querySelectorAll(".wrap h1, .wrap h2"));
-  if (heads.length < 2) return;
-  heads.forEach(function (h, i) { if (!h.id) h.id = "h-" + (i + 1); });
-  var btn = document.createElement("button");
-  btn.id = "toc-btn"; btn.type = "button"; btn.title = "文章目录"; btn.innerHTML = "&#9776;";
-  var panel = document.createElement("nav");
-  panel.id = "toc-panel"; panel.setAttribute("aria-label", "文章目录");
-  var html = '<div class="toc-title">CONTENTS</div>';
-  heads.forEach(function (h) {
-    html += '<a href="#' + h.id + '" class="' + (h.tagName === "H1" ? "t1" : "t2") + '">' + h.textContent + "</a>";
-  });
-  panel.innerHTML = html;
-  document.body.appendChild(btn);
-  document.body.appendChild(panel);
-  function close() { panel.classList.remove("open"); btn.classList.remove("on"); }
-  btn.addEventListener("click", function (e) {
-    e.stopPropagation();
-    panel.classList.toggle("open"); btn.classList.toggle("on");
-  });
-  panel.addEventListener("click", function (e) {
-    var a = e.target.closest("a");
-    if (!a) return;
-    e.preventDefault();
-    var t = document.getElementById(a.getAttribute("href").slice(1));
-    if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
-    close();
-  });
-  document.addEventListener("click", function (e) {
-    if (!panel.contains(e.target) && e.target !== btn) close();
-  });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+  var btn = null, panel = null, links = [];
+  if (heads.length >= 2) {
+    heads.forEach(function (h, i) { if (!h.id) h.id = "h-" + (i + 1); });
+    btn = document.createElement("button");
+    btn.id = "toc-btn"; btn.type = "button"; btn.title = "文章目录"; btn.innerHTML = "&#9776;";
+    panel = document.createElement("nav");
+    panel.id = "toc-panel"; panel.setAttribute("aria-label", "文章目录");
+    var html = '<div class="toc-title">CONTENTS</div>';
+    heads.forEach(function (h) {
+      html += '<a href="#' + h.id + '" class="' + (h.tagName === "H1" ? "t1" : "t2") + '">' + h.textContent + "</a>";
+    });
+    panel.innerHTML = html;
+    document.body.appendChild(btn);
+    document.body.appendChild(panel);
+    links = [].slice.call(panel.querySelectorAll("a"));
+    function toggle(e) { e.stopPropagation(); panel.classList.toggle("open"); btn.classList.toggle("on"); }
+    btn.addEventListener("click", toggle);
+    panel.addEventListener("click", function (e) {
+      var a = e.target.closest("a");
+      if (!a) return;
+      e.preventDefault();
+      var t = document.getElementById(a.getAttribute("href").slice(1));
+      if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      close();
+    });
+    document.addEventListener("click", function (e) {
+      if (!panel.contains(e.target) && e.target !== btn) close();
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+  }
+  function close() { if (!panel) return; panel.classList.remove("open"); btn.classList.remove("on"); }
+
+  /* scroll: progress + scroll-spy */
   function onScroll() {
+    var doc = document.documentElement;
+    var max = doc.scrollHeight - window.innerHeight;
+    pbar.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0) + "%";
+    if (!panel) return;
     var show = window.scrollY > 180;
     btn.classList.toggle("show", show);
     if (!show) close();
+    var cur = -1;
+    for (var i = 0; i < heads.length; i++) {
+      if (heads[i].getBoundingClientRect().top <= 120) cur = i; else break;
+    }
+    links.forEach(function (a, i) { a.classList.toggle("active", i === cur); });
   }
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
+
+  /* reveal on scroll + bar growth animation */
+  if (!reduced && "IntersectionObserver" in window) {
+    var targets = [].slice.call(document.querySelectorAll(".wrap h2, .hline, .contrib, .chart, .paper, .trend, table.cmp, .tldr"));
+    var bars = [].slice.call(document.querySelectorAll(".bar"));
+    bars.forEach(function (b) { b.dataset.h = b.style.height; b.style.height = "0%"; });
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add("in");
+        [].slice.call(e.target.querySelectorAll(".bar")).forEach(function (b) { b.style.height = b.dataset.h; });
+        io.unobserve(e.target);
+      });
+    }, { threshold: 0.12 });
+    targets.forEach(function (el) { el.classList.add("reveal"); io.observe(el); });
+  }
 })();
 </script>
+
 </body>
 </html>

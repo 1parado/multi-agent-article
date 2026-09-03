@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
 <title>Multi-Agent Framework / Harness Papers 2026</title>
 <style>
   :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
@@ -37,15 +41,82 @@
   .trend h3 { font-size:16px; color:var(--red); margin:0 0 6px; }
   .trend p { margin:0; color:var(--gray); font-size:14.5px; }
   footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:70px; font-family:"IBM Plex Mono",Consolas,monospace; }
+  /* ---- v2 enhancements (spec: AGENT.md) ---- */
+  #pbar { position:fixed; top:0; left:0; height:3px; width:0; background:var(--red); z-index:1200; }
+  .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--cat,var(--red)); margin-right:8px; vertical-align:1px; }
+  .eyebrow { color:var(--cat,var(--red)); }
+  #toc-panel a.active { color:var(--red); background:#f6f5f3; font-weight:600; }
+  .bar { transition:height .9s cubic-bezier(.22,.7,.3,1); }
+  .barwrap:hover .bar { filter:brightness(1.1); }
+  .reveal { opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity:1; transform:none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } .bar { transition:none; } }
+  .tldr::first-letter { float:left; font-size:2.5em; line-height:.95; margin:4px 12px 0 0; font-weight:700; font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); }
+  .wrap { position:relative; }
+  .wm { position:absolute; top:56px; right:20px; font-family:"IBM Plex Mono",Consolas,monospace; font-size:58px; font-weight:700; letter-spacing:1px; color:var(--red); opacity:.06; user-select:none; pointer-events:none; white-space:nowrap; }
+  @media (max-width:700px) { .wm { display:none; } }
+  /* ---- index enhancements (spec: AGENT.md) ---- */
+  .hero { margin:36px 0 0; padding:20px 10px 8px; border:1px solid var(--line); border-radius:10px; background:#fdfcfa; }
+  .hero svg { width:100%; height:auto; display:block; }
+  .fl { stroke-dasharray:5 7; animation:dashmove 1.4s linear infinite; }
+  @keyframes dashmove { to { stroke-dashoffset:-24; } }
+  @media (prefers-reduced-motion: reduce) { .fl { animation:none; } }
+  .paper { transition:background .25s ease, border-color .25s ease; border-left:3px solid transparent; padding-left:18px; margin-left:-18px; border-radius:0 8px 8px 0; }
+  .paper:hover { background:#faf8f6; border-left-color:var(--cat,var(--red)); }
+  .paper .idx { color:var(--cat,var(--red)); }
+</style>
+<style>
+  /* ---- heading TOC widget (spec: AGENT.md) ---- */
+  #toc-btn { position:fixed; right:20px; bottom:28px; z-index:1000; width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:#fff; color:var(--red); font-size:20px; line-height:1; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.12); opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; transform:translateY(8px); }
+  #toc-btn.show { opacity:1; pointer-events:auto; transform:none; }
+  #toc-btn.on { background:var(--red); color:#fff; border-color:var(--red); }
+  #toc-panel { position:fixed; right:20px; bottom:80px; z-index:1000; min-width:200px; max-width:320px; max-height:62vh; overflow-y:auto; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 6px 24px rgba(0,0,0,.14); padding:12px 6px 8px; display:none; }
+  #toc-panel.open { display:block; }
+  #toc-panel .toc-title { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:var(--red); padding:0 12px 8px; border-bottom:1px solid var(--line); }
+  #toc-panel a { display:block; color:var(--gray); text-decoration:none; font-size:13.5px; line-height:1.6; padding:6px 12px; border-radius:6px; }
+  #toc-panel a:hover { background:#f6f5f3; color:var(--red); }
+  #toc-panel a.t1 { font-weight:700; color:var(--ink); }
+  #toc-panel a.t2 { padding-left:24px; }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-<div class="eyebrow">PAPER DIGEST · 2026</div>
+<div class="eyebrow"><span class="dot"></span>PAPER DIGEST · 2026</div>
 <h1>Multi-Agent Framework / Harness</h1>
 <div class="sub">2026 年代表性论文 · 中文编译版</div>
 <p class="intro">11 篇经核验的 arXiv 论文（多智能体编排 / harness / 自生成 / 安全），PDF 与中文版均在本目录。</p>
+
+<div class="hero">
+<svg viewBox="0 0 780 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="多智能体编排示意：计划-并行执行-验证-合成">
+  <g stroke="#C9CBC0" stroke-width="1.5" fill="none">
+    <line class="fl" x1="68" y1="100" x2="118" y2="100"/>
+    <line class="fl" x1="218" y1="100" x2="314" y2="28"/>
+    <line class="fl" x1="218" y1="100" x2="314" y2="76"/>
+    <line class="fl" x1="218" y1="100" x2="314" y2="124"/>
+    <line class="fl" x1="218" y1="100" x2="314" y2="172"/>
+    <line class="fl" x1="346" y1="28" x2="468" y2="94"/>
+    <line class="fl" x1="346" y1="76" x2="468" y2="97"/>
+    <line class="fl" x1="346" y1="124" x2="468" y2="103"/>
+    <line class="fl" x1="346" y1="172" x2="468" y2="106"/>
+    <line class="fl" x1="572" y1="100" x2="622" y2="100"/>
+  </g>
+  <circle cx="52" cy="100" r="15" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>
+  <text x="52" y="136" text-anchor="middle" font-family="IBM Plex Mono,Consolas,monospace" font-size="10" fill="#8a8a86" letter-spacing="1">QUERY</text>
+  <rect x="120" y="78" width="98" height="44" rx="8" fill="#A02C2C"/>
+  <text x="169" y="104" text-anchor="middle" font-family="IBM Plex Mono,Consolas,monospace" font-size="11" fill="#fff" letter-spacing="1">PLANNER</text>
+  <circle cx="330" cy="28" r="14" fill="#9C6B1E"/>
+  <circle cx="330" cy="76" r="14" fill="#2E7D74"/>
+  <circle cx="330" cy="124" r="14" fill="#6B4FA0"/>
+  <circle cx="330" cy="172" r="14" fill="#3E6FA3"/>
+  <text x="330" y="196" text-anchor="middle" font-family="IBM Plex Mono,Consolas,monospace" font-size="10" fill="#8a8a86" letter-spacing="1">AGENTS ×N</text>
+  <rect x="470" y="78" width="102" height="44" rx="8" fill="#fff" stroke="#A02C2C" stroke-width="1.5"/>
+  <text x="521" y="104" text-anchor="middle" font-family="IBM Plex Mono,Consolas,monospace" font-size="11" fill="#A02C2C" letter-spacing="1">VERIFIER</text>
+  <circle cx="644" cy="100" r="15" fill="#A02C2C"/>
+  <path d="M637 100 l5 5 l10 -11" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="644" y="136" text-anchor="middle" font-family="IBM Plex Mono,Consolas,monospace" font-size="10" fill="#8a8a86" letter-spacing="1">ANSWER</text>
+</svg>
+</div>
 
 <div class="tldr">
   <b>multi-agent framework</b>：协调多个 LLM agent 协作的结构——怎么拆任务、怎么并行、怎么合并。<br>
@@ -57,7 +128,7 @@
 <div class="hline"></div>
 
 <div class="paper">
-  <div class="idx">01 · MULTI-AGENT FRAMEWORK</div>
+  <div class="idx" style="--cat:#A02C2C"><span class="dot"></span>01 · MULTI-AGENT FRAMEWORK</div>
   <h3><a href="2603.11445_VMAO_中文版.html">VMAO：验证式多智能体编排</a></h3>
   <div class="en">arXiv 2603.11445 · AWS + HSBC · ICLR 2026 Workshop</div>
   <p>把「验证」提升为编排层的一等协调信号：DAG 分解并行执行，独立 LLM 检查员评估完整性，发现缺口自动重规划补漏。市场研究查询完整性 3.1→4.2、来源质量 2.6→4.1。</p>
@@ -65,7 +136,7 @@
 </div>
 
 <div class="paper">
-  <div class="idx">02 · MULTI-AGENT FRAMEWORK</div>
+  <div class="idx" style="--cat:#A02C2C"><span class="dot"></span>02 · MULTI-AGENT FRAMEWORK</div>
   <h3><a href="2602.16873_AdaptOrch_中文版.html">AdaptOrch：任务自适应拓扑编排</a></h3>
   <div class="en">arXiv 2602.16873 · 韩国国民大学</div>
   <p>证明「模型趋同时拓扑比选模型重要」（缩放定律 Ω(1/ε²)），给出线性时间路由算法，按任务 DAG 结构自动在并行/顺序/分层/混合四种拓扑中选型。同款模型提升 12–23%。</p>
@@ -73,7 +144,7 @@
 </div>
 
 <div class="paper">
-  <div class="idx">03 · AGENT HARNESS</div>
+  <div class="idx" style="--cat:#9C6B1E"><span class="dot"></span>03 · AGENT HARNESS</div>
   <h3><a href="2603.25723_NLAH_中文版.html">NLAH：自然语言 Agent Harness</a></h3>
   <div class="en">arXiv 2603.25723 · 清华深研院 + 哈工大（深圳）</div>
   <p>把埋在控制器代码里的 harness 策略外化为可编辑的自然语言文档，由共享运行时解释执行；自然语言管策略，代码管精确机制。策略层 60K→2.9K token，任务表现与代码 harness 相当。</p>
@@ -81,7 +152,7 @@
 </div>
 
 <div class="paper">
-  <div class="idx">04 · AGENT HARNESS</div>
+  <div class="idx" style="--cat:#9C6B1E"><span class="dot"></span>04 · AGENT HARNESS</div>
   <h3><a href="2603.28052_Meta-Harness_中文版.html">Meta-Harness：自动搜索最优 harness</a></h3>
   <div class="en">arXiv 2603.28052 · 斯坦福 + MIT + KRAFTON</div>
   <p>「用 harness 优化 harness」：coding agent 通过文件系统按需翻阅全部历史候选的源码、分数与执行轨迹，自动发现超越人类手工设计的 harness，TerminalBench-2 Haiku 榜第一。</p>
@@ -89,7 +160,7 @@
 </div>
 
 <div class="paper">
-  <div class="idx">05 · AGENT HARNESS · 多模态</div>
+  <div class="idx" style="--cat:#9C6B1E"><span class="dot"></span>05 · AGENT HARNESS · 多模态</div>
   <h3><a href="2606.03005_MUSE_中文版.html">MUSE：面向多模态大模型的统一 Harness</a></h3>
   <div class="en">arXiv 2606.03005 · 东北大学 + 北京大学</div>
   <p>首个面向冻结多模态大模型的统一 harness：感知工具 + 确定性验证器 + 修复循环，模型完全黑盒。GPT-4o 找字任务 3%→21%——许多「模型不行」其实是「harness 不行」。</p>
@@ -97,7 +168,7 @@
 </div>
 
 <div class="paper">
-  <div class="idx">06 · MULTI-AGENT · ACTIVATION</div>
+  <div class="idx" style="--cat:#6B4FA0"><span class="dot"></span>06 · MULTI-AGENT · ACTIVATION</div>
   <h3><a href="2608.27338_MoRe_中文版.html">MoRe：用角色混合把 MAS 协同压进单次推理</a></h3>
   <div class="en">arXiv 2608.27338 · UIUC + Amazon · 2026-08</div>
   <p>把多种角色学成可组合的激活引导向量（codebook），查询感知路由器在单次前向中动态混合。性能逼近 MAS，token 成本约降 20×——多视角不必依赖多轮文本通信。</p>
@@ -105,7 +176,7 @@
 </div>
 
 <div class="paper">
-  <div class="idx">07 · MULTI-AGENT · SECURITY SoK</div>
+  <div class="idx" style="--cat:#2E7D74"><span class="dot"></span>07 · MULTI-AGENT · SECURITY SoK</div>
   <h3><a href="2609.00595_SoK_中文版.html">SoK：安全的智能体也可能一起失败</a></h3>
   <div class="en">arXiv 2609.00595 · 2026-09 · 21 pages</div>
   <p>对 197 篇工作做执行中心分析，提出 A-I-R 攻击框架与五部分防御契约；审计 44 项评测。核心主张：真正的 MAS 安全效应必须在交互路径上被证明。</p>
@@ -113,7 +184,7 @@
 </div>
 
 <div class="paper">
-  <div class="idx">08 · MULTI-AGENT · SELF-GENERATIVE</div>
+  <div class="idx" style="--cat:#A34A7D"><span class="dot"></span>08 · MULTI-AGENT · SELF-GENERATIVE</div>
   <h3><a href="2509.24323_MAS2_中文版.html">MAS²：自生成、自配置、自纠偏的多智能体系统</a></h3>
   <div class="en">arXiv 2509.24323 · ICLR 2026 Poster</div>
   <p>用 generator–implementer–rectifier 三元 meta-agent 递归定制目标 MAS，运行中纠偏。七项基准相对 SOTA 最高约 +19.6%，处在成本–性能 Pareto 前沿。</p>
@@ -121,7 +192,7 @@
 </div>
 
 <div class="paper">
-  <div class="idx">09 · MULTI-AGENT · MODEL ROUTING</div>
+  <div class="idx" style="--cat:#3E6FA3"><span class="dot"></span>09 · MULTI-AGENT · MODEL ROUTING</div>
   <h3><a href="2601.04861_OI-MAS_中文版.html">OI-MAS：跨多尺度模型的置信感知路由</a></h3>
   <div class="en">arXiv 2601.04861 · 哈尔滨工业大学 · 2026-01</div>
   <p>把「选 agent 角色」和「选模型规模」统一为状态依赖的两级动态路由，用校准后的模型置信度作为成本惩罚的自适应权重。五基准准确率最高 +12.88%，成本最高 −79.78%。</p>
@@ -129,7 +200,7 @@
 </div>
 
 <div class="paper">
-  <div class="idx">10 · MULTI-AGENT · DECENTRALIZED</div>
+  <div class="idx" style="--cat:#557B3F"><span class="dot"></span>10 · MULTI-AGENT · DECENTRALIZED</div>
   <h3><a href="2602.00966_Symphony-Coord_中文版.html">Symphony-Coord：去中心化的涌现式协调</a></h3>
   <div class="en">arXiv 2602.00966 · NUS + NYU + Gradient 等 · 2026-02</div>
   <p>把 agent 选择建模为在线上下文多臂老虎机：Beacon 协议先筛 Top-L 候选，LinUCB 按任务与 agent 状态路由，角色专长从交互反馈中涌现。次线性 regret 理论保证，agent 失效下可自愈。</p>
@@ -137,7 +208,7 @@
 </div>
 
 <div class="paper">
-  <div class="idx">11 · AGENT HARNESS · TOOL USE</div>
+  <div class="idx" style="--cat:#9C6B1E"><span class="dot"></span>11 · AGENT HARNESS · TOOL USE</div>
   <h3><a href="2609.01736_HEART_中文版.html">HEART：自然语言工具原语 + 2.5 万函数仓库</a></h3>
   <div class="en">arXiv 2609.01736 · 2026-09</div>
   <p>让工具适配模型而非相反：Tool Primitive 用 LLM 包装工具、以自然语言为接口，ToolFace 语义检索 25,519 个函数，Planner–Router–Verifier 闭环恢复。8B 骨干超三个商用模型 6%、成本最高降 85%，且结构上免疫 prompt injection。</p>
@@ -173,5 +244,84 @@
 <p style="color:var(--gray);">先读 <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2603.28052_Meta-Harness_中文版.html">Meta-Harness</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2603.25723_NLAH_中文版.html">NLAH</a> / <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2606.03005_MUSE_中文版.html">MUSE</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2602.16873_AdaptOrch_中文版.html">AdaptOrch</a> / <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2603.11445_VMAO_中文版.html">VMAO</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2509.24323_MAS2_中文版.html">MAS²</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2608.27338_MoRe_中文版.html">MoRe</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2609.00595_SoK_中文版.html">SoK</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2601.04861_OI-MAS_中文版.html">OI-MAS</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2602.00966_Symphony-Coord_中文版.html">Symphony-Coord</a> → <a style="color:var(--red);font-weight:600;text-decoration:none;" href="2609.01736_HEART_中文版.html">HEART</a>。</p>
 
 </div>
+<script>
+/* ---- page enhancements v2 (spec: AGENT.md): TOC + scroll-spy + progress + reveal + bars ---- */
+(function () {
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* reading progress bar */
+  var pbar = document.createElement("div");
+  pbar.id = "pbar";
+  document.body.appendChild(pbar);
+
+  /* heading TOC */
+  var heads = [].slice.call(document.querySelectorAll(".wrap h1, .wrap h2"));
+  var btn = null, panel = null, links = [];
+  if (heads.length >= 2) {
+    heads.forEach(function (h, i) { if (!h.id) h.id = "h-" + (i + 1); });
+    btn = document.createElement("button");
+    btn.id = "toc-btn"; btn.type = "button"; btn.title = "文章目录"; btn.innerHTML = "&#9776;";
+    panel = document.createElement("nav");
+    panel.id = "toc-panel"; panel.setAttribute("aria-label", "文章目录");
+    var html = '<div class="toc-title">CONTENTS</div>';
+    heads.forEach(function (h) {
+      html += '<a href="#' + h.id + '" class="' + (h.tagName === "H1" ? "t1" : "t2") + '">' + h.textContent + "</a>";
+    });
+    panel.innerHTML = html;
+    document.body.appendChild(btn);
+    document.body.appendChild(panel);
+    links = [].slice.call(panel.querySelectorAll("a"));
+    function toggle(e) { e.stopPropagation(); panel.classList.toggle("open"); btn.classList.toggle("on"); }
+    btn.addEventListener("click", toggle);
+    panel.addEventListener("click", function (e) {
+      var a = e.target.closest("a");
+      if (!a) return;
+      e.preventDefault();
+      var t = document.getElementById(a.getAttribute("href").slice(1));
+      if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      close();
+    });
+    document.addEventListener("click", function (e) {
+      if (!panel.contains(e.target) && e.target !== btn) close();
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+  }
+  function close() { if (!panel) return; panel.classList.remove("open"); btn.classList.remove("on"); }
+
+  /* scroll: progress + scroll-spy */
+  function onScroll() {
+    var doc = document.documentElement;
+    var max = doc.scrollHeight - window.innerHeight;
+    pbar.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0) + "%";
+    if (!panel) return;
+    var show = window.scrollY > 180;
+    btn.classList.toggle("show", show);
+    if (!show) close();
+    var cur = -1;
+    for (var i = 0; i < heads.length; i++) {
+      if (heads[i].getBoundingClientRect().top <= 120) cur = i; else break;
+    }
+    links.forEach(function (a, i) { a.classList.toggle("active", i === cur); });
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  /* reveal on scroll + bar growth animation */
+  if (!reduced && "IntersectionObserver" in window) {
+    var targets = [].slice.call(document.querySelectorAll(".wrap h2, .hline, .contrib, .chart, .paper, .trend, table.cmp, .tldr"));
+    var bars = [].slice.call(document.querySelectorAll(".bar"));
+    bars.forEach(function (b) { b.dataset.h = b.style.height; b.style.height = "0%"; });
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add("in");
+        [].slice.call(e.target.querySelectorAll(".bar")).forEach(function (b) { b.style.height = b.dataset.h; });
+        io.unobserve(e.target);
+      });
+    }, { threshold: 0.12 });
+    targets.forEach(function (el) { el.classList.add("reveal"); io.observe(el); });
+  }
+})();
+</script>
 </body>
 </html>
