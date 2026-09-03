@@ -12,7 +12,7 @@
 | `<arXiv号>_<短名>_中文版.html`（11 篇） | 论文页 | 属于导航链（见 §2）；v5 起带 `.pubmeta`、`.epigraph`、`body.page-paper`；**v5 后续：`.mnotes` 旁注栏与 `.paper-main` 双栏均已移除，回到单栏正文** |
 | glossary.html | 术语表 | 不属于导航链；词条 `id` 供各页 `.gloss` 链接（见 §4.6） |
 | about.html | 关于 | 不属于导航链；维护信息、收录标准、更新记录、许可措辞 |
-| covers/ | 期刊封面 | 14 张 1200×630 PNG（11 论文 + index/glossary/about），每页 `og:image` 指向自己的那张；由 `.workbuddy/gen_covers.py` 生成 |
+| covers/ | 期刊封面 | 14 张 1200×630 PNG（11 论文 + index/glossary/about），每页 `og:image` 指向自己的那张；**新增论文须补一张同规格、同风格的封面**（双层红框 + 纸本横纹 + 幽灵编号 + 拓扑点线，见 §4.11） |
 | 404.html | 错误页 | 统一图元（红框 404 印章），含回首页/术语表/关于/GitHub 链接 |
 | LICENSE | 许可 | 原创内容 CC BY-NC 4.0 + 第三方论文版权声明（见 about.html 引用措辞） |
 | robots.txt | SEO | `Allow: /` + Sitemap 指向 |
@@ -84,10 +84,10 @@ PDF 链接规则：本目录存在对应 PDF 文件的用相对路径（当前�
 1. 在 `index.html` 论文列表末尾追加条目（并补 `data-cat` 属性，见 §5 色表映射）；
 2. 新页面 `.nav` 指向 `index.html`，并回写当前末篇页面的「下一篇」；
 3. 更新本文件的顺序表、色表、`README` 表格、`about.html` 收录说明与篇数文案；
-4. 在 `.workbuddy/beautify_v5.py` 的 `ORDER_ARX` 中登记 arXiv 号并补 `EPIGRAPH` 引语，重跑注入脚本 → 得到 `.pubmeta`/`.epigraph`/JSON-LD；**v5 后续：脚本不再生成 `.mnotes` 与 `.paper-main` 双栏**，分类/核心术语/阅读顺序分别由正文 meta + `.gloss` 点线引用 + footer 的 ←/→ 翻页与 index 横向对比表承载；
-5. 在 `.workbuddy/gen_covers.py` 的 `ORDER` 中登记并重跑 → 生成 `covers/<arXiv号>.png`（新页 og:image 自动指向它）；
+4. 补上 `.pubmeta`（arXiv 号 / 投稿月份 / 收录日）与 `.epigraph`（一句话导读），写法见 §4.9；并按 §4.2 补齐 head 的 canonical / JSON-LD / og 三连对；
+5. 补一张 `covers/<arXiv号>.png`（1200×630，风格见 §4.11），并让本页 `og:image` 指向它；
 6. 在 `sitemap.xml` 末尾追加该页 `<url>`；
-7. 页面内所有站内链接逐条自检（见 §8）。
+7. 页面内所有站内链接逐条自检（见 §8 自检清单）；
 
 ## 3. 页面增强组件 v1–v3 — 论文页与 index 必须包含
 
@@ -130,7 +130,7 @@ PDF 链接规则：本目录存在对应 PDF 文件的用相对路径（当前�
 <meta name="description" content="<同 og:description>">
 ```
 
-`</head>` 前的 **v5 追加块**（在样式块 D 之后，由 beautify_v5.py 统一维护，勿手改；og:image 三连对必须相邻且全页唯一——历史 dup 教训）：
+`</head>` 前的 **v5 追加块**（在样式块 D 之后，全站各页保持一致，勿手改；og:image 三连对必须相邻且全页唯一——历史 dup 教训）：
 
 ```html
 <meta name="theme-color" content="#A02C2C">
@@ -290,12 +290,12 @@ footer a:hover { color:var(--red); text-decoration:underline; }
 <div class="tldr">
 ```
 
-`cite-json` 生成规则：`bib` 为 BibTeX（字段 title/author/year/eprint/archiveprefix/url，`@misc`；作者缺失时用机构并注明「作者详见 arXiv」）；`apa` 为 `作者标注（年份）. 英文标题. arXiv:<id>. https://arxiv.org/abs/<id>`。新增论文须在 `.workbuddy/beautify_v4.py` 的 `PAPER` 表中登记 key/title/auth/year/venue/og/desc/cat。
+`cite-json` 生成规则：`bib` 为 BibTeX（字段 title/author/year/eprint/archiveprefix/url，`@misc`；作者缺失时用机构并注明「作者详见 arXiv」）；`apa` 为 `作者标注（年份）. 英文标题. arXiv:<id>. https://arxiv.org/abs/<id>`。新增论文须在**页内 `#cite-json`** 中登记 key/title/auth/year/venue/og/desc/cat 元数据。
 
 ### 4.6 术语链（正文 → glossary.html）
 
 - 论文页正文（`.tldr` 起至 `.nav` 止，且**不进入 h2/h3 标题内部**）将核心概念首次出现处包成 `<a class="gloss" href="glossary.html#<id>">词</a>`，点状下划线视觉；
-- 每个论文页保留 3–5 个术语链即可（当前映射见 `.workbuddy/beautify_v4.py` 的 `TERM_LINKS`/`ALIASES`，别名按出现偏好排列，注入脚本会自动屏蔽 h2/h3 与标签内部）；
+- 每个论文页保留 3–5 个术语链即可（当前映射以现有页面为准，别名按出现偏好排列；**注入时必须屏蔽 h2/h3 与已有标签内部**，否则会污染标题与既有 `<a>`——历史教训）；
 - **新增术语**必须三步同步：glossary.html 增加 `<div class="term" id="<id>">` 词条 → 本文件 §6 的术语 id 目录 → 需要链接它的页面正文注入 `.gloss`；
 - 术语 alias 不得与其他已注入锚点词重叠（避免嵌套链接）。
 
@@ -311,20 +311,19 @@ footer a:hover { color:var(--red); text-decoration:underline; }
 
 ### 4.9 v5 论文页增强（仅 11 篇论文页）
 
-论文页 `<body class="page-paper">`，正文包在 `<div class="wrap">…</div>` 内（**v5 后续：已不再生成 `.paper-main` 双栏包裹，回到单栏正文**）。由 beautify_v5.py 注入的两个元素：
+论文页 `<body class="page-paper">`，正文包在 `<div class="wrap">…</div>` 内，**单栏，无右侧 sidebar**。必备两个元素：
 
 - **`.pubmeta`**：紧跟在 `.meta` 之后的一行（`.meta` 的 `</p>` 后）：`arXiv <号> · 投稿 <年-月> [· venue] · 中文版收录 2026-09-03`；
-- **`.epigraph`**：`.tldr` 之前的一条 `blockquote` 引语（红左边线、斜体），内容为 beautify_v5.py 中 `EPIGRAPH` 字典按 arXiv 号配置的「一句话导读」，`cite` 落款「— 本站导读」。
+- **`.epigraph`**：`.tldr` 之前的一条 `blockquote` 引语（红左边线、斜体），内容是该篇的「一句话导读」，`cite` 落款「— 本站导读」。
 
-**v5 后续调整（按用户反馈）**：
+**已移除的元素（按用户反馈，勿再加回）**：
 
-- 「馆藏信息」旁注卡片（arXiv/投稿/收录日）与 `.pubmeta` 行完全重复，已移除（patches/rm_archive_card.py）。
-- 进一步移除整个 `<aside class="mnotes">` 旁注栏（分类 / 核心术语 / 阅读顺序）与 `.paper-main` 双栏包裹：
+- 「馆藏信息」旁注卡片（arXiv/投稿/收录日）——与 `.pubmeta` 行完全重复。
+- 整个 `<aside class="mnotes">` 旁注栏（分类 / 核心术语 / 阅读顺序）与 `.paper-main` 双栏包裹：
   - **分类**——已直接在正文 `.meta` 行中给出，并可由 index 横向对比表跳转；
   - **核心术语**——已用 `.gloss` 点线样式在正文中给出，悬停即跳 glossary；
   - **阅读顺序**——footer 的 ←/→ 键盘翻页链接 + index 横向对比表已经承载；
-  - 因此 sidebar 没有额外价值，回退到单栏正文让版心更舒展；
-  - 实施 patches/rm_mnotes.py（幂等），脚本与规范同步更新。
+  - 因此 sidebar 没有额外价值，保持单栏正文、版心更舒展。
 
 正文 h2 之前的头部信息区也可视情况补充收录时间戳。
 
@@ -340,7 +339,7 @@ footer a:hover { color:var(--red); text-decoration:underline; }
 - `sitemap.xml`：14 条 URL（index/glossary/about 带 lastmod/changefreq/priority，11 论文带 lastmod），论文 URL 用 percent-encoded 文件名；**新增论文必须追加**；
 - `LICENSE`：原创内容 CC BY-NC 4.0 + 第三方论文版权声明双段式，非 MIT；
 - `about.html`：含与 LICENSE 一致的许可措辞；收录标准、维护者、时间表；
-- `apple-touch-icon.png`：180×180（gen_covers.py 生成），红底白线 planner→agents 图元，与 favicon 呼应。
+- `apple-touch-icon.png`：180×180，红底白线 planner→agents 图元，与 favicon 呼应。
 
 ### 4.12 v6 目录移到左上角（替代 v1 的右下角浮钮）
 
@@ -348,7 +347,7 @@ v6 样式块（`</head>` 前最后一个 `<style>`，含 `v6 enhancements` 注�
 
 ### 4.13 v6 giscus 评论区（全部 14 个内容页，404 除外）
 
-每页 `</body>` 前注入 `.giscwrap#giscus` 容器 + v6 懒加载脚本：`IntersectionObserver`（rootMargin 1400px）接近视口才把 `giscus.app/client.js` 注入 `.gismount`。**giscus 配置常量统一维护在 `.workbuddy/beautify_v6.py` 顶部的 GISCUS_BLOCK**，当前值（2026-09-03 实测）：
+每页 `</body>` 前注入 `.giscwrap#giscus` 容器 + v6 懒加载脚本：`IntersectionObserver`（rootMargin 1400px）接近视口才把 `giscus.app/client.js` 注入 `.gismount`。**giscus 配置写在 `.giscwrap` 的 `data-*` 属性上，全站 14 页必须一致**，当前值（2026-09-03 实测）：
 
 | 属性 | 值 |
 |------|------|
@@ -362,7 +361,7 @@ v6 样式块（`</head>` 前最后一个 `<style>`，含 `v6 enhancements` 注�
 
 注意事项：
 - 仓库须启用 **Discussions**（已启用）；giscus **App 需仓库管理员到 github.com/apps/giscus 安装一次**，未安装时评论区显示错误提示，安装后无需改代码；
-- 若仓库迁移/换分类，改 `GISCUS_BLOCK` 常量后对全站重跑 beautify_v6.py；
+- 若仓库迁移/换分类，须同步修改**全部 14 页** `.giscwrap` 的 `data-repo` / `data-repo-id` / `data-category-id`，勿只改一页；
 - `.giscwrap` 打印时隐藏；`.gistitle` 里的引导文案提示「选中正文 → ✎ 批注」。
 
 ### 4.14 v6 WPS 式批注（选中文字 → 引用评论）
@@ -396,20 +395,19 @@ index 条目写法：`<div class="idx" style="--cat:#9C6B1E"><span class="dot"><
 
 glossary / about 两页与普通页同构（含 §3 样式块 A/B、§4.3 C、样式块 D、v3+v4+v5 脚本、§4.1 字体、§4.2 favicon/OG/JSON-LD；v5 脚本在这两页为空操作只返回）；其 nav 遵循 §0 特殊页写法，不进 §2 顺序表。
 
-## 7. 批量脚本（.workbuddy/）
+## 7. 全站一致性
 
-| 脚本 | 用途 |
-|------|------|
-| beautify_v4.py | v4 全站注入（字体异步/OG/样式/脚本/引用/术语链/筛选/页脚/文案修正），内含 PAPER 元数据表与 TERM_LINKS 术语映射，**新增论文时在此登记** |
-| beautify_v5.py | v5 全站注入（head meta 块/JSON-LD/论文页 pubmeta·epigraph/样式块 D/v5 脚本），内含 ORDER_ARX（阅读顺序）与 EPIGRAPH 字典；**新增论文时在此登记 arXiv 号并补引语，重跑后自带全站自检与 og:image 唯一性断言**；**v5 后续：已不再生成 `.paper-main` 双栏与 `.mnotes` 旁注栏** |
-| gen_covers.py | 程序化期刊封面生成器（arXiv 号为随机种子 → 确定性拓扑点线），输出 covers/ 14 张 1200×630 PNG + apple-touch-icon.png 180×180；**新增论文时在此 ORDER 登记并重跑** |
-| v4_scan.py / v4_fix_straydiv.py | 术语扫描 / 游离 `</div>` 修复（历史问题保留，勿重犯） |
-| patches/rm_archive_card.py | 移除「馆藏信息」旁注卡片的一次性补丁（与 .pubmeta 重复）；仅历史记录，库里已无该卡片 |
-| patches/rm_mnotes.py | 整段移除 `.mnotes` 旁注栏与 `.paper-main` 双栏包裹的一次性补丁（按用户反馈回退到单栏正文）；幂等，再次运行会被断言拦截 |
-| patches/rm_mnotes.py | 整段移除 `.mnotes` 旁注栏与 `.paper-main` 双栏包裹的一次性补丁（按用户反馈回退到单栏正文）；幂等，再次运行会被断言拦截 |
-| beautify_v2.py / v3.py / patch / remove_dropcap / fix_nav.py | 历史批次，仅存档 |
+本规范描述的是**成品页面应有的样子**，不依赖任何批量脚本。新增或修改内容时，手工保证下列七处同步：
 
-批量修改一律：先断言对应版本标记不存在再注入（防重复）；改完全站用 §8 清单 grep 自检；保持 LF 换行、UTF-8 无 BOM。
+1. index 论文列表（`.paper` 卡片，含 `data-cat`）；
+2. §2 顺序表（论文页「← / →」导航的依据）；
+3. §5 类别色表（eyebrow 的 `--cat` 与 `.dot` 取值）；
+4. README 论文表格；
+5. `about.html` 的收录说明；
+6. `sitemap.xml`；
+7. `covers/` 下每篇论文的 1200×630 封面 PNG（页内 `og:image` 指向它）。
+
+改动落地后用 §8 自检清单逐项 grep 验证；文件保持 LF 换行、UTF-8 无 BOM。
 
 ## 8. 完成前的自检清单
 
@@ -429,6 +427,6 @@ glossary / about 两页与普通页同构（含 §3 样式块 A/B、§4.3 C、�
 
 ## 9. 其他约定
 
-- 样式沿用现有模板（`.wrap` 780px（论文页 v5 双栏网格 780px+232px 旁注列，≤1240px 自动降级）、IBM Plex Mono 强调、红 `#A02C2C` 主色 + 类别色签），系列一致；
+- 样式沿用现有模板（`.wrap` 780px 单栏正文、IBM Plex Mono 强调、红 `#A02C2C` 主色 + 类别色签），系列一致；**论文页不再有旁注栏或双栏网格**；
 - 文件命名：`<arXiv编号>_<短名>_中文版.html`；
-- index 论文列表、§2 顺序表、§5 色表、README 表格、about.html 收录说明、sitemap.xml、covers/、beautify_v5.py 的 ORDER_ARX 八者同步。
+- 各处的同步关系见 §7。
