@@ -333,6 +333,18 @@ footer a:hover { color:var(--red); text-decoration:underline; }
 - **已读藏书章**：localStorage 键 `mpa-read`（`{arxiv: 时间戳}`）。论文页滚动超过 85% 或停留 30s 记为本篇已读（`body[data-read]`）；index 列表卡片滚动到「已读」的卡片右上角显示红底 `.readmark` 印章，`#vhint-r` 实时显示 `已读 n / 11`；
 - **404.html**：红框 404 印章图元风格，独立轻量页，不参与导航链。
 
+⚠️ **`hidden` 属性失效陷阱（2026-09-03 实测修复，勿回退）**：三视图靠 `el.hidden = true/false` 切换，但样式块里 `.gallery { display:grid }`（class，特异性 0-1-0）与 `#star { … }`（id，特异性 1-0-0）**都会压过 UA 的 `[hidden] { display:none }`**（作者样式表优先级高于 UA）。结果：画廊/星图一旦 `buildGallery()`/`buildStar()` 注入过内容，再点回「列表」也永远藏不掉，表现成「点了别的按钮但展示风格不变」。样式块必须保留兜底规则：
+
+```css
+.gallery[hidden], #star[hidden] { display:none !important; }
+```
+
+新增任何用 `hidden` 属性切换的容器时，同步补一条 `[hidden]` 兜底，或在 JS 里显式写 `el.style.display = "none"`。
+
+**画廊卡片结构（v5.1 起）**：每个 `<a>` 内联 `style="--cat:<§5 类别色>"`（JS 里 `CAT_COLORS` 取色），子元素顺序为 `.ribbon`（左侧 4px 分类色条）→ `.badge`（`Nº 序号` + `.dot`，深玻玻璃药丸）→ `.readmark`（已读藏书章）→ `.thumb`（`aspect-ratio:1200/630` + `object-fit:cover`，悬停 `scale(1.05)`）→ `.ov`（`.cat` 分类名 / `.ti` 标题双行截断 / `.en` 英文小字）。`paintRead()` 除了给列表卡片加 `.read`，**也要给 galleries 里的 `a[data-arx]` 加 `.read`**，否则画廊里看不到藏书章。
+
+**三视图 CSS 的归属（2026-09-03 清理）**：`.viewbar / .vbtn / .vhint / #vhint-r` 仅在 index / glossary / about 三页存在（`#viewbar` markup 也是这三页有，但 glossary/about 的 viewbar 无 markup、v5 脚本在 `if (!viewbar) return;` 短路，所以 `.viewbar` 样式在该两页也是死代码——保留以避免差异）；而 **`.gallery` + `#star` 的 CSS 只在 index.html 出现**（其他 12 页 `#gallery`/`#star` markup 都不存在，CSS 是 100% 死代码）。新增任何需要这三视图样式的新页面时，只在真正有 `#gallery`/`#star` markup 的页里同步——不要照搬 glossary/about 的死 CSS，否则下次改画廊又会脱节。
+
 ### 4.11 SEO / 许可 / 站身份文件
 
 - `robots.txt`：`User-agent: *` + `Allow: /` + `Sitemap:` 指向 `sitemap.xml`；

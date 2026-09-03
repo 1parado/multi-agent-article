@@ -6,6 +6,8 @@
   **11 篇 multi-agent 代表性论文（arXiv 2025-09 ~ 2026-09）· 中文编译 + 原文链接**
 
   [📖 在线阅读](https://github.com/1parado/multi-agent-article/blob/main/index.html)
+
+  学AI，上[L站](https://linux.do/)
 </div>
 
 ---

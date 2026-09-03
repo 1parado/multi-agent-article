@@ -117,20 +117,6 @@
   .vbtn.on { color:var(--red); border-color:var(--red); background:#fdfaf7; }
   .vhint { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; color:var(--soft); margin-left:8px; }
   #vhint-r { margin-left:auto; color:var(--red); }
-  .gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:18px; margin:0 0 36px; }
-  .gallery a { display:block; position:relative; border:1px solid var(--line); border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; transition:transform .25s ease, box-shadow .25s ease; background:#fff; }
-  .gallery a:hover { transform:translateY(-3px); box-shadow:0 6px 22px rgba(0,0,0,.10); }
-  .gallery img { display:block; width:100%; height:auto; }
-  .gallery .ov { padding:10px 12px 12px; background:#fdfaf7; border-left:3px solid var(--red); }
-  .gallery .ov .id { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:var(--red); }
-  .gallery .ov .ti { font-size:14.5px; font-weight:600; margin-top:2px; color:var(--ink); }
-  .gallery .ov .en { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; color:var(--soft); margin-top:4px; }
-  #star { position:relative; height:380px; border:1px solid var(--line); border-radius:12px; background:linear-gradient(180deg,#fdfaf7 0%,#fff 100%); padding:18px 22px; margin:0 0 36px; }
-  #star svg { width:100%; height:100%; display:block; overflow:visible; }
-  #star .tip { position:absolute; pointer-events:none; padding:8px 12px; background:#fff; border:1px solid var(--line); border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,.08); font-size:12.5px; max-width:260px; opacity:0; transition:opacity .15s; }
-  #star .tip.on { opacity:1; }
-  #star .tip b { color:var(--red); font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; display:block; margin-bottom:4px; }
-  #star .tip .en { color:var(--soft); font-size:11px; }
   /* 藏书章 */
   .readmark { position:absolute; top:14px; right:14px; transform:rotate(-8deg); font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:#fff; background:var(--red); border:2px solid #fff; padding:3px 9px; border-radius:4px; box-shadow:0 0 0 1px var(--red); display:none; z-index:2; }
   .paper { position:relative; }
