@@ -43,6 +43,19 @@
   .nav a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; }
   footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:34px; font-family:"IBM Plex Mono",Consolas,monospace; }
 </style>
+<style>
+  /* ---- heading TOC widget (spec: AGENT.md) ---- */
+  #toc-btn { position:fixed; right:20px; bottom:28px; z-index:1000; width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:#fff; color:var(--red); font-size:20px; line-height:1; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.12); opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; transform:translateY(8px); }
+  #toc-btn.show { opacity:1; pointer-events:auto; transform:none; }
+  #toc-btn.on { background:var(--red); color:#fff; border-color:var(--red); }
+  #toc-panel { position:fixed; right:20px; bottom:80px; z-index:1000; min-width:200px; max-width:320px; max-height:62vh; overflow-y:auto; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 6px 24px rgba(0,0,0,.14); padding:12px 6px 8px; display:none; }
+  #toc-panel.open { display:block; }
+  #toc-panel .toc-title { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:var(--red); padding:0 12px 8px; border-bottom:1px solid var(--line); }
+  #toc-panel a { display:block; color:var(--gray); text-decoration:none; font-size:13.5px; line-height:1.6; padding:6px 12px; border-radius:6px; }
+  #toc-panel a:hover { background:#f6f5f3; color:var(--red); }
+  #toc-panel a.t1 { font-weight:700; color:var(--ink); }
+  #toc-panel a.t2 { padding-left:24px; }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -51,7 +64,7 @@
 <h1>AdaptOrch</h1>
 <div class="zh">LLM 性能趋同时代的任务自适应多智能体编排</div>
 <p class="meta">Geunbin Yu · 韩国国民大学 · arXiv 2602.16873</p>
-<div class="links"><a href="https://github.com/1parado/multi-agent-article/raw/main/2602.16873_AdaptOrch_Task-Adaptive-Multi-Agent-Orchestration.pdf">PDF</a><a href="https://arxiv.org/abs/2602.16873">arXiv</a><a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">目录</a></div>
+<div class="links"><a href="2602.16873_AdaptOrch_Task-Adaptive-Multi-Agent-Orchestration.pdf">PDF</a><a href="https://arxiv.org/abs/2602.16873">arXiv</a><a href="index.html">目录</a></div>
 
 <div class="tldr">当各家大模型的基准分数挤进 2–5% 的窄带，「选哪个模型」不再重要，<b>「怎么编排」才是主导性能的杠杆</b>。AdaptOrch 给出这条论断的缩放定律证明，以及一个线性时间算法：分析任务 DAG 的结构特征，自动在并行 / 顺序 / 分层 / 混合四种编排拓扑中选型——同款模型下比静态拓扑基线提升 12–23%。</div>
 
@@ -121,8 +134,51 @@
   <li>落地友好：可直接映射到 Claude Code Agent Teams、LangGraph、OpenCode + MCP 等现有基础设施。</li>
 </ul>
 
-<div class="nav"><a href="https://github.com/1parado/multi-agent-article/blob/main/2603.11445_VMAO_中文版.html">← VMAO</a><a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">目录</a><a href="https://github.com/1parado/multi-agent-article/blob/main/2603.25723_NLAH_中文版.html">NLAH →</a></div>
+<div class="nav"><a href="2603.11445_VMAO_中文版.html">← VMAO</a><a href="index.html">目录</a><a href="2603.25723_NLAH_中文版.html">NLAH →</a></div>
 <footer>AdaptOrch · arXiv 2602.16873</footer>
 </div>
+<script>
+/* ---- heading TOC widget (spec: AGENT.md) ---- */
+(function () {
+  var heads = [].slice.call(document.querySelectorAll(".wrap h1, .wrap h2"));
+  if (heads.length < 2) return;
+  heads.forEach(function (h, i) { if (!h.id) h.id = "h-" + (i + 1); });
+  var btn = document.createElement("button");
+  btn.id = "toc-btn"; btn.type = "button"; btn.title = "文章目录"; btn.innerHTML = "&#9776;";
+  var panel = document.createElement("nav");
+  panel.id = "toc-panel"; panel.setAttribute("aria-label", "文章目录");
+  var html = '<div class="toc-title">CONTENTS</div>';
+  heads.forEach(function (h) {
+    html += '<a href="#' + h.id + '" class="' + (h.tagName === "H1" ? "t1" : "t2") + '">' + h.textContent + "</a>";
+  });
+  panel.innerHTML = html;
+  document.body.appendChild(btn);
+  document.body.appendChild(panel);
+  function close() { panel.classList.remove("open"); btn.classList.remove("on"); }
+  btn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    panel.classList.toggle("open"); btn.classList.toggle("on");
+  });
+  panel.addEventListener("click", function (e) {
+    var a = e.target.closest("a");
+    if (!a) return;
+    e.preventDefault();
+    var t = document.getElementById(a.getAttribute("href").slice(1));
+    if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+    close();
+  });
+  document.addEventListener("click", function (e) {
+    if (!panel.contains(e.target) && e.target !== btn) close();
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+  function onScroll() {
+    var show = window.scrollY > 180;
+    btn.classList.toggle("show", show);
+    if (!show) close();
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+})();
+</script>
 </body>
 </html>

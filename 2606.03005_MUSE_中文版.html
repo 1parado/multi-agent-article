@@ -41,6 +41,19 @@
   .nav a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; }
   footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:34px; font-family:"IBM Plex Mono",Consolas,monospace; }
 </style>
+<style>
+  /* ---- heading TOC widget (spec: AGENT.md) ---- */
+  #toc-btn { position:fixed; right:20px; bottom:28px; z-index:1000; width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:#fff; color:var(--red); font-size:20px; line-height:1; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.12); opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; transform:translateY(8px); }
+  #toc-btn.show { opacity:1; pointer-events:auto; transform:none; }
+  #toc-btn.on { background:var(--red); color:#fff; border-color:var(--red); }
+  #toc-panel { position:fixed; right:20px; bottom:80px; z-index:1000; min-width:200px; max-width:320px; max-height:62vh; overflow-y:auto; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 6px 24px rgba(0,0,0,.14); padding:12px 6px 8px; display:none; }
+  #toc-panel.open { display:block; }
+  #toc-panel .toc-title { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:var(--red); padding:0 12px 8px; border-bottom:1px solid var(--line); }
+  #toc-panel a { display:block; color:var(--gray); text-decoration:none; font-size:13.5px; line-height:1.6; padding:6px 12px; border-radius:6px; }
+  #toc-panel a:hover { background:#f6f5f3; color:var(--red); }
+  #toc-panel a.t1 { font-weight:700; color:var(--ink); }
+  #toc-panel a.t2 { padding-left:24px; }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -49,7 +62,7 @@
 <h1>MUSE</h1>
 <div class="zh">面向多模态大模型（MLLM）的统一 Agentic Harness</div>
 <p class="meta">Jianglin Lu, Yun Fu 等 · 东北大学 &amp; 北京大学 · arXiv 2606.03005</p>
-<div class="links"><a href="https://github.com/1parado/multi-agent-article/raw/main/2606.03005_MUSE_Unified-Agentic-Harness-for-MLLMs.pdf">PDF</a><a href="https://arxiv.org/abs/2606.03005">arXiv</a><a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">目录</a></div>
+<div class="links"><a href="2606.03005_MUSE_Unified-Agentic-Harness-for-MLLMs.pdf">PDF</a><a href="https://arxiv.org/abs/2606.03005">arXiv</a><a href="index.html">目录</a></div>
 
 <div class="tldr">多模态大模型会在人类一眼就会的任务上翻车——从截图走迷宫、挑对拼图块、在几百个相似字符里找目标字。主流思路是重新训练模型，MUSE 反其道而行：<b>模型完全冻结、严格黑盒</b>，在外面套一层模块化 harness——感知工具（OCR 等）、结构化解析、确定性验证器、验证器引导的修复循环。GPT-4o 在找字任务上从 3% 提到 21%，证明许多「模型不行」其实是<b>「harness 不行」</b>。</div>
 
@@ -119,8 +132,51 @@
   <li><b>局限</b>：设计驱动的 harness 依赖对失败模式的先验观察，任务扩展需注册新的适配器/钩子/验证器；修复循环增加调用成本（由验证器短路机制控制）。</li>
 </ul>
 
-<div class="nav"><a href="https://github.com/1parado/multi-agent-article/blob/main/2603.28052_Meta-Harness_中文版.html">← Meta-Harness</a><a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">目录</a></div>
+<div class="nav"><a href="2603.28052_Meta-Harness_中文版.html">← 上一篇：Meta-Harness</a><a href="index.html">目录</a><a href="2608.27338_MoRe_中文版.html">下一篇：MoRe →</a></div>
 <footer>MUSE · arXiv 2606.03005</footer>
 </div>
+<script>
+/* ---- heading TOC widget (spec: AGENT.md) ---- */
+(function () {
+  var heads = [].slice.call(document.querySelectorAll(".wrap h1, .wrap h2"));
+  if (heads.length < 2) return;
+  heads.forEach(function (h, i) { if (!h.id) h.id = "h-" + (i + 1); });
+  var btn = document.createElement("button");
+  btn.id = "toc-btn"; btn.type = "button"; btn.title = "文章目录"; btn.innerHTML = "&#9776;";
+  var panel = document.createElement("nav");
+  panel.id = "toc-panel"; panel.setAttribute("aria-label", "文章目录");
+  var html = '<div class="toc-title">CONTENTS</div>';
+  heads.forEach(function (h) {
+    html += '<a href="#' + h.id + '" class="' + (h.tagName === "H1" ? "t1" : "t2") + '">' + h.textContent + "</a>";
+  });
+  panel.innerHTML = html;
+  document.body.appendChild(btn);
+  document.body.appendChild(panel);
+  function close() { panel.classList.remove("open"); btn.classList.remove("on"); }
+  btn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    panel.classList.toggle("open"); btn.classList.toggle("on");
+  });
+  panel.addEventListener("click", function (e) {
+    var a = e.target.closest("a");
+    if (!a) return;
+    e.preventDefault();
+    var t = document.getElementById(a.getAttribute("href").slice(1));
+    if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+    close();
+  });
+  document.addEventListener("click", function (e) {
+    if (!panel.contains(e.target) && e.target !== btn) close();
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+  function onScroll() {
+    var show = window.scrollY > 180;
+    btn.classList.toggle("show", show);
+    if (!show) close();
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+})();
+</script>
 </body>
 </html>

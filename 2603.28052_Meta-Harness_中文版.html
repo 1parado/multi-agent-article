@@ -41,6 +41,19 @@
   .nav a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; }
   footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:34px; font-family:"IBM Plex Mono",Consolas,monospace; }
 </style>
+<style>
+  /* ---- heading TOC widget (spec: AGENT.md) ---- */
+  #toc-btn { position:fixed; right:20px; bottom:28px; z-index:1000; width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:#fff; color:var(--red); font-size:20px; line-height:1; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.12); opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; transform:translateY(8px); }
+  #toc-btn.show { opacity:1; pointer-events:auto; transform:none; }
+  #toc-btn.on { background:var(--red); color:#fff; border-color:var(--red); }
+  #toc-panel { position:fixed; right:20px; bottom:80px; z-index:1000; min-width:200px; max-width:320px; max-height:62vh; overflow-y:auto; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 6px 24px rgba(0,0,0,.14); padding:12px 6px 8px; display:none; }
+  #toc-panel.open { display:block; }
+  #toc-panel .toc-title { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:var(--red); padding:0 12px 8px; border-bottom:1px solid var(--line); }
+  #toc-panel a { display:block; color:var(--gray); text-decoration:none; font-size:13.5px; line-height:1.6; padding:6px 12px; border-radius:6px; }
+  #toc-panel a:hover { background:#f6f5f3; color:var(--red); }
+  #toc-panel a.t1 { font-weight:700; color:var(--ink); }
+  #toc-panel a.t2 { padding-left:24px; }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -49,7 +62,7 @@
 <h1>Meta-Harness</h1>
 <div class="zh">模型 Harness 的端到端自动优化</div>
 <p class="meta">Yoonho Lee, Chelsea Finn 等 · 斯坦福 &amp; MIT &amp; KRAFTON · arXiv 2603.28052</p>
-<div class="links"><a href="https://github.com/1parado/multi-agent-article/raw/main/2603.28052_Meta-Harness_End-to-End-Optimization-of-Model-Harnesses.pdf">PDF</a><a href="https://arxiv.org/abs/2603.28052">arXiv</a><a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">目录</a></div>
+<div class="links"><a href="2603.28052_Meta-Harness_End-to-End-Optimization-of-Model-Harnesses.pdf">PDF</a><a href="https://arxiv.org/abs/2603.28052">arXiv</a><a href="index.html">目录</a></div>
 
 <div class="tldr">固定模型换 harness 能拉开 6 倍的性能差距，但 harness 仍靠工程师手工打磨，而现有文本优化器只喂标量分数或压缩摘要，根本不够诊断 harness 问题。Meta-Harness 用一个 coding agent 做「优化 harness 的 harness」：<b>通过文件系统按需翻阅所有历史候选的源码、分数和完整执行轨迹</b>，在文本分类、数学推理和 TerminalBench-2 上自动发现超越人类手工设计的 harness。</div>
 
@@ -122,8 +135,51 @@
   <li>一次搜索数小时即可完成，产出的策略可读、可跨模型复用——一旦搜索空间可访问，通用 agent 就能超过手工设计。</li>
 </ul>
 
-<div class="nav"><a href="https://github.com/1parado/multi-agent-article/blob/main/2603.25723_NLAH_中文版.html">← NLAH</a><a href="https://github.com/1parado/multi-agent-article/blob/main/index.html">目录</a><a href="https://github.com/1parado/multi-agent-article/blob/main/2606.03005_MUSE_中文版.html">MUSE →</a></div>
+<div class="nav"><a href="2603.25723_NLAH_中文版.html">← NLAH</a><a href="index.html">目录</a><a href="2606.03005_MUSE_中文版.html">MUSE →</a></div>
 <footer>Meta-Harness · arXiv 2603.28052</footer>
 </div>
+<script>
+/* ---- heading TOC widget (spec: AGENT.md) ---- */
+(function () {
+  var heads = [].slice.call(document.querySelectorAll(".wrap h1, .wrap h2"));
+  if (heads.length < 2) return;
+  heads.forEach(function (h, i) { if (!h.id) h.id = "h-" + (i + 1); });
+  var btn = document.createElement("button");
+  btn.id = "toc-btn"; btn.type = "button"; btn.title = "文章目录"; btn.innerHTML = "&#9776;";
+  var panel = document.createElement("nav");
+  panel.id = "toc-panel"; panel.setAttribute("aria-label", "文章目录");
+  var html = '<div class="toc-title">CONTENTS</div>';
+  heads.forEach(function (h) {
+    html += '<a href="#' + h.id + '" class="' + (h.tagName === "H1" ? "t1" : "t2") + '">' + h.textContent + "</a>";
+  });
+  panel.innerHTML = html;
+  document.body.appendChild(btn);
+  document.body.appendChild(panel);
+  function close() { panel.classList.remove("open"); btn.classList.remove("on"); }
+  btn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    panel.classList.toggle("open"); btn.classList.toggle("on");
+  });
+  panel.addEventListener("click", function (e) {
+    var a = e.target.closest("a");
+    if (!a) return;
+    e.preventDefault();
+    var t = document.getElementById(a.getAttribute("href").slice(1));
+    if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+    close();
+  });
+  document.addEventListener("click", function (e) {
+    if (!panel.contains(e.target) && e.target !== btn) close();
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+  function onScroll() {
+    var show = window.scrollY > 180;
+    btn.classList.toggle("show", show);
+    if (!show) close();
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+})();
+</script>
 </body>
 </html>
