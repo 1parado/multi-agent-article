@@ -5,7 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Multi-Agent Paper Digest 2026">
+<meta property="og:title" content="Symphony-Coord：去中心化的涌现式协调">
+<meta property="og:description" content="把 agent 选择建模为在线上下文多臂老虎机：Beacon 筛选 Top-L 候选，LinUCB 按任务与 agent 状态路由，次线性 regret 保证。">
+<meta property="og:url" content="https://1parado.github.io/multi-agent-article/2602.00966_Symphony-Coord_%E4%B8%AD%E6%96%87%E7%89%88.html">
+<meta property="og:image" content="https://1parado.github.io/multi-agent-article/hero.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Symphony-Coord：去中心化的涌现式协调">
+<meta name="twitter:description" content="把 agent 选择建模为在线上下文多臂老虎机：Beacon 筛选 Top-L 候选，LinUCB 按任务与 agent 状态路由，次线性 regret 保证。">
+<meta name="description" content="把 agent 选择建模为在线上下文多臂老虎机：Beacon 筛选 Top-L 候选，LinUCB 按任务与 agent 状态路由，次线性 regret 保证。">
 
 <title>Symphony-Coord: Adaptive Routing for Multi-Agent LLM Systems（中文版）</title>
 <style>
@@ -105,6 +117,47 @@
     .paper { padding-left:12px; margin-left:-12px; padding-right:8px; }
   }
 </style>
+<style>
+  /* ---- v4 enhancements (spec: AGENT.md): print / focus / cite / filter / footlinks / gloss ---- */
+  a:focus-visible, button:focus-visible, input:focus-visible { outline:2px solid var(--red); outline-offset:2px; }
+  .gloss { color:inherit; text-decoration:underline; text-decoration-style:dotted; text-decoration-color:var(--sage); text-underline-offset:4px; cursor:help; }
+  .gloss:hover { color:var(--red); text-decoration-color:var(--red); }
+  .citebar { display:flex; align-items:center; gap:10px; margin:0 0 2px; flex-wrap:wrap; }
+  .citecap { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:var(--soft); }
+  .citebtn { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11.5px; letter-spacing:1px; color:var(--red); background:none; border:1px solid var(--line); border-radius:99px; padding:3px 12px; cursor:pointer; transition:border-color .2s, background .2s, color .2s; }
+  .citebtn:hover { border-color:var(--red); background:#fbf7f4; }
+  .citebtn.ok { color:#fff; background:var(--red); border-color:var(--red); }
+  footer a { color:var(--soft); text-decoration:none; }
+  footer a:hover { color:var(--red); text-decoration:underline; }
+  .sitefoot { text-align:center; color:var(--soft); font-size:12.5px; margin-top:70px; font-family:"IBM Plex Mono",Consolas,monospace; }
+  .sitefoot .fl1 { margin-bottom:10px; letter-spacing:1px; }
+  .sitefoot .fl1 .ghlink { color:inherit; }
+  .sitefoot .fl1 .ghlink:hover { color:var(--red); }
+  .sitefoot .fl2 { font-size:11.5px; letter-spacing:1.5px; }
+  .sitefoot .fl2 a { color:var(--soft); text-decoration:none; margin:0 8px; }
+  .sitefoot .fl2 a:hover { color:var(--red); text-decoration:underline; }
+  .fltbar { display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; margin:2px 0 30px; }
+  .flt { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.2px; color:var(--gray); background:#fff; border:1px solid var(--line); border-radius:99px; padding:4px 12px; cursor:pointer; transition:color .2s, border-color .2s, box-shadow .2s, background .2s; }
+  .chip .dot { width:6px; height:6px; margin-right:7px; vertical-align:1px; }
+  .chip:hover { color:var(--ink); border-color:var(--cat,var(--red)); }
+  .chip.on { color:var(--cat,var(--red)); border-color:var(--cat,var(--red)); box-shadow:0 0 0 1px var(--cat,var(--red)) inset; background:#fdfaf7; }
+  .q { flex:1 1 200px; min-width:170px; font:14px -apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fdfcfb; border:1px solid var(--line); border-radius:8px; padding:7px 12px; }
+  .q:focus { outline:none; border-color:var(--red); background:#fff; }
+  .q::-webkit-search-cancel-button { -webkit-appearance:none; }
+  .fltstat { width:100%; font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; color:var(--soft); }
+  .fltnone { font-size:14px; color:var(--gray); }
+  @media (max-width:640px) { .citecap { display:none; } .fltbar { gap:8px; } }
+  @media print {
+    #pbar, #toc-btn, #toc-panel, #totop, .wm, .hlink, #fltbar, .fltnone, .fltstat, #q { display:none !important; }
+    .reveal { opacity:1 !important; transform:none !important; }
+    body { font-size:12px; line-height:1.7; }
+    .wrap { padding-top:24px; }
+    h2 { page-break-after:avoid; }
+    .contrib, .chart, table.cmp, .paper, .trend, .term { page-break-inside:avoid; }
+    .bar, .bar.red, .bar.sage, .dot { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+  }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -116,7 +169,10 @@
 <p class="meta">Zhaoyang Guan 等 · NUS + NYU + Gradient 等 · arXiv 2602.00966 · 2026-02（v2 2026-05）</p>
 <div class="links"><a href="https://arxiv.org/pdf/2602.00966.pdf">PDF</a><a href="https://arxiv.org/abs/2602.00966">arXiv</a><a class="ghlink" href="https://github.com/1parado/multi-agent-article" target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>GitHub</a><a href="index.html">目录</a></div>
 
-<div class="tldr">现有多智能体协调依赖静态角色分配和中心化控制器，agent 池一大就路由低效、适应性差、故障恢复脆弱。Symphony-Coord 把 agent 选择建模为<b>在线上下文多臂老虎机问题</b>：两阶段动态 Beacon 协议先轻量筛出 Top-L 候选，再用 LinUCB 选择器按任务与 agent 状态路由，角色专长从交互反馈中<b>涌现</b>而非人工预定义。理论上给出次线性 regret 界；实验中在分布偏移与 agent 失效下表现出自愈能力。</div>
+<div class="citebar"><span class="citecap">CITE</span><button type="button" class="citebtn" data-cite="bib">BibTeX</button><button type="button" class="citebtn" data-cite="apa">APA</button></div>
+<script type="application/json" id="cite-json">{"bib": "@misc{symphony2026,\n  title         = {Symphony-Coord: Adaptive Routing for Multi-Agent LLM Systems},\n  author        = {Zhaoyang Guan and others},\n  year          = {2026},\n  eprint        = {2602.00966},\n  archiveprefix = {arXiv},\n  url           = {https://arxiv.org/abs/2602.00966},\n}", "apa": "Zhaoyang Guan (2026). Symphony-Coord: Adaptive Routing for Multi-Agent LLM Systems. arXiv:2602.00966. https://arxiv.org/abs/2602.00966"}</script>
+
+<div class="tldr">现有多智能体协调依赖静态角色分配和中心化控制器，agent 池一大就路由低效、适应性差、故障恢复脆弱。Symphony-Coord 把 agent 选择建模为<b>在线上下文<a class="gloss" href="glossary.html#bandit">多臂老虎机</a>问题</b>：两阶段动态 Beacon 协议先轻量筛出 Top-L 候选，再用 <a class="gloss" href="glossary.html#linucb">LinUCB</a> 选择器按任务与 agent 状态路由，角色专长从交互反馈中<b>涌现</b>而非人工预定义。理论上给出次线性 <a class="gloss" href="glossary.html#regret">regret</a> 界；实验中在分布偏移与 agent 失效下表现出自愈能力。</div>
 
 <h2>解决什么问题</h2>
 <div class="hline"></div>
@@ -167,7 +223,8 @@
 </ul>
 
 <div class="nav"><a href="2601.04861_OI-MAS_中文版.html">← 上一篇：OI-MAS</a><a href="index.html">目录</a><a href="2609.01736_HEART_中文版.html">下一篇：HEART →</a></div>
-<footer>Symphony-Coord · arXiv 2602.00966</footer>
+<footer>Symphony-Coord · arXiv 2602.00966
+  <a href="glossary.html">术语表</a> · <a href="about.html">关于</a></footer>
 </div>
 <script>
 /* ---- page enhancements v3 (spec: AGENT.md): TOC + scroll-spy + progress + reveal + bars + anchors + totop + kbd ---- */
@@ -299,6 +356,92 @@
 })();
 </script>
 
+
+
+<script>
+/* ---- page enhancements v4 (spec: AGENT.md): print-prep + cite + index filter/search ---- */
+(function () {
+  /* 打印前把未滚动到的入场动效/条形图展开为最终态 */
+  function expandAll() {
+    [].slice.call(document.querySelectorAll(".reveal:not(.in)")).forEach(function (el) { el.classList.add("in"); });
+    [].slice.call(document.querySelectorAll(".bar")).forEach(function (b) { if (b.dataset.h) b.style.height = b.dataset.h; });
+  }
+  if (window.matchMedia) {
+    var mq = window.matchMedia("print");
+    if (mq.addEventListener) mq.addEventListener("change", function (m) { if (m.matches) expandAll(); });
+    else if (mq.addListener) mq.addListener(function (m) { if (m.matches) expandAll(); });
+  }
+  document.addEventListener("beforeprint", expandAll);
+
+  /* 论文页：引用复制（BibTeX / APA） */
+  var cd = document.getElementById("cite-json");
+  if (cd) {
+    var data = {};
+    try { data = JSON.parse(cd.textContent); } catch (e) {}
+    function copyText(txt, ok) {
+      function fallback() {
+        var ta = document.createElement("textarea");
+        ta.value = txt; document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); } catch (e) {}
+        document.body.removeChild(ta); ok();
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, fallback);
+      else fallback();
+    }
+    [].slice.call(document.querySelectorAll("[data-cite]")).forEach(function (b) {
+      b.addEventListener("click", function () {
+        var k = b.getAttribute("data-cite");
+        if (!data[k]) return;
+        var old = b.textContent;
+        copyText(data[k], function () {
+          b.textContent = "✓ 已复制";
+          b.classList.add("ok");
+          setTimeout(function () { b.textContent = old; b.classList.remove("ok"); }, 1600);
+        });
+      });
+    });
+  }
+
+  /* index：分类筛选 + 关键词检索 */
+  var bar = document.getElementById("fltbar");
+  if (bar) {
+    var cards = [].slice.call(document.querySelectorAll(".wrap > .paper"));
+    var chips = [].slice.call(bar.querySelectorAll(".chip"));
+    var q = document.getElementById("q");
+    var stat = document.getElementById("fltstat");
+    var none = document.getElementById("fltnone");
+    var cat = "*", query = "";
+    function cardText(c) {
+      var parts = c.querySelectorAll(".idx, h3, .en, p");
+      var s = "";
+      [].slice.call(parts).forEach(function (el) { s += " " + (el.textContent || ""); });
+      return s.toLowerCase();
+    }
+    function apply() {
+      var shown = 0;
+      cards.forEach(function (c) {
+        var okc = (cat === "*" || c.getAttribute("data-cat") === cat);
+        var okq = true;
+        if (query) okq = cardText(c).indexOf(query) !== -1;
+        var show = okc && okq;
+        c.style.display = show ? "" : "none";
+        if (show) shown++;
+      });
+      if (stat) stat.textContent = "SHOWING " + shown + " / " + cards.length;
+      if (none) none.hidden = shown !== 0;
+    }
+    chips.forEach(function (ch) {
+      ch.addEventListener("click", function () {
+        cat = ch.getAttribute("data-cat") || "*";
+        chips.forEach(function (x) { x.classList.toggle("on", x === ch); });
+        apply();
+      });
+    });
+    if (q) q.addEventListener("input", function () { query = q.value.trim().toLowerCase(); apply(); });
+    apply();
+  }
+})();
+</script>
 
 </body>
 </html>

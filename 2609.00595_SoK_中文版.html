@@ -5,7 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Multi-Agent Paper Digest 2026">
+<meta property="og:title" content="SoK：安全的智能体也可能一起失败">
+<meta property="og:description" content="对 197 篇工作做执行中心分析，提出 A-I-R 攻击框架与五部分防御契约；审计 44 项评测。">
+<meta property="og:url" content="https://1parado.github.io/multi-agent-article/2609.00595_SoK_%E4%B8%AD%E6%96%87%E7%89%88.html">
+<meta property="og:image" content="https://1parado.github.io/multi-agent-article/hero.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SoK：安全的智能体也可能一起失败">
+<meta name="twitter:description" content="对 197 篇工作做执行中心分析，提出 A-I-R 攻击框架与五部分防御契约；审计 44 项评测。">
+<meta name="description" content="对 197 篇工作做执行中心分析，提出 A-I-R 攻击框架与五部分防御契约；审计 44 项评测。">
 
 <title>SoK: When Safe Agents Fail Together（中文版）</title>
 <style>
@@ -95,6 +107,47 @@
     .paper { padding-left:12px; margin-left:-12px; padding-right:8px; }
   }
 </style>
+<style>
+  /* ---- v4 enhancements (spec: AGENT.md): print / focus / cite / filter / footlinks / gloss ---- */
+  a:focus-visible, button:focus-visible, input:focus-visible { outline:2px solid var(--red); outline-offset:2px; }
+  .gloss { color:inherit; text-decoration:underline; text-decoration-style:dotted; text-decoration-color:var(--sage); text-underline-offset:4px; cursor:help; }
+  .gloss:hover { color:var(--red); text-decoration-color:var(--red); }
+  .citebar { display:flex; align-items:center; gap:10px; margin:0 0 2px; flex-wrap:wrap; }
+  .citecap { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:var(--soft); }
+  .citebtn { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11.5px; letter-spacing:1px; color:var(--red); background:none; border:1px solid var(--line); border-radius:99px; padding:3px 12px; cursor:pointer; transition:border-color .2s, background .2s, color .2s; }
+  .citebtn:hover { border-color:var(--red); background:#fbf7f4; }
+  .citebtn.ok { color:#fff; background:var(--red); border-color:var(--red); }
+  footer a { color:var(--soft); text-decoration:none; }
+  footer a:hover { color:var(--red); text-decoration:underline; }
+  .sitefoot { text-align:center; color:var(--soft); font-size:12.5px; margin-top:70px; font-family:"IBM Plex Mono",Consolas,monospace; }
+  .sitefoot .fl1 { margin-bottom:10px; letter-spacing:1px; }
+  .sitefoot .fl1 .ghlink { color:inherit; }
+  .sitefoot .fl1 .ghlink:hover { color:var(--red); }
+  .sitefoot .fl2 { font-size:11.5px; letter-spacing:1.5px; }
+  .sitefoot .fl2 a { color:var(--soft); text-decoration:none; margin:0 8px; }
+  .sitefoot .fl2 a:hover { color:var(--red); text-decoration:underline; }
+  .fltbar { display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; margin:2px 0 30px; }
+  .flt { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.2px; color:var(--gray); background:#fff; border:1px solid var(--line); border-radius:99px; padding:4px 12px; cursor:pointer; transition:color .2s, border-color .2s, box-shadow .2s, background .2s; }
+  .chip .dot { width:6px; height:6px; margin-right:7px; vertical-align:1px; }
+  .chip:hover { color:var(--ink); border-color:var(--cat,var(--red)); }
+  .chip.on { color:var(--cat,var(--red)); border-color:var(--cat,var(--red)); box-shadow:0 0 0 1px var(--cat,var(--red)) inset; background:#fdfaf7; }
+  .q { flex:1 1 200px; min-width:170px; font:14px -apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fdfcfb; border:1px solid var(--line); border-radius:8px; padding:7px 12px; }
+  .q:focus { outline:none; border-color:var(--red); background:#fff; }
+  .q::-webkit-search-cancel-button { -webkit-appearance:none; }
+  .fltstat { width:100%; font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; color:var(--soft); }
+  .fltnone { font-size:14px; color:var(--gray); }
+  @media (max-width:640px) { .citecap { display:none; } .fltbar { gap:8px; } }
+  @media print {
+    #pbar, #toc-btn, #toc-panel, #totop, .wm, .hlink, #fltbar, .fltnone, .fltstat, #q { display:none !important; }
+    .reveal { opacity:1 !important; transform:none !important; }
+    body { font-size:12px; line-height:1.7; }
+    .wrap { padding-top:24px; }
+    h2 { page-break-after:avoid; }
+    .contrib, .chart, table.cmp, .paper, .trend, .term { page-break-inside:avoid; }
+    .bar, .bar.red, .bar.sage, .dot { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+  }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -109,13 +162,16 @@
   <a href="https://arxiv.org/pdf/2609.00595.pdf">PDF</a>
 </div>
 
+<div class="citebar"><span class="citecap">CITE</span><button type="button" class="citebtn" data-cite="bib">BibTeX</button><button type="button" class="citebtn" data-cite="apa">APA</button></div>
+<script type="application/json" id="cite-json">{"bib": "@misc{sok2026,\n  title         = {SoK: When Safe Agents Fail Together},\n  author        = {SoK 作者团队（详见 arXiv）},\n  year          = {2026},\n  eprint        = {2609.00595},\n  archiveprefix = {arXiv},\n  url           = {https://arxiv.org/abs/2609.00595},\n}", "apa": "SoK (2026). SoK: When Safe Agents Fail Together. arXiv:2609.00595. https://arxiv.org/abs/2609.00595"}</script>
+
 <div class="tldr">
-  <b>一句话</b>：多智能体系统在主体边界之间传递信息、状态、决策与权限，局部安全检查无法覆盖的系统级失败会因此产生。本文对 <b>197</b> 篇工作做执行中心分析，提出 <b>A-I-R</b> 攻击框架与五部分防御契约，并审计 44 项评测工作，推动「交互感知」的 MAS 安全观。
+  <b>一句话</b>：<a class="gloss" href="glossary.html#mas">多智能体系统</a>在主体边界之间传递信息、状态、决策与权限，局部安全检查无法覆盖的系统级失败会因此产生。本文对 <b>197</b> 篇工作做执行中心分析，提出 <b>A-I-R</b> 攻击框架与五部分防御契约，并审计 44 项评测工作，推动「交互感知」的 MAS 安全观。
 </div>
 
 <h2>要解决什么问题</h2>
 <div class="hline"></div>
-<p>单智能体安全研究已积累大量防御与评测，但一旦多个 LLM agent 协作，攻击面从「模型内部」扩展到「交互接口与信任边界」。信息、状态、决策与权威跨主体流动时，局部安全检查可能全部通过，系统整体仍失败——「安全的智能体一起失败」。</p>
+<p>单智能体安全研究已积累大量防御与评测，但一旦多个 <a class="gloss" href="glossary.html#llm">LLM</a> agent 协作，攻击面从「模型内部」扩展到「交互接口与信任边界」。信息、状态、决策与权威跨主体流动时，局部安全检查可能全部通过，系统整体仍失败——「安全的智能体一起失败」。</p>
 <p>现有工作往往把「用了多个 agent」直接等同于「存在真正的多智能体安全效应」，缺少以执行为中心的统一视角，导致攻击机制碎片化、防御难以比较、评测无法隔离交互效应。</p>
 
 <h2>创新点</h2>
@@ -134,7 +190,7 @@
 </div>
 <div class="contrib">
   <h3><span class="no">04</span>评测审计与开放问题</h3>
-  <p>审计 44 项评测与基准工作，指出需更好隔离交互效应、设计可比较可诊断指标、支持跨 MAS 设计复用，以及评估开放系统运行。</p>
+  <p>审计 44 项评测与<a class="gloss" href="glossary.html#benchmark">基准</a>工作，指出需更好隔离交互效应、设计可比较可诊断指标、支持跨 MAS 设计复用，以及评估开放系统运行。</p>
 </div>
 
 <h2>主要结论</h2>
@@ -156,7 +212,8 @@
   <a href="2608.27338_MoRe_中文版.html">← 上一篇：MoRe</a>
   <a href="2509.24323_MAS2_中文版.html">下一篇：MAS² →</a>
 </div>
-<footer>SoK · arXiv 2609.00595</footer>
+<footer>SoK · arXiv 2609.00595
+  <a href="glossary.html">术语表</a> · <a href="about.html">关于</a></footer>
 </div>
 <script>
 /* ---- page enhancements v3 (spec: AGENT.md): TOC + scroll-spy + progress + reveal + bars + anchors + totop + kbd ---- */
@@ -288,6 +345,92 @@
 })();
 </script>
 
+
+
+<script>
+/* ---- page enhancements v4 (spec: AGENT.md): print-prep + cite + index filter/search ---- */
+(function () {
+  /* 打印前把未滚动到的入场动效/条形图展开为最终态 */
+  function expandAll() {
+    [].slice.call(document.querySelectorAll(".reveal:not(.in)")).forEach(function (el) { el.classList.add("in"); });
+    [].slice.call(document.querySelectorAll(".bar")).forEach(function (b) { if (b.dataset.h) b.style.height = b.dataset.h; });
+  }
+  if (window.matchMedia) {
+    var mq = window.matchMedia("print");
+    if (mq.addEventListener) mq.addEventListener("change", function (m) { if (m.matches) expandAll(); });
+    else if (mq.addListener) mq.addListener(function (m) { if (m.matches) expandAll(); });
+  }
+  document.addEventListener("beforeprint", expandAll);
+
+  /* 论文页：引用复制（BibTeX / APA） */
+  var cd = document.getElementById("cite-json");
+  if (cd) {
+    var data = {};
+    try { data = JSON.parse(cd.textContent); } catch (e) {}
+    function copyText(txt, ok) {
+      function fallback() {
+        var ta = document.createElement("textarea");
+        ta.value = txt; document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); } catch (e) {}
+        document.body.removeChild(ta); ok();
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, fallback);
+      else fallback();
+    }
+    [].slice.call(document.querySelectorAll("[data-cite]")).forEach(function (b) {
+      b.addEventListener("click", function () {
+        var k = b.getAttribute("data-cite");
+        if (!data[k]) return;
+        var old = b.textContent;
+        copyText(data[k], function () {
+          b.textContent = "✓ 已复制";
+          b.classList.add("ok");
+          setTimeout(function () { b.textContent = old; b.classList.remove("ok"); }, 1600);
+        });
+      });
+    });
+  }
+
+  /* index：分类筛选 + 关键词检索 */
+  var bar = document.getElementById("fltbar");
+  if (bar) {
+    var cards = [].slice.call(document.querySelectorAll(".wrap > .paper"));
+    var chips = [].slice.call(bar.querySelectorAll(".chip"));
+    var q = document.getElementById("q");
+    var stat = document.getElementById("fltstat");
+    var none = document.getElementById("fltnone");
+    var cat = "*", query = "";
+    function cardText(c) {
+      var parts = c.querySelectorAll(".idx, h3, .en, p");
+      var s = "";
+      [].slice.call(parts).forEach(function (el) { s += " " + (el.textContent || ""); });
+      return s.toLowerCase();
+    }
+    function apply() {
+      var shown = 0;
+      cards.forEach(function (c) {
+        var okc = (cat === "*" || c.getAttribute("data-cat") === cat);
+        var okq = true;
+        if (query) okq = cardText(c).indexOf(query) !== -1;
+        var show = okc && okq;
+        c.style.display = show ? "" : "none";
+        if (show) shown++;
+      });
+      if (stat) stat.textContent = "SHOWING " + shown + " / " + cards.length;
+      if (none) none.hidden = shown !== 0;
+    }
+    chips.forEach(function (ch) {
+      ch.addEventListener("click", function () {
+        cat = ch.getAttribute("data-cat") || "*";
+        chips.forEach(function (x) { x.classList.toggle("on", x === ch); });
+        apply();
+      });
+    });
+    if (q) q.addEventListener("input", function () { query = q.value.trim().toLowerCase(); apply(); });
+    apply();
+  }
+})();
+</script>
 
 </body>
 </html>

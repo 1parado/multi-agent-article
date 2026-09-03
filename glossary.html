@@ -3,49 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Multi-Agent Paper Digest 2026">
+<meta property="og:title" content="术语表 · Multi-Agent 论文中文导读">
+<meta property="og:description" content="读 multi-agent / harness 论文前可查的 30 个术语：框架、编排、路由、验证、安全、训练与度量。">
+<title>术语表 · Multi-Agent 论文中文导读</title>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<meta property="og:type" content="article">
-<meta property="og:site_name" content="Multi-Agent Paper Digest 2026">
-<meta property="og:title" content="MAS²：自生成、自配置、自纠偏的多智能体系统">
-<meta property="og:description" content="用 generator–implementer–rectifier 三元 meta-agent 递归定制目标 MAS 并在运行中纠偏；相对 SOTA 最高约 +19.6%。">
-<meta property="og:url" content="https://1parado.github.io/multi-agent-article/2509.24323_MAS2_%E4%B8%AD%E6%96%87%E7%89%88.html">
-<meta property="og:image" content="https://1parado.github.io/multi-agent-article/hero.svg">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="MAS²：自生成、自配置、自纠偏的多智能体系统">
-<meta name="twitter:description" content="用 generator–implementer–rectifier 三元 meta-agent 递归定制目标 MAS 并在运行中纠偏；相对 SOTA 最高约 +19.6%。">
-<meta name="description" content="用 generator–implementer–rectifier 三元 meta-agent 递归定制目标 MAS 并在运行中纠偏；相对 SOTA 最高约 +19.6%。">
-
-<title>MAS²: Self-Generative Multi-Agent Systems（中文版）</title>
 <style>
   :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
   * { box-sizing:border-box; }
   body { font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fff; margin:0; line-height:2.0; font-size:15.5px; }
   .wrap { max-width:780px; margin:0 auto; padding:72px 24px 90px; }
   .eyebrow { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:12px; letter-spacing:3px; }
-  h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:28px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
+  h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:29px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
   .zh { font-size:19px; font-weight:700; margin-bottom:10px; }
   .meta { color:var(--soft); font-size:13.5px; margin:0 0 14px; }
   .links a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; margin-right:18px; }
   .links a:hover { text-decoration:underline; }
-  .tldr { font-size:16.5px; margin:34px 0 0; padding-bottom:34px; border-bottom:1px solid var(--line); }
-  .tldr b { color:var(--red); }
   h2 { font-size:21px; font-weight:800; margin:56px 0 0; }
   .hline { width:42px; height:3px; background:var(--red); border-radius:2px; margin:8px 0 24px; }
-  p { color:var(--gray); margin:0 0 14px; }
-  ul { color:var(--gray); padding-left:22px; margin:0 0 14px; }
-  li { margin:8px 0; }
-  .contrib { margin:0 0 26px; }
-  .contrib h3 { font-size:16px; margin:0 0 6px; }
-  .contrib h3 .no { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:13px; margin-right:10px; }
-  .contrib h3 .core { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:11px; letter-spacing:1.5px; border:1px solid var(--red); border-radius:99px; padding:1px 8px; margin-left:10px; vertical-align:2px; font-weight:600; }
-  .contrib p { margin:0; }
-  .nav { margin-top:56px; padding-top:24px; border-top:1px solid var(--line); display:flex; justify-content:space-between; font-size:14px; }
-  .nav a { color:var(--red); text-decoration:none; font-weight:600; }
-  footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:50px; font-family:"IBM Plex Mono",Consolas,monospace; }
+  .intro { color:var(--gray); font-size:15px; margin:0 0 4px; }
+  .term { border-left:2px solid var(--line); padding:6px 0 6px 18px; margin:26px 0; transition:border-color .25s; }
+  .term:hover { border-color:var(--red); }
+  .termh { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:4px; }
+  .tt { font-family:"IBM Plex Mono",Consolas,monospace; font-size:16px; font-weight:600; color:var(--ink); letter-spacing:.3px; }
+  .tzh { font-size:13px; color:var(--soft); letter-spacing:1px; }
+  .term p { margin:0; color:var(--gray); font-size:14.5px; }
+  .term p b { color:var(--red); font-weight:600; }
+  .nav { display:flex; justify-content:space-between; margin-top:64px; padding-top:22px; border-top:1px solid var(--line); }
+  .nav a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; }
+  footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:34px; font-family:"IBM Plex Mono",Consolas,monospace; }
+  footer a { color:var(--soft); text-decoration:none; }
+  footer a:hover { color:var(--red); text-decoration:underline; }
+  @media (max-width:640px) { body { font-size:15px; line-height:1.9; } .wrap { padding:48px 18px 72px; } h1 { font-size:24px; } h2 { font-size:19px; margin-top:44px; } .term { padding-left:12px; } }
 </style>
 <style>
   /* ---- heading TOC widget (spec: AGENT.md) ---- */
@@ -62,16 +54,10 @@
   /* ---- v2 enhancements (spec: AGENT.md) ---- */
   #pbar { position:fixed; top:0; left:0; height:3px; width:0; background:var(--red); z-index:1200; }
   .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--cat,var(--red)); margin-right:8px; vertical-align:1px; }
-  .eyebrow { color:var(--cat,var(--red)); }
   #toc-panel a.active { color:var(--red); background:#f6f5f3; font-weight:600; }
-  .bar { transition:height .9s cubic-bezier(.22,.7,.3,1); }
-  .barwrap:hover .bar { filter:brightness(1.1); }
   .reveal { opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease; }
   .reveal.in { opacity:1; transform:none; }
-  @media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } .bar { transition:none; } }
-  .wrap { position:relative; }
-  .wm { position:absolute; top:56px; right:20px; font-family:"IBM Plex Mono",Consolas,monospace; font-size:58px; font-weight:700; letter-spacing:1px; color:var(--red); opacity:.06; user-select:none; pointer-events:none; white-space:nowrap; }
-  @media (max-width:700px) { .wm { display:none; } }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } }
 </style>
 <style>
   /* ---- v3 enhancements (spec: AGENT.md) ---- */
@@ -87,133 +73,80 @@
   .ghlink { color:inherit; text-decoration:none; }
   .ghlink:hover { color:var(--red); }
   .ghlink svg { vertical-align:-2px; margin-right:5px; }
-  table.cmp td { transition:background .2s ease; }
-  table.cmp tr:nth-child(odd) td { background:#faf9f7; }
-  table.cmp tr:hover td { background:#f3efe9; }
-  table.cmp td:first-child b { color:var(--red); }
-  table.cmp td:first-child { font-family:"IBM Plex Mono",Consolas,monospace; font-size:13px; letter-spacing:.3px; }
-  @media (max-width:640px) {
-    body { font-size:15px; line-height:1.9; }
-    .wrap { padding:48px 18px 72px; }
-    h1 { font-size:24px; }
-    h2 { font-size:19px; margin-top:44px; }
-    .zh, .sub { font-size:17px; }
-    .chart { gap:20px; }
-    .bars { height:160px; }
-    #toc-btn, #totop { right:12px; }
-    #toc-panel { right:12px; max-width:78vw; }
-    .hlink { display:none; }
-    .hero { padding:12px 4px 4px; }
-    .paper { padding-left:12px; margin-left:-12px; padding-right:8px; }
-  }
+  @media (max-width:640px) { #toc-btn, #totop { right:12px; } #toc-panel { right:12px; max-width:78vw; } .hlink { display:none; } }
 </style>
 <style>
-  /* ---- v4 enhancements (spec: AGENT.md): print / focus / cite / filter / footlinks / gloss ---- */
+  /* ---- v4 enhancements (spec: AGENT.md) ---- */
   a:focus-visible, button:focus-visible, input:focus-visible { outline:2px solid var(--red); outline-offset:2px; }
   .gloss { color:inherit; text-decoration:underline; text-decoration-style:dotted; text-decoration-color:var(--sage); text-underline-offset:4px; cursor:help; }
   .gloss:hover { color:var(--red); text-decoration-color:var(--red); }
-  .citebar { display:flex; align-items:center; gap:10px; margin:0 0 2px; flex-wrap:wrap; }
-  .citecap { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:var(--soft); }
-  .citebtn { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11.5px; letter-spacing:1px; color:var(--red); background:none; border:1px solid var(--line); border-radius:99px; padding:3px 12px; cursor:pointer; transition:border-color .2s, background .2s, color .2s; }
-  .citebtn:hover { border-color:var(--red); background:#fbf7f4; }
-  .citebtn.ok { color:#fff; background:var(--red); border-color:var(--red); }
-  footer a { color:var(--soft); text-decoration:none; }
-  footer a:hover { color:var(--red); text-decoration:underline; }
-  .sitefoot { text-align:center; color:var(--soft); font-size:12.5px; margin-top:70px; font-family:"IBM Plex Mono",Consolas,monospace; }
-  .sitefoot .fl1 { margin-bottom:10px; letter-spacing:1px; }
-  .sitefoot .fl1 .ghlink { color:inherit; }
-  .sitefoot .fl1 .ghlink:hover { color:var(--red); }
-  .sitefoot .fl2 { font-size:11.5px; letter-spacing:1.5px; }
-  .sitefoot .fl2 a { color:var(--soft); text-decoration:none; margin:0 8px; }
-  .sitefoot .fl2 a:hover { color:var(--red); text-decoration:underline; }
-  .fltbar { display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; margin:2px 0 30px; }
-  .flt { display:flex; flex-wrap:wrap; gap:8px; }
-  .chip { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.2px; color:var(--gray); background:#fff; border:1px solid var(--line); border-radius:99px; padding:4px 12px; cursor:pointer; transition:color .2s, border-color .2s, box-shadow .2s, background .2s; }
-  .chip .dot { width:6px; height:6px; margin-right:7px; vertical-align:1px; }
-  .chip:hover { color:var(--ink); border-color:var(--cat,var(--red)); }
-  .chip.on { color:var(--cat,var(--red)); border-color:var(--cat,var(--red)); box-shadow:0 0 0 1px var(--cat,var(--red)) inset; background:#fdfaf7; }
-  .q { flex:1 1 200px; min-width:170px; font:14px -apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fdfcfb; border:1px solid var(--line); border-radius:8px; padding:7px 12px; }
-  .q:focus { outline:none; border-color:var(--red); background:#fff; }
-  .q::-webkit-search-cancel-button { -webkit-appearance:none; }
-  .fltstat { width:100%; font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; color:var(--soft); }
-  .fltnone { font-size:14px; color:var(--gray); }
-  @media (max-width:640px) { .citecap { display:none; } .fltbar { gap:8px; } }
   @media print {
-    #pbar, #toc-btn, #toc-panel, #totop, .wm, .hlink, #fltbar, .fltnone, .fltstat, #q { display:none !important; }
+    #pbar, #toc-btn, #toc-panel, #totop, .wm, .hlink { display:none !important; }
     .reveal { opacity:1 !important; transform:none !important; }
     body { font-size:12px; line-height:1.7; }
     .wrap { padding-top:24px; }
     h2 { page-break-after:avoid; }
-    .contrib, .chart, table.cmp, .paper, .trend, .term { page-break-inside:avoid; }
-    .bar, .bar.red, .bar.sage, .dot { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+    .term { page-break-inside:avoid; }
+    .tt, .tzh, .secno { color:#000 !important; }
   }
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="wm">arXiv 2509.24323</div>
 
-<div class="eyebrow" style="--cat:#A34A7D"><span class="dot"></span>MULTI-AGENT · SELF-GENERATIVE</div>
-<h1>MAS²: Self-Generative Multi-Agent Systems</h1>
-<div class="zh">自生成、自配置、自纠偏的多智能体系统</div>
-<div class="meta">arXiv 2509.24323 · ICLR 2026 Poster · NTU / ZJU / NUS 等</div>
-<div class="links">
-  <a href="https://arxiv.org/abs/2509.24323">arXiv</a><a class="ghlink" href="https://github.com/1parado/multi-agent-article" target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>GitHub</a>
-  <a href="https://arxiv.org/pdf/2509.24323.pdf">PDF</a>
-  <a href="https://github.com/yeyeyeah2/MAS2">Code</a>
-</div>
+<div class="eyebrow"><span class="dot"></span>GLOSSARY · 术语表</div>
+<h1>Multi-Agent 术语表</h1>
+<div class="zh">读论文前可查的 30 个词</div>
+<p class="intro">各论文页里带 <span class="gloss">点状下划线</span> 的词都可以点到这里。按主题分组，中文释义尽量一句话说清「它解决什么、为什么重要」。</p>
 
-<div class="citebar"><span class="citecap">CITE</span><button type="button" class="citebtn" data-cite="bib">BibTeX</button><button type="button" class="citebtn" data-cite="apa">APA</button></div>
-<script type="application/json" id="cite-json">{"bib": "@misc{mas2,\n  title         = {Self-Generative Multi-Agent Systems},\n  author        = {NTU / ZJU / NUS 等（作者详见 arXiv）},\n  year          = {2025},\n  eprint        = {2509.24323},\n  archiveprefix = {arXiv},\n  url           = {https://arxiv.org/abs/2509.24323},\n  note          = {ICLR 2026 Poster，中文编译见 multi-agent-article},\n}", "apa": "MAS² (2025). Self-Generative Multi-Agent Systems. arXiv:2509.24323. https://arxiv.org/abs/2509.24323"}</script>
-
-<div class="tldr">
-  <b>一句话</b>：多数自动 MAS 仍是「生成一次就部署」，面对动态环境易崩。MAS² 用 <b>generator–implementer–rectifier</b> 三元 meta-agent 递归地为任务定制<a class="gloss" href="glossary.html#mas">多智能体系统</a>，并在运行中纠偏；七项基准上相对 <a class="gloss" href="glossary.html#sota">SOTA</a> 最高约 <b>+19.6%</b>，且处在成本–性能 <a class="gloss" href="glossary.html#pareto">Pareto</a> 前沿。
-</div>
-
-<h2>要解决什么问题</h2>
+<h2>基础与训练</h2>
 <div class="hline"></div>
-<p>MAS 设计经历了手工配置 → 部分自动化（拓扑/路由）→ 全自动生成。近期基于 LLM 自身生成 MAS 的工作（如 MAS-GPT、ScoreFlow、FlowReasoner）仍多采用「generate-once-and-deploy」：为任务实例化一次系统后固定执行，无法应对工具崩溃、网络失败、中间结果错误等真实动态。</p>
-<p>外部优化模块（贝叶斯、MCTS、GNN）又受限于预定义算子搜索空间，架构创新有限。需要一种能在运行中持续生成、配置并修正目标 MAS 的范式。</p>
+<div class="term" id="llm"><div class="termh"><span class="tt">LLM</span><span class="tzh">大语言模型</span></div><p>Large Language Model，以自回归方式预测文本的大规模神经网络，是 agent 的「大脑」；本系列多篇论文把它当作可冻结、可外包的外围能力。</p></div>
+<div class="term" id="mllm"><div class="termh"><span class="tt">MLLM</span><span class="tzh">多模态大语言模型</span></div><p>Multimodal LLM，能同时处理文本与图像（乃至音频）输入的大模型；其感知能力常依赖外围工具补强（见 MUSE）。</p></div>
+<div class="term" id="token"><div class="termh"><span class="tt">token</span><span class="tzh">词元</span></div><p>模型处理文本的最小单位，约为词或子词；「token 成本」指一次任务消耗的输入输出词元总量，是 agent 方案的重要开销指标。</p></div>
+<div class="term" id="sft"><div class="termh"><span class="tt">SFT</span><span class="tzh">监督微调</span></div><p>Supervised Fine-Tuning，用标注好的输入-期望输出对继续训练模型，使其学会某种技能（如工具调用）；是让通用模型变专用的最直接手段。</p></div>
+<div class="term" id="grpo"><div class="termh"><span class="tt">GRPO</span><span class="tzh">组相对策略优化</span></div><p>一种强化学习后训练方法：对同一问题采样一组输出，用组内相对优势更新策略，比逐样本 critic 更省算力；MoRe 用它探索「角色协同」策略。</p></div>
+<div class="term" id="moe"><div class="termh"><span class="tt">MoE</span><span class="tzh">混合专家</span></div><p>Mixture-of-Experts，模型内含多个「专家」子网络、由路由器按输入挑选激活，用更少算力获得更大容量；与 MoRe 的「角色混合」思路同源但作用层不同。</p></div>
+<div class="term" id="benchmark"><div class="termh"><span class="tt">benchmark</span><span class="tzh">基准 / 评测集</span></div><p>用于公平比较不同系统能力的标准化任务集与指标，如 MMLU、ToolBench、TerminalBench；选对基准与读懂指标是评估 agent 的关键。</p></div>
+<div class="term" id="sota"><div class="termh"><span class="tt">SOTA</span><span class="tzh">当前最优</span></div><p>State-of-the-Art，指在某个基准上当前公开可比的最高水平，常作为论文「我们比 SOTA 高 X%」的对照锚点。</p></div>
 
-<h2>创新点</h2>
+<h2>多智能体与编排</h2>
 <div class="hline"></div>
-<div class="contrib">
-  <h3><span class="no">01</span>MAS² 范式：用 MAS 生成 MAS<span class="core">CORE</span></h3>
-  <p>递归自生成：一个 meta 级多智能体团队，为不同问题自主设计专用多智能体系统，突破「一次生成、终身部署」的刚性。</p>
-</div>
-<div class="contrib">
-  <h3><span class="no">02</span>Generator–Implementer–Rectifier 三元组</h3>
-  <p><b>Generator</b> 产出高层工作流模板；<b>Implementer</b> 为每步填入具体 LLM 骨干与配置；<b>Rectifier</b> 监控执行与环境反馈，实时纠偏。三者分工明确、可分别特化。</p>
-</div>
-<div class="contrib">
-  <h3><span class="no">03</span>Collaborative Tree Optimization (CTO)</h3>
-  <p>三 agent 协作扩展决策树（多种 MAS 配置与执行路径），终端环境反馈经路径信用传播回传到各角色，得到角色特异偏好数据，再用相对奖励对齐算法分别训练。</p>
-</div>
+<div class="term" id="agent"><div class="termh"><span class="tt">agent</span><span class="tzh">智能体</span></div><p>能感知环境、调用工具、自主规划并执行多步任务的 LLM 程序单元；多篇论文把「选 agent、配 agent、验证 agent」视为系统设计对象。</p></div>
+<div class="term" id="mas"><div class="termh"><span class="tt">MAS</span><span class="tzh">多智能体系统</span></div><p>Multi-Agent System，多个分工或竞争的 agent 通过协作完成单个 agent 难以胜任的任务；其核心设计问题是任务拆分、角色分工与结果合并。</p></div>
+<div class="term" id="framework"><div class="termh"><span class="tt">framework</span><span class="tzh">框架</span></div><p>组织多个 LLM agent 协作的结构化方案：决定怎么拆任务、怎么并行/串行、怎么传递中间结果（如 AutoGen、LangGraph 一类思路）。</p></div>
+<div class="term" id="orchestration"><div class="termh"><span class="tt">orchestration</span><span class="tzh">编排</span></div><p>对 agent 协作过程的统筹调度——谁先做、谁等谁、失败怎么办。本系列核心论点之一：模型趋同后，「编排结构」本身成为性能主战场。</p></div>
+<div class="term" id="dag"><div class="termh"><span class="tt">DAG</span><span class="tzh">有向无环图</span></div><p>Directed Acyclic Graph，用「节点=子任务、边=依赖」描述可并行分解的任务结构；无环保证拓扑顺序可执行，是任务拆分与并行的标准建模。</p></div>
+<div class="term" id="planner"><div class="termh"><span class="tt">planner</span><span class="tzh">规划器</span></div><p>负责把大目标拆成子步骤、决定执行顺序的模块（常由 LLM 承担）；与执行器解耦后，规划可被独立检验与重试。</p></div>
+<div class="term" id="router"><div class="termh"><span class="tt">router</span><span class="tzh">路由器</span></div><p>按查询/状态把请求分派给合适执行者的模块——可路由到不同角色、不同模型或不同工具；路由策略好坏直接决定资源效率与效果。</p></div>
+<div class="term" id="verifier"><div class="termh"><span class="tt">verifier</span><span class="tzh">验证器 / 检查员</span></div><p>独立于生成者的评估模块，用「模型外的信号」判定结果是否合格（完整性、正确性、约束满足）。把验证与生成解耦，是多数论文确认的最有价值组件。</p></div>
+<div class="term" id="harness"><div class="termh"><span class="tt">harness</span><span class="tzh">模型外围执行系统</span></div><p>包裹在模型外围、控制「每步看到什么、能用什么工具、何时验证、何时停止」的执行系统；同一模型换 harness 可拉开数倍性能差距。</p></div>
 
-<h2>关键结果</h2>
+<h2>路由、学习与效率</h2>
 <div class="hline"></div>
-<p>在多跳检索（HotpotQA 等）、代码（HumanEval）、数学（MATH）等七项基准上对比手工 MAS（DyLAN、MedPrompt、LLM-Debate 等）与自动 MAS（ScoreFlow、MaAS、AFlow 等）：</p>
-<ul>
-  <li>复杂场景（深度研究、代码生成）相对 SOTA 最高约 <b>+19.6%</b>；HotpotQA 89.3%（相对 DyLAN +8.5%）；HumanEval 97.0%（相对 AFlow +4.1%）。</li>
-  <li>跨骨干泛化：换用未见过的 LLM 仍可带来最高约 <b>+15.1%</b> 提升。</li>
-  <li>成本–性能上处于 Pareto 前沿，并非单纯堆 token。</li>
-</ul>
+<div class="term" id="model-routing"><div class="termh"><span class="tt">model routing</span><span class="tzh">模型路由</span></div><p>按任务难度/类型把请求动态分派给不同规模模型，让简单问题走小模型、难问题走大模型，以成本换质量；进阶做法是把置信度纳入路由决策。</p></div>
+<div class="term" id="confidence"><div class="termh"><span class="tt">confidence</span><span class="tzh">置信度</span></div><p>模型对自身输出可靠程度的一种估计（如 softmax 概率、自一致率）。校准后的置信度可作为路由、验证、停止决策的权重信号。</p></div>
+<div class="term" id="calibration"><div class="termh"><span class="tt">calibration</span><span class="tzh">校准</span></div><p>让「模型说 80% 可信」的样本真的约 80% 正确的过程；未校准的置信度会误导路由与验证，因此校准是置信感知系统的前置条件。</p></div>
+<div class="term" id="codebook"><div class="termh"><span class="tt">codebook</span><span class="tzh">角色码本</span></div><p>一组可学习、可组合的向量集合，每个向量代表一种潜在「角色/技能」；MoRe 用码本把多角色特化压缩进单次前向推理。</p></div>
+<div class="term" id="steering"><div class="termh"><span class="tt">activation steering</span><span class="tzh">激活引导</span></div><p>在模型中间层表示上叠加特定方向向量（steering vector），从而在不改权重的情况下引导输出风格或能力；特化发生在激活空间而非文本空间。</p></div>
+<div class="term" id="scaling-law"><div class="termh"><span class="tt">scaling law</span><span class="tzh">缩放定律</span></div><p>刻画「算力/数据/参数 → 性能」定量关系的经验规律；AdaptOrch 把类似分析用于「编排拓扑」，得到「模型趋同时拓扑主导」的 Ω(1/ε²) 界。</p></div>
+<div class="term" id="pareto"><div class="termh"><span class="tt">Pareto frontier</span><span class="tzh">帕累托前沿</span></div><p>多个目标（如性能与成本）无法同时最优时的折中边界；处在前沿意味着「想再提一点质量，就必须付出更多成本」——评估系统性价比的标准视角。</p></div>
 
-<h2>局限</h2>
+<h2>在线决策与理论保证</h2>
 <div class="hline"></div>
-<ul>
-  <li>Meta-agent 本身的训练与搜索仍有计算开销；极短任务上可能「杀鸡用牛刀」。</li>
-  <li>纠偏依赖可观测的执行反馈；黑盒工具或延迟反馈场景下效果受限。</li>
-  <li>决策树扩展与信用分配的设计选择对最终性能敏感，迁移到全新领域需重新校准。</li>
-</ul>
+<div class="term" id="bandit"><div class="termh"><span class="tt">bandit</span><span class="tzh">多臂老虎机</span></div><p>序贯决策问题：每次从若干「臂」（选项）中选一个并观察奖励，目标是总奖励最大——需要在「探索未知选项」与「利用已知最优」间权衡。agent 路由常建模为此类问题。</p></div>
+<div class="term" id="linucb"><div class="termh"><span class="tt">LinUCB</span><span class="tzh">线性上置信界算法</span></div><p>用特征线性模型估计每个臂的期望奖励并加上置信上界做选择的标准 bandit 算法；Symphony-Coord 用它按「任务+agent 状态」动态路由。</p></div>
+<div class="term" id="regret"><div class="termh"><span class="tt">regret</span><span class="tzh">遗憾界</span></div><p>衡量在线决策算法好坏的累积指标：与「总是选最优臂」的理想收益之差。次线性 regret 意味着随轮数增长，平均损失趋近于零——即算法「学会」了。</p></div>
 
-<div class="nav">
-  <a href="2609.00595_SoK_中文版.html">← 上一篇：SoK</a>
-  <a href="index.html">目录</a>
-  <a href="2601.04861_OI-MAS_中文版.html">下一篇：OI-MAS →</a>
-</div>
-<footer>MAS² · arXiv 2509.24323 · ICLR 2026
-  <a href="glossary.html">术语表</a> · <a href="about.html">关于</a></footer>
+<h2>安全、工具与接口</h2>
+<div class="hline"></div>
+<div class="term" id="prompt-injection"><div class="termh"><span class="tt">prompt injection</span><span class="tzh">提示注入</span></div><p>攻击者把恶意指令混入模型将处理的文本（网页、邮件、工具输出），诱导模型执行非预期操作；是 LLM 应用最典型的安全威胁之一。</p></div>
+<div class="term" id="asr"><div class="termh"><span class="tt">ASR</span><span class="tzh">攻击成功率</span></div><p>Attack Success Rate，攻击生效（如注入成功、越狱成功）的样本比例；越低代表系统对该类攻击越有抵抗力。</p></div>
+<div class="term" id="schema"><div class="termh"><span class="tt">schema</span><span class="tzh">接口描述</span></div><p>对工具/API 输入输出结构的形式化描述（参数名、类型、约束）；传统工具调用要求模型严格按 schema 生成，是脆弱性的主要来源之一。</p></div>
+<div class="term" id="semantic-search"><div class="termh"><span class="tt">semantic search</span><span class="tzh">语义检索</span></div><p>用向量相似度而非关键字匹配来查找相关内容（如从数万工具描述中按语义找相关函数）；是让「大工具目录」可用的关键工程手段。</p></div>
+
+<div class="nav"><a href="index.html">← 返回目录</a><a href="about.html">关于本站</a></div>
+<footer><a href="index.html">Multi-Agent Paper Digest 2026</a> · <a href="about.html">关于</a> · <a href="https://github.com/1parado/multi-agent-article">GitHub</a></footer>
 </div>
 <script>
 /* ---- page enhancements v3 (spec: AGENT.md): TOC + scroll-spy + progress + reveal + bars + anchors + totop + kbd ---- */
@@ -329,7 +262,7 @@
 
   /* reveal on scroll + bar growth animation */
   if (!reduced && "IntersectionObserver" in window) {
-    var targets = [].slice.call(document.querySelectorAll(".wrap h2, .hline, .contrib, .chart, .paper, .trend, table.cmp, .tldr"));
+    var targets = [].slice.call(document.querySelectorAll(".wrap h2, .hline, .contrib, .chart, .paper, .trend, table.cmp, .tldr, .term"));
     var bars = [].slice.call(document.querySelectorAll(".bar"));
     bars.forEach(function (b) { b.dataset.h = b.style.height; b.style.height = "0%"; });
     var io = new IntersectionObserver(function (entries) {

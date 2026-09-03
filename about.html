@@ -3,49 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Multi-Agent Paper Digest 2026">
+<meta property="og:title" content="关于 · Multi-Agent 论文中文导读">
+<meta property="og:description" content="一个个人维护的 multi-agent 论文中文编译站：收录标准、阅读指南、维护者与反馈途径。">
+<title>关于 · Multi-Agent 论文中文导读</title>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<meta property="og:type" content="article">
-<meta property="og:site_name" content="Multi-Agent Paper Digest 2026">
-<meta property="og:title" content="MAS²：自生成、自配置、自纠偏的多智能体系统">
-<meta property="og:description" content="用 generator–implementer–rectifier 三元 meta-agent 递归定制目标 MAS 并在运行中纠偏；相对 SOTA 最高约 +19.6%。">
-<meta property="og:url" content="https://1parado.github.io/multi-agent-article/2509.24323_MAS2_%E4%B8%AD%E6%96%87%E7%89%88.html">
-<meta property="og:image" content="https://1parado.github.io/multi-agent-article/hero.svg">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="MAS²：自生成、自配置、自纠偏的多智能体系统">
-<meta name="twitter:description" content="用 generator–implementer–rectifier 三元 meta-agent 递归定制目标 MAS 并在运行中纠偏；相对 SOTA 最高约 +19.6%。">
-<meta name="description" content="用 generator–implementer–rectifier 三元 meta-agent 递归定制目标 MAS 并在运行中纠偏；相对 SOTA 最高约 +19.6%。">
-
-<title>MAS²: Self-Generative Multi-Agent Systems（中文版）</title>
 <style>
   :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
   * { box-sizing:border-box; }
   body { font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fff; margin:0; line-height:2.0; font-size:15.5px; }
   .wrap { max-width:780px; margin:0 auto; padding:72px 24px 90px; }
   .eyebrow { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:12px; letter-spacing:3px; }
-  h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:28px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
+  h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:29px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
   .zh { font-size:19px; font-weight:700; margin-bottom:10px; }
   .meta { color:var(--soft); font-size:13.5px; margin:0 0 14px; }
   .links a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; margin-right:18px; }
   .links a:hover { text-decoration:underline; }
-  .tldr { font-size:16.5px; margin:34px 0 0; padding-bottom:34px; border-bottom:1px solid var(--line); }
-  .tldr b { color:var(--red); }
   h2 { font-size:21px; font-weight:800; margin:56px 0 0; }
   .hline { width:42px; height:3px; background:var(--red); border-radius:2px; margin:8px 0 24px; }
   p { color:var(--gray); margin:0 0 14px; }
+  p b { color:var(--ink); }
   ul { color:var(--gray); padding-left:22px; margin:0 0 14px; }
   li { margin:8px 0; }
-  .contrib { margin:0 0 26px; }
-  .contrib h3 { font-size:16px; margin:0 0 6px; }
-  .contrib h3 .no { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:13px; margin-right:10px; }
-  .contrib h3 .core { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:11px; letter-spacing:1.5px; border:1px solid var(--red); border-radius:99px; padding:1px 8px; margin-left:10px; vertical-align:2px; font-weight:600; }
-  .contrib p { margin:0; }
-  .nav { margin-top:56px; padding-top:24px; border-top:1px solid var(--line); display:flex; justify-content:space-between; font-size:14px; }
-  .nav a { color:var(--red); text-decoration:none; font-weight:600; }
-  footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:50px; font-family:"IBM Plex Mono",Consolas,monospace; }
+  li b { color:var(--ink); }
+  a { color:var(--red); }
+  .note { background:#fbf7f4; border:1px solid var(--line); border-left:3px solid var(--red); border-radius:0 8px 8px 0; padding:10px 16px; font-size:14px; color:var(--gray); margin:6px 0 18px; }
+  .upd { font-family:"IBM Plex Mono",Consolas,monospace; font-size:12.5px; }
+  .upd td { padding:3px 0; color:var(--gray); }
+  .upd td:first-child { color:var(--red); padding-right:18px; letter-spacing:1px; }
+  .nav { display:flex; justify-content:space-between; margin-top:64px; padding-top:22px; border-top:1px solid var(--line); }
+  .nav a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; }
+  footer { text-align:center; color:var(--soft); font-size:12.5px; margin-top:34px; font-family:"IBM Plex Mono",Consolas,monospace; }
+  footer a { color:var(--soft); text-decoration:none; }
+  footer a:hover { color:var(--red); text-decoration:underline; }
+  .ghlink { color:inherit; text-decoration:none; }
+  .ghlink:hover { color:var(--red); }
+  .ghlink svg { vertical-align:-2px; margin-right:5px; }
+  @media (max-width:640px) { body { font-size:15px; line-height:1.9; } .wrap { padding:48px 18px 72px; } h1 { font-size:24px; } h2 { font-size:19px; margin-top:44px; } }
 </style>
 <style>
   /* ---- heading TOC widget (spec: AGENT.md) ---- */
@@ -62,16 +59,10 @@
   /* ---- v2 enhancements (spec: AGENT.md) ---- */
   #pbar { position:fixed; top:0; left:0; height:3px; width:0; background:var(--red); z-index:1200; }
   .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--cat,var(--red)); margin-right:8px; vertical-align:1px; }
-  .eyebrow { color:var(--cat,var(--red)); }
   #toc-panel a.active { color:var(--red); background:#f6f5f3; font-weight:600; }
-  .bar { transition:height .9s cubic-bezier(.22,.7,.3,1); }
-  .barwrap:hover .bar { filter:brightness(1.1); }
   .reveal { opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease; }
   .reveal.in { opacity:1; transform:none; }
-  @media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } .bar { transition:none; } }
-  .wrap { position:relative; }
-  .wm { position:absolute; top:56px; right:20px; font-family:"IBM Plex Mono",Consolas,monospace; font-size:58px; font-weight:700; letter-spacing:1px; color:var(--red); opacity:.06; user-select:none; pointer-events:none; white-space:nowrap; }
-  @media (max-width:700px) { .wm { display:none; } }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } }
 </style>
 <style>
   /* ---- v3 enhancements (spec: AGENT.md) ---- */
@@ -84,136 +75,64 @@
   .hlink { position:absolute; left:-20px; top:50%; transform:translateY(-50%); color:var(--red); opacity:0; text-decoration:none; font-family:"IBM Plex Mono",Consolas,monospace; font-size:16px; font-weight:600; transition:opacity .2s; }
   h2:hover .hlink { opacity:.55; }
   .hlink:hover { opacity:1; }
-  .ghlink { color:inherit; text-decoration:none; }
-  .ghlink:hover { color:var(--red); }
-  .ghlink svg { vertical-align:-2px; margin-right:5px; }
-  table.cmp td { transition:background .2s ease; }
-  table.cmp tr:nth-child(odd) td { background:#faf9f7; }
-  table.cmp tr:hover td { background:#f3efe9; }
-  table.cmp td:first-child b { color:var(--red); }
-  table.cmp td:first-child { font-family:"IBM Plex Mono",Consolas,monospace; font-size:13px; letter-spacing:.3px; }
-  @media (max-width:640px) {
-    body { font-size:15px; line-height:1.9; }
-    .wrap { padding:48px 18px 72px; }
-    h1 { font-size:24px; }
-    h2 { font-size:19px; margin-top:44px; }
-    .zh, .sub { font-size:17px; }
-    .chart { gap:20px; }
-    .bars { height:160px; }
-    #toc-btn, #totop { right:12px; }
-    #toc-panel { right:12px; max-width:78vw; }
-    .hlink { display:none; }
-    .hero { padding:12px 4px 4px; }
-    .paper { padding-left:12px; margin-left:-12px; padding-right:8px; }
-  }
+  @media (max-width:640px) { #toc-btn, #totop { right:12px; } #toc-panel { right:12px; max-width:78vw; } .hlink { display:none; } }
 </style>
 <style>
-  /* ---- v4 enhancements (spec: AGENT.md): print / focus / cite / filter / footlinks / gloss ---- */
+  /* ---- v4 enhancements (spec: AGENT.md) ---- */
   a:focus-visible, button:focus-visible, input:focus-visible { outline:2px solid var(--red); outline-offset:2px; }
-  .gloss { color:inherit; text-decoration:underline; text-decoration-style:dotted; text-decoration-color:var(--sage); text-underline-offset:4px; cursor:help; }
-  .gloss:hover { color:var(--red); text-decoration-color:var(--red); }
-  .citebar { display:flex; align-items:center; gap:10px; margin:0 0 2px; flex-wrap:wrap; }
-  .citecap { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:var(--soft); }
-  .citebtn { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11.5px; letter-spacing:1px; color:var(--red); background:none; border:1px solid var(--line); border-radius:99px; padding:3px 12px; cursor:pointer; transition:border-color .2s, background .2s, color .2s; }
-  .citebtn:hover { border-color:var(--red); background:#fbf7f4; }
-  .citebtn.ok { color:#fff; background:var(--red); border-color:var(--red); }
-  footer a { color:var(--soft); text-decoration:none; }
-  footer a:hover { color:var(--red); text-decoration:underline; }
-  .sitefoot { text-align:center; color:var(--soft); font-size:12.5px; margin-top:70px; font-family:"IBM Plex Mono",Consolas,monospace; }
-  .sitefoot .fl1 { margin-bottom:10px; letter-spacing:1px; }
-  .sitefoot .fl1 .ghlink { color:inherit; }
-  .sitefoot .fl1 .ghlink:hover { color:var(--red); }
-  .sitefoot .fl2 { font-size:11.5px; letter-spacing:1.5px; }
-  .sitefoot .fl2 a { color:var(--soft); text-decoration:none; margin:0 8px; }
-  .sitefoot .fl2 a:hover { color:var(--red); text-decoration:underline; }
-  .fltbar { display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; margin:2px 0 30px; }
-  .flt { display:flex; flex-wrap:wrap; gap:8px; }
-  .chip { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.2px; color:var(--gray); background:#fff; border:1px solid var(--line); border-radius:99px; padding:4px 12px; cursor:pointer; transition:color .2s, border-color .2s, box-shadow .2s, background .2s; }
-  .chip .dot { width:6px; height:6px; margin-right:7px; vertical-align:1px; }
-  .chip:hover { color:var(--ink); border-color:var(--cat,var(--red)); }
-  .chip.on { color:var(--cat,var(--red)); border-color:var(--cat,var(--red)); box-shadow:0 0 0 1px var(--cat,var(--red)) inset; background:#fdfaf7; }
-  .q { flex:1 1 200px; min-width:170px; font:14px -apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fdfcfb; border:1px solid var(--line); border-radius:8px; padding:7px 12px; }
-  .q:focus { outline:none; border-color:var(--red); background:#fff; }
-  .q::-webkit-search-cancel-button { -webkit-appearance:none; }
-  .fltstat { width:100%; font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; color:var(--soft); }
-  .fltnone { font-size:14px; color:var(--gray); }
-  @media (max-width:640px) { .citecap { display:none; } .fltbar { gap:8px; } }
   @media print {
-    #pbar, #toc-btn, #toc-panel, #totop, .wm, .hlink, #fltbar, .fltnone, .fltstat, #q { display:none !important; }
+    #pbar, #toc-btn, #toc-panel, #totop, .wm, .hlink { display:none !important; }
     .reveal { opacity:1 !important; transform:none !important; }
     body { font-size:12px; line-height:1.7; }
     .wrap { padding-top:24px; }
     h2 { page-break-after:avoid; }
-    .contrib, .chart, table.cmp, .paper, .trend, .term { page-break-inside:avoid; }
-    .bar, .bar.red, .bar.sage, .dot { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
   }
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="wm">arXiv 2509.24323</div>
 
-<div class="eyebrow" style="--cat:#A34A7D"><span class="dot"></span>MULTI-AGENT · SELF-GENERATIVE</div>
-<h1>MAS²: Self-Generative Multi-Agent Systems</h1>
-<div class="zh">自生成、自配置、自纠偏的多智能体系统</div>
-<div class="meta">arXiv 2509.24323 · ICLR 2026 Poster · NTU / ZJU / NUS 等</div>
-<div class="links">
-  <a href="https://arxiv.org/abs/2509.24323">arXiv</a><a class="ghlink" href="https://github.com/1parado/multi-agent-article" target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>GitHub</a>
-  <a href="https://arxiv.org/pdf/2509.24323.pdf">PDF</a>
-  <a href="https://github.com/yeyeyeah2/MAS2">Code</a>
-</div>
+<div class="eyebrow"><span class="dot"></span>ABOUT · 关于本站</div>
+<h1>About</h1>
+<div class="zh">为什么做这个站、收录什么、如何维护</div>
+<p class="meta">Paradox · 2026-09</p>
+<div class="links"><a href="index.html">目录</a><a href="glossary.html">术语表</a><a class="ghlink" href="https://github.com/1parado/multi-agent-article" target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>GitHub</a></div>
 
-<div class="citebar"><span class="citecap">CITE</span><button type="button" class="citebtn" data-cite="bib">BibTeX</button><button type="button" class="citebtn" data-cite="apa">APA</button></div>
-<script type="application/json" id="cite-json">{"bib": "@misc{mas2,\n  title         = {Self-Generative Multi-Agent Systems},\n  author        = {NTU / ZJU / NUS 等（作者详见 arXiv）},\n  year          = {2025},\n  eprint        = {2509.24323},\n  archiveprefix = {arXiv},\n  url           = {https://arxiv.org/abs/2509.24323},\n  note          = {ICLR 2026 Poster，中文编译见 multi-agent-article},\n}", "apa": "MAS² (2025). Self-Generative Multi-Agent Systems. arXiv:2509.24323. https://arxiv.org/abs/2509.24323"}</script>
-
-<div class="tldr">
-  <b>一句话</b>：多数自动 MAS 仍是「生成一次就部署」，面对动态环境易崩。MAS² 用 <b>generator–implementer–rectifier</b> 三元 meta-agent 递归地为任务定制<a class="gloss" href="glossary.html#mas">多智能体系统</a>，并在运行中纠偏；七项基准上相对 <a class="gloss" href="glossary.html#sota">SOTA</a> 最高约 <b>+19.6%</b>，且处在成本–性能 <a class="gloss" href="glossary.html#pareto">Pareto</a> 前沿。
-</div>
-
-<h2>要解决什么问题</h2>
+<h2>这个站是什么</h2>
 <div class="hline"></div>
-<p>MAS 设计经历了手工配置 → 部分自动化（拓扑/路由）→ 全自动生成。近期基于 LLM 自身生成 MAS 的工作（如 MAS-GPT、ScoreFlow、FlowReasoner）仍多采用「generate-once-and-deploy」：为任务实例化一次系统后固定执行，无法应对工具崩溃、网络失败、中间结果错误等真实动态。</p>
-<p>外部优化模块（贝叶斯、MCTS、GNN）又受限于预定义算子搜索空间，架构创新有限。需要一种能在运行中持续生成、配置并修正目标 MAS 的范式。</p>
+<p>2026 年前后，各家大模型在基准上的差距收窄到 2–5% 的窄带，<b>「模型之外的结构」成为新的性能主战场</b>：怎么把多个 agent 组织起来（framework）、怎么包裹模型控制它的每一步（harness）、怎么让它自生成与自我纠偏、怎么保证多主体交互下的安全。</p>
+<p>本站以「一页读懂一篇」的方式，为 11 篇相关论文提供中文编译页（解决什么问题 → 创新点 → 关键结果 → 局限），并配横向对比表与建议阅读顺序，作为个人学习笔记，也希望能帮同好降低入门门槛。</p>
 
-<h2>创新点</h2>
-<div class="hline"></div>
-<div class="contrib">
-  <h3><span class="no">01</span>MAS² 范式：用 MAS 生成 MAS<span class="core">CORE</span></h3>
-  <p>递归自生成：一个 meta 级多智能体团队，为不同问题自主设计专用多智能体系统，突破「一次生成、终身部署」的刚性。</p>
-</div>
-<div class="contrib">
-  <h3><span class="no">02</span>Generator–Implementer–Rectifier 三元组</h3>
-  <p><b>Generator</b> 产出高层工作流模板；<b>Implementer</b> 为每步填入具体 LLM 骨干与配置；<b>Rectifier</b> 监控执行与环境反馈，实时纠偏。三者分工明确、可分别特化。</p>
-</div>
-<div class="contrib">
-  <h3><span class="no">03</span>Collaborative Tree Optimization (CTO)</h3>
-  <p>三 agent 协作扩展决策树（多种 MAS 配置与执行路径），终端环境反馈经路径信用传播回传到各角色，得到角色特异偏好数据，再用相对奖励对齐算法分别训练。</p>
-</div>
-
-<h2>关键结果</h2>
-<div class="hline"></div>
-<p>在多跳检索（HotpotQA 等）、代码（HumanEval）、数学（MATH）等七项基准上对比手工 MAS（DyLAN、MedPrompt、LLM-Debate 等）与自动 MAS（ScoreFlow、MaAS、AFlow 等）：</p>
-<ul>
-  <li>复杂场景（深度研究、代码生成）相对 SOTA 最高约 <b>+19.6%</b>；HotpotQA 89.3%（相对 DyLAN +8.5%）；HumanEval 97.0%（相对 AFlow +4.1%）。</li>
-  <li>跨骨干泛化：换用未见过的 LLM 仍可带来最高约 <b>+15.1%</b> 提升。</li>
-  <li>成本–性能上处于 Pareto 前沿，并非单纯堆 token。</li>
-</ul>
-
-<h2>局限</h2>
+<h2>收录标准与范围</h2>
 <div class="hline"></div>
 <ul>
-  <li>Meta-agent 本身的训练与搜索仍有计算开销；极短任务上可能「杀鸡用牛刀」。</li>
-  <li>纠偏依赖可观测的执行反馈；黑盒工具或延迟反馈场景下效果受限。</li>
-  <li>决策树扩展与信用分配的设计选择对最终性能敏感，迁移到全新领域需重新校准。</li>
+  <li><b>主题互补</b>：围绕 multi-agent 编排 / agent harness / 自生成 / 安全 / 路由与去中心化协调，避开与已收录篇目高度重复的工作；</li>
+  <li><b>代表性优先</b>：优先收录引发讨论或方法上有原创性的 arXiv 工作（含已中稿会议/研讨会者，如 ICLR 2026）；</li>
+  <li><b>人工核验</b>：每篇的中文页基于 arXiv 摘要与正文撰写，关键数字逐一核对原文后再落笔。</li>
 </ul>
+<p>收录时间范围为 arXiv 2025-09 ～ 2026-09（个别篇目编号早于 2026 但以 2026 年发表/会议版本为准，如 #08 MAS² 为 arXiv 2509、ICLR 2026 Poster）。新增论文会追加到目录末尾并更新本篇的收录时间。</p>
 
-<div class="nav">
-  <a href="2609.00595_SoK_中文版.html">← 上一篇：SoK</a>
-  <a href="index.html">目录</a>
-  <a href="2601.04861_OI-MAS_中文版.html">下一篇：OI-MAS →</a>
-</div>
-<footer>MAS² · arXiv 2509.24323 · ICLR 2026
-  <a href="glossary.html">术语表</a> · <a href="about.html">关于</a></footer>
+<h2>怎么读这个站</h2>
+<div class="hline"></div>
+<p>建议先读 <a href="index.html">目录页</a> 的「建议阅读顺序」，再按兴趣进入单篇；每篇页面右侧 ☰ 可随时查看章节目录，正文中带点状下划线的词可在 <a href="glossary.html">术语表</a> 查解释。若想留存或引用，每篇页首都有「引用 BibTeX / APA」一键复制；用浏览器打印（Ctrl/Cmd+P）即可导出该页为 PDF，悬浮控件会自动隐藏。</p>
+
+<h2>维护者与反馈</h2>
+<div class="hline"></div>
+<p>本站由 <b>Paradox</b> 个人维护，源码公开于 <a href="https://github.com/1parado/multi-agent-article">github.com/1parado/multi-agent-article</a>（纯静态、无构建依赖，可直接双击 index.html 浏览）。发现数字错误、断链或想推荐论文，欢迎提 <a href="https://github.com/1parado/multi-agent-article/issues">GitHub Issue</a>。</p>
+
+<h2>更新记录</h2>
+<div class="hline"></div>
+<table class="upd">
+  <tr><td>2026-09-03</td><td>v4：术语表 / About 页、分类筛选与检索、一键引用、打印适配、分享预览与 favicon、字体异步加载</td></tr>
+  <tr><td>2026-09-02</td><td>v3：标题锚点复制、返回顶部、键盘翻页、章节编号、对比表升级、移动端适配、GitHub 图标</td></tr>
+  <tr><td>2026-09-01</td><td>v2：分类色签、Hero 插画、阅读进度条、目录高亮、字体与动效升级</td></tr>
+  <tr><td>2026-08-31</td><td>建立站点：导航修复、目录组件；扩至 11 篇论文</td></tr>
+</table>
+
+<div class="note">论文版权归原作者与出版方所有；本页中文内容为学习交流整理，引用请以英文原文为准。</div>
+
+<div class="nav"><a href="index.html">← 返回目录</a><a href="glossary.html">术语表</a></div>
+<footer><a href="index.html">Multi-Agent Paper Digest 2026</a> · <a href="about.html">关于</a> · <a href="https://github.com/1parado/multi-agent-article">GitHub</a></footer>
 </div>
 <script>
 /* ---- page enhancements v3 (spec: AGENT.md): TOC + scroll-spy + progress + reveal + bars + anchors + totop + kbd ---- */
