@@ -91,7 +91,6 @@ PDF 链接规则：本目录存在对应 PDF 文件的用相对路径；不存�
   .reveal { opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease; }
   .reveal.in { opacity:1; transform:none; }
   @media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } .bar { transition:none; } }
-  .tldr::first-letter { float:left; font-size:2.5em; line-height:.95; margin:4px 12px 0 0; font-weight:700; font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); }
   .wrap { position:relative; }
   .wm { position:absolute; top:56px; right:20px; font-family:"IBM Plex Mono",Consolas,monospace; font-size:58px; font-weight:700; letter-spacing:1px; color:var(--red); opacity:.06; user-select:none; pointer-events:none; white-space:nowrap; }
   @media (max-width:700px) { .wm { display:none; } }
@@ -232,6 +231,6 @@ index 条目写法：`<div class="idx" style="--cat:#9C6B1E"><span class="dot"><
 
 ## 5. 其他约定
 
-- 页面样式沿用现有模板（`.wrap` 最大宽 780px、`.tldr` 首字下沉、IBM Plex Mono 强调），保持系列一致；
+- 页面样式沿用现有模板（`.wrap` 最大宽 780px、IBM Plex Mono 强调），保持系列一致；
 - 文件命名：`<arXiv编号>_<短名>_中文版.html`；
 - `index.html` 的论文列表、第 2 节顺序表、第 3.4 节类别色表、README 表格四者保持同步。
