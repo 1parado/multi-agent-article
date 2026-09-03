@@ -1,6 +1,6 @@
-# AGENT.md — 论文 HTML 页面编写规范 v4
+# AGENT.md — 论文 HTML 页面编写规范 v6
 
-本目录（multi-agent-article）是论文中文编译版的静态站点：`index.html` 为目录页，每篇论文一个独立 HTML，另有 `glossary.html`（术语表）、`about.html`（关于）、`favicon.svg`。**任何 Agent / 人在新增或修改页面时必须遵守本规范**，否则会出现「页面之间无法互相跳转」「组件版本落后」等回归问题（历史上发生过：① 导航被写成 GitHub blob 绝对链接导致全站跳转失效；② 增强组件版本不一致；③ 引用条注入多出游离 `</div>`；④ index 页脚检测逻辑误判注入失败）。
+本目录（multi-agent-article）是论文中文编译版的静态站点：`index.html` 为目录页，每篇论文一个独立 HTML，另有 `glossary.html`（术语表）、`about.html`（关于）、`covers/`（期刊封面）、404 等站点文件；**v6 起每页带 giscus 评论区与「选中即批注」交互**。**任何 Agent / 人在新增或修改页面时必须遵守本规范**，否则会出现「页面之间无法互相跳转」「组件版本落后」等回归问题（历史上发生过：① 导航被写成 GitHub blob 绝对链接导致全站跳转失效；② 增强组件版本不一致；③ 引用条注入多出游离 `</div>`；④ index 页脚检测逻辑误判注入失败；⑤ v5 注入在带旧 og:image 的页面上留下两条 og:image）。
 
 ---
 
@@ -8,12 +8,18 @@
 
 | 页面 | 类型 | 说明 |
 |------|------|------|
-| index.html | 目录页 | 论文列表（每项带 `data-cat`）+ 横向对比表 + 趋势 + 阅读顺序 + `#fltbar` 筛选检索 |
-| `<arXiv号>_<短名>_中文版.html`（11 篇） | 论文页 | 属于导航链（见 §2），带 `.links`、`.citebar`、正文 `.gloss` 术语链 |
+| index.html | 目录页 | 论文列表（每项带 `data-cat`）+ 横向对比表 + 趋势 + 阅读顺序 + `#fltbar` 筛选检索 + v5 三视图（`.viewbar`：列表/画廊/星图）与已读藏书章 |
+| `<arXiv号>_<短名>_中文版.html`（11 篇） | 论文页 | 属于导航链（见 §2）；v5 起带 `.paper-main`+`.mnotes` 双栏、`.pubmeta`、`.epigraph`、`body.page-paper` |
 | glossary.html | 术语表 | 不属于导航链；词条 `id` 供各页 `.gloss` 链接（见 §4.6） |
-| about.html | 关于 | 不属于导航链；维护信息、收录标准、更新记录 |
+| about.html | 关于 | 不属于导航链；维护信息、收录标准、更新记录、许可措辞 |
+| covers/ | 期刊封面 | 14 张 1200×630 PNG（11 论文 + index/glossary/about），每页 `og:image` 指向自己的那张；由 `.workbuddy/gen_covers.py` 生成 |
+| 404.html | 错误页 | 统一图元（红框 404 印章），含回首页/术语表/关于/GitHub 链接 |
+| LICENSE | 许可 | 原创内容 CC BY-NC 4.0 + 第三方论文版权声明（见 about.html 引用措辞） |
+| robots.txt | SEO | `Allow: /` + Sitemap 指向 |
+| sitemap.xml | SEO | 14 条 URL（index/glossary/about + 11 论文，含 lastmod/priority），**新增论文须追加** |
 | favicon.svg | 站身份 | 所有页面 `<head>` 必须引用 |
-| hero.svg / *.pdf | 资源 | hero 作为 og:image；PDF 见 §1 链接规则 |
+| apple-touch-icon.png | 站身份 | 180×180 红底 planner→agents 点线图标；所有页面 `<head>` 引用 |
+| hero.svg / *.pdf | 资源 | hero 仅作 index 编排插画素材（不再作 og:image，og:image 一律用 covers PNG）；PDF 见 §1 链接规则 |
 
 特殊页（glossary / about）底部导航写法：
 ```html
@@ -78,18 +84,21 @@ PDF 链接规则：本目录存在对应 PDF 文件的用相对路径（当前�
 1. 在 `index.html` 论文列表末尾追加条目（并补 `data-cat` 属性，见 §5 色表映射）；
 2. 新页面 `.nav` 指向 `index.html`，并回写当前末篇页面的「下一篇」；
 3. 更新本文件的顺序表、色表、`README` 表格、`about.html` 收录说明与篇数文案；
-4. 页面内所有站内链接逐条自检（见 §8）。
+4. 在 `.workbuddy/beautify_v5.py` 的 `ORDER_ARX` 中登记 arXiv 号并补 `EPIGRAPH` 引语，重跑注入脚本 → 得到 `.pubmeta`/`.epigraph`/`.mnotes`/JSON-LD；
+5. 在 `.workbuddy/gen_covers.py` 的 `ORDER` 中登记并重跑 → 生成 `covers/<arXiv号>.png`（新页 og:image 自动指向它）；
+6. 在 `sitemap.xml` 末尾追加该页 `<url>`；
+7. 页面内所有站内链接逐条自检（见 §8）。
 
 ## 3. 页面增强组件 v1–v3 — 论文页与 index 必须包含
 
-**实现方式：固定的代码块，原样复制，不做改写。** 组件历史：v1 TOC / v2（进度条、色签、reveal、水印、Hero）/ v3（返回顶部、章节编号、锚点复制、键盘翻页、对比表升级、移动端）。全部页面已内置，逐项核验标准：
+**实现方式：固定的代码块，原样复制，不做改写。** 组件历史：v1 TOC / v2（进度条、色签、reveal、水印、Hero）/ v3（返回顶部、章节编号、锚点复制、键盘翻页、对比表升级、移动端）/ v5（旁注栏、封面、三视图、站身份）。全部页面已内置，逐项核验标准：
 
 - `<head>` 含 **v4 字体异步块**（见 §4.1）；
-- `</head>` 前依次为：样式块 A（TOC widget + v2 增强）、样式块 B（v3 增强）、样式块 C（v4 增强，见 §4.3）；
-- `</body>` 前依次为：增强脚本 v3（搜索 `page enhancements v3`）与增强脚本 v4（搜索 `page enhancements v4`）；
+- `</head>` 前依次为：样式块 A（TOC widget + v2 增强）、样式块 B（v3 增强）、样式块 C（v4 增强，见 §4.3）、样式块 D（v5 增强，搜索 `v5 enhancements`）；
+- `</body>` 前依次为：增强脚本 v3（搜索 `page enhancements v3`）、脚本 v4（搜索 `page enhancements v4`）、脚本 v5（搜索 `page enhancements v5`，见 §4.10）；
 - 类别色签（§5）、GitHub 图标（`.ghlink`）、论文页水印 `.wm`、对比表 `table.cmp`、Hero SVG 等 v2/v3 细节以现有页面为准。
 
-检查方法：源码含 `page enhancements v3` 与 `page enhancements v4`、`#pbar {`、`#totop {`、`#fltbar`（index）/`#cite-json`（论文页）、`favicon.svg`、`property="og:title"` 即合格。
+检查方法：源码含 `page enhancements v3`、`page enhancements v4`、`page enhancements v5`、`#pbar {`、`#totop {`、`#fltbar`（index）/`#cite-json`（论文页）、`favicon.svg`、`property="og:title"` 即合格。
 
 ## 4. 页面增强组件 v4 — 全部页面必须包含
 
@@ -102,25 +111,39 @@ PDF 链接规则：本目录存在对应 PDF 文件的用相对路径（当前�
 <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
 ```
 
-### 4.2 favicon 与 OG / Twitter 分享 meta
+### 4.2 favicon、OG/Twitter 分享 meta 与站身份/结构化数据
 
-每页 `<head>` 在字体块之后必须包含 favicon 与 OG meta。论文页按各自元数据填写（站点根 `SITE = https://1parado.github.io/multi-agent-article`，og:url 用 **percent-encoded** 文件名；og:image 统一指向 `SITE/hero.svg`）：
+**og:image 一律指向本页专属的 `covers/` PNG（1200×630），不再用 hero.svg。** 映射：论文页 → `covers/<arXiv号>.png`；index → `covers/index.png`；glossary → `covers/glossary.png`；about → `covers/about.png`。
+
+`<head>` 中「字体块之后」的基础 OG 块（v4，每页一份）：
 
 ```html
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<meta property="og:type" content="article">
+<meta property="og:type" content="article"> <!-- index/glossary/about 用 website -->
 <meta property="og:site_name" content="Multi-Agent Paper Digest 2026">
 <meta property="og:title" content="<中文标题>">
 <meta property="og:description" content="<一句话介绍，<150 字>">
 <meta property="og:url" content="https://1parado.github.io/multi-agent-article/<percent-encoded文件名>">
-<meta property="og:image" content="https://1parado.github.io/multi-agent-article/hero.svg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="<同 og:title>">
 <meta name="twitter:description" content="<同 og:description>">
 <meta name="description" content="<同 og:description>">
 ```
 
-index 用 `og:type=website`、`og:url=SITE/`。新增论文的 og:title / og:description 素材直接取自 index 列表的 h3 与 p 描述。
+`</head>` 前的 **v5 追加块**（在样式块 D 之后，由 beautify_v5.py 统一维护，勿手改；og:image 三连对必须相邻且全页唯一——历史 dup 教训）：
+
+```html
+<meta name="theme-color" content="#A02C2C">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="canonical" href="https://1parado.github.io/multi-agent-article/<percent-encoded文件名>">
+<meta property="og:image" content="https://1parado.github.io/multi-agent-article/covers/<本页>.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://1parado.github.io/multi-agent-article/covers/<本页>.png">
+<script type="application/ld+json">…</script>
+```
+
+JSON-LD 类型：论文页 `ScholarlyArticle`（headline/name/alternativeHeadline/url/datePublished/dateModified/isPartOf/description/keywords/publisher）；index `WebSite`；glossary/about `WebPage`。新增论文的 og:title / og:description 素材直接取自 index 列表的 h3 与 p 描述。
 
 ### 4.3 v4 样式块（`</head>` 前的最后一个 `<style>`）
 
@@ -286,6 +309,56 @@ footer a:hover { color:var(--red); text-decoration:underline; }
 - 论文页：既有单行 footer 内容后追加 ` · <a href="glossary.html">术语表</a> · <a href="about.html">关于</a>`；
 - glossary / about：自带 footer（返回目录 + 链接）。
 
+### 4.9 v5 论文页增强（仅 11 篇论文页）
+
+论文页 `<body class="page-paper">`，正文包在 `<div class="wrap"><div class="paper-main">…</div>` 内，`.paper-main` 之后、`<footer>` 之前放 `<aside class="mnotes">` 旁注栏（桌面 ≥1241px 时右栏 sticky 双栏网格，窄屏/打印自动降为单列）。由 beautify_v5.py 注入的四个元素：
+
+- **`.pubmeta`**：紧跟在 `.meta` 之后的一行（`.meta` 的 `</p>` 后）：`arXiv <号> · 投稿 <年-月> [· venue] · 中文版收录 2026-09-03`；
+- **`.epigraph`**：`.tldr` 之前的一条 `blockquote` 引语（红左边线、斜体），内容为 beautify_v5.py 中 `EPIGRAPH` 字典按 arXiv 号配置的「一句话导读」，`cite` 落款「— 本站导读」；
+- **`.mnotes`**：4 张 `.mnote` 卡片——馆藏信息（arXiv/投稿/收录日）、分类（类别色点 + 链到 glossary 分组锚点 `glossary.html#<cat>`）、核心术语（取 `TERM_LINKS` 首个 + 计数）、阅读顺序（上/本篇 Nº/下，红字本篇）；
+- 正文 h2 之前的头部信息区也可视情况补充收录时间戳。
+
+### 4.10 v5 index 三视图 + 已读藏书章（index + 论文页共用脚本）
+
+- **index**：`#fltbar` 之后插入 `.viewbar`（列表/画廊/星图三按钮 + `#vhint` 提示 + `#vhint-r` 已读数）+ `#gallery` + `#star` 容器。v5 脚本按需构建：画廊 = `covers/<arxiv>.png` 封面卡片网格；星图 = SVG 时间序点线（11 节点、类别色、悬停浮层）；列表/画廊/星图三视图与 `#fltbar` 筛选、`#q` 检索联动，且把 `?cat=&q=&view=` 同步进 URL（`history.replaceState`）。样式块 D 已含 `.viewbar/.vbtn/.gallery/#star` 等样式；
+- **已读藏书章**：localStorage 键 `mpa-read`（`{arxiv: 时间戳}`）。论文页滚动超过 85% 或停留 30s 记为本篇已读（`body[data-read]`）；index 列表卡片滚动到「已读」的卡片右上角显示红底 `.readmark` 印章，`#vhint-r` 实时显示 `已读 n / 11`；
+- **404.html**：红框 404 印章图元风格，独立轻量页，不参与导航链。
+
+### 4.11 SEO / 许可 / 站身份文件
+
+- `robots.txt`：`User-agent: *` + `Allow: /` + `Sitemap:` 指向 `sitemap.xml`；
+- `sitemap.xml`：14 条 URL（index/glossary/about 带 lastmod/changefreq/priority，11 论文带 lastmod），论文 URL 用 percent-encoded 文件名；**新增论文必须追加**；
+- `LICENSE`：原创内容 CC BY-NC 4.0 + 第三方论文版权声明双段式，非 MIT；
+- `about.html`：含与 LICENSE 一致的许可措辞；收录标准、维护者、时间表；
+- `apple-touch-icon.png`：180×180（gen_covers.py 生成），红底白线 planner→agents 图元，与 favicon 呼应。
+
+### 4.12 v6 目录移到左上角（替代 v1 的右下角浮钮）
+
+v6 样式块（`</head>` 前最后一个 `<style>`，含 `v6 enhancements` 注释）把 `#toc-btn` 定位改为 `fixed left:14px top:14px`、`#toc-panel` 改为 `top:66px left:14px` 下拉；`@media (min-width:1040px)` 下用 `opacity/pointer-events !important` 压过 v1 的「滚动 >180px 才显示」逻辑使其**桌面常显**，移动端仍保持滚动后出现（避免遮挡正文）。`#totop` 仍在右下，不受影响。
+
+### 4.13 v6 giscus 评论区（全部 14 个内容页，404 除外）
+
+每页 `</body>` 前注入 `.giscwrap#giscus` 容器 + v6 懒加载脚本：`IntersectionObserver`（rootMargin 1400px）接近视口才把 `giscus.app/client.js` 注入 `.gismount`。**giscus 配置常量统一维护在 `.workbuddy/beautify_v6.py` 顶部的 GISCUS_BLOCK**，当前值（2026-09-03 实测）：
+
+| 属性 | 值 |
+|------|------|
+| data-repo | `1parado/multi-agent-article` |
+| data-repo-id | `R_kgDOUK42-A` |
+| data-category | `General` |
+| data-category-id | `DIC_kwDOUK42-M4DExUU` |
+| data-mapping | `og:title`（14 页 og:title 全站唯一 → 本地 / 预览 / Pages 均落同一讨论串） |
+| data-theme / data-lang | `light` / `zh-CN` |
+| data-input-position | `top`（配合批注复制后粘贴） |
+
+注意事项：
+- 仓库须启用 **Discussions**（已启用）；giscus **App 需仓库管理员到 github.com/apps/giscus 安装一次**，未安装时评论区显示错误提示，安装后无需改代码；
+- 若仓库迁移/换分类，改 `GISCUS_BLOCK` 常量后对全站重跑 beautify_v6.py；
+- `.giscwrap` 打印时隐藏；`.gistitle` 里的引导文案提示「选中正文 → ✎ 批注」。
+
+### 4.14 v6 WPS 式批注（选中文字 → 引用评论）
+
+v6 脚本实现「选中即批注」：在正文（`.wrap` 内）用鼠标划选文字后，选区上方浮现 `.annbar` 工具条（✎ 写批注 / 复制引用）；「✎ 写批注」弹出 `.annmask` 弹层，展示被引原文（`.annq`，自动截断 300 字）、出处（`.pos`：所在章节 + 页面 og:title），用户在 textarea 写下批注后点「复制批注 · 去评论区」——脚本把「Markdown 引用块 + 出处 + 批注 + via 落款」复制到剪贴板，并滚动到 `.giscwrap` 闪烁提示，用户粘贴到 giscus 输入框发布（需 GitHub 登录，全员可见）。限制：选区须落在 `.wrap` 内（排除评论区/弹层/工具条自身）；<4 字不触发；键盘 ←/→ 在有非空选区或工具条显示时被拦截，避免误触翻页；Esc 关闭弹层。
+
 ## 5. 类别色签（分类色）
 
 每个类别一个专属色，用于论文页 eyebrow、index `.idx` 行、index 筛选 chip（`--cat`）与 `data-cat`：
@@ -303,7 +376,7 @@ footer a:hover { color:var(--red); text-decoration:underline; }
 论文页 eyebrow 写法：`<div class="eyebrow" style="--cat:#9C6B1E"><span class="dot"></span>PAPER 03 · AGENT HARNESS</div>`；
 index 条目写法：`<div class="idx" style="--cat:#9C6B1E"><span class="dot"></span>03 · AGENT HARNESS</div>`，且外层 `<div class="paper" data-cat="HARNESS">`。
 
-## 6. glossary.html 术语 id 目录（当前已建 30 词条，按分组）
+## 6. glossary.html 术语 id 目录（当前已建 31 词条，按分组）
 
 - 基础与训练：`llm` `mllm` `token` `sft` `grpo` `moe` `benchmark` `sota`
 - 多智能体与编排：`agent` `mas` `framework` `orchestration` `dag` `planner` `router` `verifier` `harness`
@@ -311,17 +384,19 @@ index 条目写法：`<div class="idx" style="--cat:#9C6B1E"><span class="dot"><
 - 在线决策与理论保证：`bandit` `linucb` `regret`
 - 安全、工具与接口：`prompt-injection` `asr` `schema` `semantic-search`
 
-glossary / about 两页与普通页同构（含 §3 样式块 A/B、§4.3 C、v3+v4 脚本、§4.1 字体、§4.2 favicon/OG）；其 nav 遵循 §0 特殊页写法，不进 §2 顺序表。
+glossary / about 两页与普通页同构（含 §3 样式块 A/B、§4.3 C、样式块 D、v3+v4+v5 脚本、§4.1 字体、§4.2 favicon/OG/JSON-LD；v5 脚本在这两页为空操作只返回）；其 nav 遵循 §0 特殊页写法，不进 §2 顺序表。
 
 ## 7. 批量脚本（.workbuddy/）
 
 | 脚本 | 用途 |
 |------|------|
-| beautify_v4.py | v4 全站注入（字体异步/OG/样式/脚本/引用/术语链/筛选/页脚/文案修正），内含 PAPER 元数据表与 TERM_LINKS 术语映射，**新增论文时在此登记并重跑其「全站自检」逻辑** |
+| beautify_v4.py | v4 全站注入（字体异步/OG/样式/脚本/引用/术语链/筛选/页脚/文案修正），内含 PAPER 元数据表与 TERM_LINKS 术语映射，**新增论文时在此登记** |
+| beautify_v5.py | v5 全站注入（head meta 块/JSON-LD/论文页 pubmeta·epigraph·mnotes·双栏/样式块 D/v5 脚本），内含 ORDER_ARX（阅读顺序）与 EPIGRAPH 字典；**新增论文时在此登记 arXiv 号并补引语，重跑后自带全站自检与 og:image 唯一性断言** |
+| gen_covers.py | 程序化期刊封面生成器（arXiv 号为随机种子 → 确定性拓扑点线），输出 covers/ 14 张 1200×630 PNG + apple-touch-icon.png 180×180；**新增论文时在此 ORDER 登记并重跑** |
 | v4_scan.py / v4_fix_straydiv.py | 术语扫描 / 游离 `</div>` 修复（历史问题保留，勿重犯） |
 | beautify_v2.py / v3.py / patch / remove_dropcap / fix_nav.py | 历史批次，仅存档 |
 
-批量修改一律：先断言 v4 标记不存在再注入（防重复）；改完全站用 §8 清单 grep 自检；保持 LF 换行、UTF-8 无 BOM。
+批量修改一律：先断言对应版本标记不存在再注入（防重复）；改完全站用 §8 清单 grep 自检；保持 LF 换行、UTF-8 无 BOM。
 
 ## 8. 完成前的自检清单
 
@@ -330,14 +405,17 @@ glossary / about 两页与普通页同构（含 §3 样式块 A/B、§4.3 C、v3
 - [ ] 页内没有任何 `github.com/.../blob/main/` 或 `github.com/.../raw/main/` 形式的站内链接；
 - [ ] `.nav` 与 §2 顺序表一致，「← / →」齐全，文件名与磁盘一一对应；特殊页 nav 右端不以 `→` 结尾；
 - [ ] 页首 `.links` 含「目录」与 GitHub 图标；论文页 `.links` 后是 `.citebar`（**仅一个** `</div>` 闭合 links）且含 `cite-json`；
-- [ ] 源码同时含 `page enhancements v3`、`page enhancements v4`、`#pbar {`、`#totop {`、`rel="preload" as="style"`（字体）、`favicon.svg`、`property="og:title"`；
+- [ ] 源码同时含 `page enhancements v3`、`page enhancements v4`、`page enhancements v5`、`#pbar {`、`#totop {`、`rel="preload" as="style"`（字体）、`favicon.svg`、`property="og:title"`；
 - [ ] 论文页 eyebrow 带 `--cat` 与 `.dot`；正文含 3–5 个 `class="gloss"` 且锚点 id 存在于 glossary.html；index 每个 `.paper` 带 `data-cat`，`#fltbar` 含 8 个 chip（全部+7 类）；
 - [ ] index footer 为 `.sitefoot` 两行结构；论文页 footer 含术语表/关于链接；
-- [ ] 浏览器实测：目录筛选 chip 过滤、检索框过滤、空态提示；论文页点 BibTeX/APA 复制成功；Ctrl+P 打印预览无悬浮控件、条形图高度完整；术语点状下划线可跳到 glossary 对应词条；分享链接在微信/浏览器有标题与描述；
-- [ ] 全站点一遍：index → 论文页 → 上一篇/下一篇 → 术语表 → 关于，全部可达。
+- [ ] 每页恰好一条 `og:image` 且紧跟 `og:image:width(1200)/height(630)` 三连对、指向本页 `covers/` PNG；每页恰好一条 `canonical`/`apple-touch-icon`/`theme-color`/`application/ld+json`（论文 `ScholarlyArticle`、index `WebSite`、glossary/about `WebPage`）；
+- [ ] 论文页含 `page-paper`/`paper-main`/`.mnotes`（4 张 `.mnote`）/`.pubmeta`/`.epigraph` 各一，`.mnotes` 在 `.paper-main` 闭合后、`<footer>` 前；
+- [ ] index 含 `#viewbar`+`#gallery`+`#star`；`covers/` 每张 1200×630 与引用一致；新论文已进 `sitemap.xml`；
+- [ ] 浏览器实测：目录筛选 chip 过滤、检索框过滤、空态提示；论文页点 BibTeX/APA 复制成功；Ctrl+P 打印预览无悬浮控件、条形图高度完整、旁注栏隐藏；术语点状下划线可跳到 glossary 对应词条；分享链接在微信/浏览器显示本页专属封面与标题；列表/画廊/星图切换、URL 带 `?view=` 刷新后保持视图、读完一篇后 index 出现红色藏书章；
+- [ ] 全站点一遍：index → 论文页 → 上一篇/下一篇 → 术语表 → 关于 → 404，全部可达。
 
 ## 9. 其他约定
 
-- 样式沿用现有模板（`.wrap` 780px、IBM Plex Mono 强调、红 `#A02C2C` 主色 + 类别色签），系列一致；
+- 样式沿用现有模板（`.wrap` 780px（论文页 v5 双栏网格 780px+232px 旁注列，≤1240px 自动降级）、IBM Plex Mono 强调、红 `#A02C2C` 主色 + 类别色签），系列一致；
 - 文件命名：`<arXiv编号>_<短名>_中文版.html`；
-- index 论文列表、§2 顺序表、§5 色表、README 表格、about.html 收录说明五者同步。
+- index 论文列表、§2 顺序表、§5 色表、README 表格、about.html 收录说明、sitemap.xml、covers/、beautify_v5.py 的 ORDER_ARX 八者同步。

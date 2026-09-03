@@ -13,7 +13,6 @@
 <meta property="og:title" content="NLAH：自然语言 Agent Harness">
 <meta property="og:description" content="把埋在控制器代码里的 harness 策略外化为可编辑的自然语言文档，由共享运行时解释执行；策略层 60K→2.9K token。">
 <meta property="og:url" content="https://1parado.github.io/multi-agent-article/2603.25723_NLAH_%E4%B8%AD%E6%96%87%E7%89%88.html">
-<meta property="og:image" content="https://1parado.github.io/multi-agent-article/hero.svg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="NLAH：自然语言 Agent Harness">
 <meta name="twitter:description" content="把埋在控制器代码里的 harness 策略外化为可编辑的自然语言文档，由共享运行时解释执行；策略层 60K→2.9K token。">
@@ -158,19 +157,131 @@
     .bar, .bar.red, .bar.sage, .dot { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
   }
 </style>
+<style>
+  /* ---- v5 enhancements (spec: AGENT.md): covers/views/marginalia/epigraph ---- */
+  body.page-paper .wrap { display:grid; grid-template-columns:minmax(0,1fr) 232px; gap:48px; }
+  body.page-paper .wrap > .paper-main { min-width:0; }
+  body.page-paper .mnotes { display:flex; flex-direction:column; gap:14px; align-self:start; position:sticky; top:36px; }
+  body.page-paper .mnotes h4 { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; color:var(--red); margin:0 0 6px; font-weight:600; }
+  body.page-paper .mnote { border:1px solid var(--line); border-radius:8px; padding:12px 14px; background:#fdfcfa; font-size:13.5px; color:var(--gray); }
+  body.page-paper .mnote p { margin:0; line-height:1.65; font-size:13.5px; }
+  body.page-paper .mnote a { color:var(--red); text-decoration:none; }
+  body.page-paper .mnote a:hover { text-decoration:underline; }
+  body.page-paper .mnote .dotc { color:var(--cat,var(--red)); }
+  @media (max-width:1240px) {
+    body.page-paper .wrap { display:block; }
+    body.page-paper .mnotes { position:static; margin-top:42px; padding-top:22px; border-top:1px solid var(--line); flex-direction:column; }
+  }
+  .pubmeta { font-family:"IBM Plex Mono",Consolas,monospace; font-size:12px; letter-spacing:1.2px; color:var(--soft); margin:8px 0 0; }
+  .pubmeta b { color:var(--ink); font-weight:500; }
+  .epigraph { margin:0 0 28px; padding:18px 22px 16px; border-left:3px solid var(--red); background:#fdfaf7; border-radius:0 8px 8px 0; }
+  .epigraph p { margin:0 0 6px; font-size:15.5px; color:var(--ink); font-style:italic; line-height:1.85; }
+  .epigraph cite { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; color:var(--soft); font-style:normal; }
+  /* index views */
+  .viewbar { display:flex; align-items:center; gap:6px; margin:0 0 26px; flex-wrap:wrap; }
+  .vbtn { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11.5px; letter-spacing:1.5px; color:var(--gray); background:#fff; border:1px solid var(--line); border-radius:99px; padding:4px 14px; cursor:pointer; transition:color .2s,border-color .2s,background .2s; }
+  .vbtn:hover { color:var(--red); border-color:var(--red); }
+  .vbtn.on { color:var(--red); border-color:var(--red); background:#fdfaf7; }
+  .vhint { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; color:var(--soft); margin-left:8px; }
+  #vhint-r { margin-left:auto; color:var(--red); }
+  .gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:18px; margin:0 0 36px; }
+  .gallery a { display:block; position:relative; border:1px solid var(--line); border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; transition:transform .25s ease, box-shadow .25s ease; background:#fff; }
+  .gallery a:hover { transform:translateY(-3px); box-shadow:0 6px 22px rgba(0,0,0,.10); }
+  .gallery img { display:block; width:100%; height:auto; }
+  .gallery .ov { padding:10px 12px 12px; background:#fdfaf7; border-left:3px solid var(--red); }
+  .gallery .ov .id { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:var(--red); }
+  .gallery .ov .ti { font-size:14.5px; font-weight:600; margin-top:2px; color:var(--ink); }
+  .gallery .ov .en { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; color:var(--soft); margin-top:4px; }
+  #star { position:relative; height:380px; border:1px solid var(--line); border-radius:12px; background:linear-gradient(180deg,#fdfaf7 0%,#fff 100%); padding:18px 22px; margin:0 0 36px; }
+  #star svg { width:100%; height:100%; display:block; overflow:visible; }
+  #star .tip { position:absolute; pointer-events:none; padding:8px 12px; background:#fff; border:1px solid var(--line); border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,.08); font-size:12.5px; max-width:260px; opacity:0; transition:opacity .15s; }
+  #star .tip.on { opacity:1; }
+  #star .tip b { color:var(--red); font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; display:block; margin-bottom:4px; }
+  #star .tip .en { color:var(--soft); font-size:11px; }
+  /* 藏书章 */
+  .readmark { position:absolute; top:14px; right:14px; transform:rotate(-8deg); font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:#fff; background:var(--red); border:2px solid #fff; padding:3px 9px; border-radius:4px; box-shadow:0 0 0 1px var(--red); display:none; z-index:2; }
+  .paper { position:relative; }
+  .paper.read .readmark { display:inline-block; }
+  @media print {
+    .viewbar, #gallery, #star, .mnotes, .pubmeta, .readmark { display:none !important; }
+    .epigraph { background:#fff !important; border-left-color:#A02C2C !important; }
+    body.page-paper .wrap { display:block; }
+  }
+</style>
+<meta name="theme-color" content="#A02C2C">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="canonical" href="https://1parado.github.io/multi-agent-article/2603.25723_NLAH_%E4%B8%AD%E6%96%87%E7%89%88.html">
+<meta property="og:image" content="https://1parado.github.io/multi-agent-article/covers/2603.25723.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://1parado.github.io/multi-agent-article/covers/2603.25723.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "ScholarlyArticle", "headline": "NLAH：自然语言 Agent Harness", "name": "NLAH：自然语言 Agent Harness", "alternativeHeadline": "Natural-Language Agent Harnesses", "url": "https://1parado.github.io/multi-agent-article/2603.25723_NLAH_%E4%B8%AD%E6%96%87%E7%89%88.html", "inLanguage": "zh-CN", "datePublished": "2026-03", "dateModified": "2026-09-03", "isPartOf": {"@type": "WebSite", "name": "Multi-Agent Paper Digest 2026", "url": "https://1parado.github.io/multi-agent-article/"}, "description": "把埋在控制器代码里的 harness 策略外化为可编辑的自然语言文档，由共享运行时解释执行；策略层 60K→2.9K token。", "keywords": ["multi-agent", "agent harness", "Harness 执行系统"], "publisher": {"@type": "Organization", "name": "1parado/multi-agent-article"}}</script>
+
+<!-- v5-meta-injected -->
+<style>
+  /* ---- v6 enhancements (spec: AGENT.md): toc-top-left + giscus comments + annotate ---- */
+  #toc-btn { right:auto !important; left:14px !important; top:14px !important; bottom:auto !important; }
+  #toc-panel { right:auto !important; left:14px !important; top:66px !important; bottom:auto !important; }
+  @media (max-width:640px) {
+    #toc-btn { left:10px !important; top:10px !important; }
+    #toc-panel { left:10px !important; top:60px !important; max-width:82vw !important; }
+  }
+  @media (min-width:1040px) {
+    #toc-btn { opacity:1 !important; pointer-events:auto !important; transform:none !important; }
+  }
+  .giscwrap { max-width:760px; margin:0 auto; padding:54px 24px 30px; }
+  .gistitle { display:flex; flex-wrap:wrap; gap:4px 18px; align-items:baseline; margin-bottom:16px; padding-top:16px; border-top:1px solid var(--line); }
+  .gt { font-family:"IBM Plex Mono",Consolas,monospace; font-size:12px; letter-spacing:2.5px; color:var(--red); font-weight:600; }
+  .gs { font-size:12.5px; color:var(--soft); }
+  .gismount { min-height:220px; }
+  .gismount iframe { width:100%; border:0; }
+  .giscwrap.hit .gismount { animation:gishit 1.1s ease; border-radius:10px; }
+  @keyframes gishit { 0% { box-shadow:0 0 0 0 rgba(160,44,44,.5); } 100% { box-shadow:0 0 0 16px rgba(160,44,44,0); } }
+  .annbar { position:fixed; z-index:1500; display:flex; align-items:center; gap:2px; background:#fff; border:1px solid var(--red); border-radius:99px; padding:4px; box-shadow:0 6px 20px rgba(0,0,0,.16); opacity:0; pointer-events:none; transform:translateY(6px); transition:opacity .15s, transform .15s; }
+  .annbar.on { opacity:1; pointer-events:auto; transform:none; }
+  .annbar button { border:0; background:transparent; color:var(--gray); font-size:12.5px; padding:4px 12px; border-radius:99px; cursor:pointer; white-space:nowrap; }
+  .annbar button:hover { background:#fdf0ef; color:var(--red); }
+  .annbar .sp { width:1px; height:15px; background:var(--line); }
+  .annbar button.pri { background:var(--red); color:#fff; }
+  .annbar button.pri:hover { background:#8a2424; color:#fff; }
+  .annmask { position:fixed; inset:0; z-index:2000; background:rgba(26,26,26,.36); display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .15s; }
+  .annmask.on { opacity:1; pointer-events:auto; }
+  .anncard { width:min(580px,100%); max-height:84vh; overflow:auto; background:#fff; border-radius:14px; box-shadow:0 18px 50px rgba(0,0,0,.22); padding:20px 22px 16px; }
+  .anncard h4 { margin:0 0 3px; font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:var(--red); }
+  .anncard .pos { font-size:12px; color:var(--soft); margin-bottom:12px; }
+  .annq { margin:0 0 12px; padding:10px 14px; background:#fdf7f3; border:1px solid var(--line); border-left:3px solid var(--red); border-radius:0 8px 8px 0; color:var(--gray); font-size:13.5px; line-height:1.8; max-height:150px; overflow:auto; white-space:pre-wrap; word-break:break-word; }
+  .anncard textarea { width:100%; min-height:96px; resize:vertical; border:1px solid var(--line); border-radius:8px; padding:9px 12px; font:13.5px/1.8 -apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fdfcfb; }
+  .anncard textarea:focus { outline:none; border-color:var(--red); background:#fff; }
+  .annacts { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; align-items:center; }
+  .annacts .hint { margin-right:auto; font-size:12px; color:var(--soft); }
+  .abtn { border:1px solid var(--line); background:#fff; color:var(--gray); border-radius:99px; padding:6px 16px; cursor:pointer; font-size:13px; }
+  .abtn:hover { border-color:var(--red); color:var(--red); }
+  .abtn.ok { border-color:var(--red); background:var(--red); color:#fff; }
+  .anntoast { position:fixed; left:50%; bottom:34px; transform:translate(-50%,10px); z-index:2100; background:var(--ink); color:#fff; font-size:13px; padding:9px 18px; border-radius:99px; box-shadow:0 8px 24px rgba(0,0,0,.25); opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; max-width:86vw; text-align:center; }
+  .anntoast.on { opacity:1; transform:translate(-50%,0); }
+  .anntoast b { color:#f4cfc8; }
+  @media print {
+    .giscwrap, .annbar, .annmask, .anntoast { display:none !important; }
+  }
+</style>
+<!-- v6-style-injected -->
 </head>
-<body>
+<body class="page-paper">
 <div class="wrap">
+<div class="paper-main">
 <div class="wm">arXiv 2603.25723</div>
 
 <div class="eyebrow" style="--cat:#9C6B1E"><span class="dot"></span>PAPER 03 · AGENT HARNESS</div>
 <h1>Natural-Language Agent Harnesses</h1>
 <div class="zh">把 harness 策略写成可执行的自然语言文档（NLAH + IHR）</div>
 <p class="meta">Linyue Pan, Hai-Tao Zheng 等 · 清华大学深研院 &amp; 哈工大（深圳）· arXiv 2603.25723</p>
+<p class="pubmeta">arXiv <b>2603.25723</b> · 投稿 <b>2026-03</b> · 中文版收录 <b>2026-09-03</b></p>
 <div class="links"><a href="2603.25723_Natural-Language-Agent-Harnesses.pdf">PDF</a><a href="https://arxiv.org/abs/2603.25723">arXiv</a><a class="ghlink" href="https://github.com/1parado/multi-agent-article" target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>GitHub</a><a href="index.html">目录</a></div>
 
 <div class="citebar"><span class="citecap">CITE</span><button type="button" class="citebtn" data-cite="bib">BibTeX</button><button type="button" class="citebtn" data-cite="apa">APA</button></div>
 <script type="application/json" id="cite-json">{"bib": "@misc{nlah2026,\n  title         = {Natural-Language Agent Harnesses},\n  author        = {Linyue Pan, Hai-Tao Zheng and others},\n  year          = {2026},\n  eprint        = {2603.25723},\n  archiveprefix = {arXiv},\n  url           = {https://arxiv.org/abs/2603.25723},\n}", "apa": "Linyue Pan (2026). Natural-Language Agent Harnesses. arXiv:2603.25723. https://arxiv.org/abs/2603.25723"}</script>
+<blockquote class="epigraph"><p>把策略从代码里解放出来，写成人话。</p><cite>— 本站导读</cite></blockquote>
+
 
 <div class="tldr">agent 的 <a class="gloss" href="glossary.html#harness">harness</a> 对性能影响巨大，但策略逻辑通常埋在紧耦合的控制器代码里，难检查、难比较、难迁移、难消融。论文把 harness 的<b>策略层</b>提炼成可编辑的自然语言文档（NLAH），交给共享运行时（IHR）解释执行——自然语言管策略，代码只保留必须精确的机制。三套<a class="gloss" href="glossary.html#benchmark">基准</a>上任务表现与代码 harness 相当，策略文档从几万 token 缩到几千 token，且可逐模块做科学消融。</div>
 
@@ -238,6 +349,8 @@
 </ul>
 
 <div class="nav"><a href="2602.16873_AdaptOrch_中文版.html">← AdaptOrch</a><a href="index.html">目录</a><a href="2603.28052_Meta-Harness_中文版.html">Meta-Harness →</a></div>
+</div>
+<aside class="mnotes" aria-label="编者旁注"><div class="mnote"><h4>馆藏信息</h4><p>arXiv <b>2603.25723</b><br>投稿 <b>2026-03</b><br>中文版收录 <b>2026-09-03</b></p></div><div class="mnote"><h4>分类</h4><p><span class="dotc" style="color:#9C6B1E">●</span> <a href="glossary.html#HARNESS">Harness 执行系统</a></p></div><div class="mnote"><h4>核心术语</h4><p>核心术语：<a href="glossary.html#harness">harness</a> 等 3 个</p></div><div class="mnote"><h4>阅读顺序</h4><p>上一篇：<a href="AdaptOrch_中文版.html">AdaptOrch</a><br><span style="color:var(--red);">本篇 Nº 3</span><br>下一篇：<a href="Meta-Harness_中文版.html">Meta-Harness</a></p></div></aside>
 <footer>NLAH · arXiv 2603.25723
   <a href="glossary.html">术语表</a> · <a href="about.html">关于</a></footer>
 </div>
@@ -454,6 +567,356 @@
     });
     if (q) q.addEventListener("input", function () { query = q.value.trim().toLowerCase(); apply(); });
     apply();
+  }
+})();
+</script>
+
+
+<script>
+/* ---- page enhancements v5 (spec: AGENT.md): read-mark + index views + URL deep-link ---- */
+(function () {
+  var LS_KEY = "mpa-read";
+  function getRead() { try { return JSON.parse(localStorage.getItem(LS_KEY) || "{}"); } catch (e) { return {}; } }
+  function setRead(o) { try { localStorage.setItem(LS_KEY, JSON.stringify(o)); } catch (e) {} }
+  function arxOfCard(c) { var a = c.querySelector("h3 a"); if (!a) return ""; var m = a.getAttribute("href").match(/(\d{4}\.\d+)/); return m ? m[1] : ""; }
+
+  if (document.body.classList.contains("page-paper")) {
+    var wm = document.querySelector(".wm");
+    var arx = wm ? (wm.textContent.match(/\d{4}\.\d+/) || [""])[0] : "";
+    if (arx) {
+      var done = false;
+      function mark() {
+        if (done) return;
+        var o = getRead(); o[arx] = Date.now(); setRead(o); done = true;
+        document.body.setAttribute("data-read", arx);
+      }
+      window.addEventListener("scroll", function () {
+        var doc = document.documentElement; var max = doc.scrollHeight - window.innerHeight;
+        if (max > 0 && window.scrollY / max > 0.85) mark();
+      }, { passive: true });
+      setTimeout(mark, 30000);
+    }
+    return;
+  }
+
+  var viewbar = document.getElementById("viewbar");
+  if (!viewbar) return;
+  var vbtns = viewbar.querySelectorAll(".vbtn");
+  var views = { list: null, gallery: document.getElementById("gallery"), star: document.getElementById("star") };
+  var hint = document.getElementById("vhint");
+  var fread = document.getElementById("vhint-r");
+  var cards = [].slice.call(document.querySelectorAll(".wrap > .paper"));
+  var current = "list";
+  var CAT_COLORS = { FRAMEWORK:"#A02C2C", HARNESS:"#9C6B1E", ACTIVATION:"#6B4FA0", SECURITY:"#2E7D74", "SELF-GENERATIVE":"#A34A7D", ROUTING:"#3E6FA3", DECENTRALIZED:"#557B3F" };
+
+  var DATA = cards.map(function (c) {
+    var num = (c.querySelector(".idx").textContent.match(/\d+/) || [""])[0];
+    return { num: num, cat: c.getAttribute("data-cat"),
+             title: c.querySelector("h3").textContent.trim(),
+             en: (c.querySelector(".en") || {}).textContent || "",
+             desc: c.querySelector("p").textContent.trim(),
+             url: c.querySelector("h3 a").getAttribute("href"),
+             arx: arxOfCard(c) };
+  });
+
+  function buildGallery() {
+    var g = views.gallery; if (g.dataset.built) return;
+    g.innerHTML = DATA.map(function (d) {
+      return '<a href="' + d.url + '" data-arx="' + d.arx + '" data-cat="' + d.cat + '"><img src="covers/' + d.arx + '.png" alt="' + d.title + '" loading="lazy"><div class="ov"><div class="id">N\u00ba ' + d.num + ' \u00b7 ' + d.cat + '</div><div class="ti">' + d.title + '</div><div class="en">' + d.en + '</div></div></a>';
+    }).join("");
+    g.dataset.built = "1";
+  }
+  function buildStar() {
+    var s = views.star; if (s.dataset.built) return;
+    var N = DATA.length, W = 1000, H = 320;
+    var svg = ['<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">'];
+    var pts = DATA.map(function (d, i) {
+      var x = 60 + (W - 120) * i / (N - 1);
+      var y = H/2 + Math.sin(i * 1.3) * 70 + Math.cos(i * 0.7) * 22;
+      return { x: x, y: y, cat: d.cat, arx: d.arx, num: d.num, title: d.title, en: d.en, desc: d.desc, url: d.url };
+    });
+    for (var i = 0; i < N - 1; i++) svg.push('<line x1="' + pts[i].x + '" y1="' + pts[i].y + '" x2="' + pts[i+1].x + '" y2="' + pts[i+1].y + '" stroke="#E4DFD6" stroke-width="1.5" />');
+    pts.forEach(function (p, i) {
+      var c = CAT_COLORS[p.cat] || "#A02C2C";
+      svg.push('<a href="' + p.url + '" data-arx="' + p.arx + '"><circle cx="' + p.x + '" cy="' + p.y + '" r="13" fill="' + c + '" stroke="#fff" stroke-width="2" /></a>');
+      svg.push('<text x="' + p.x + '" y="' + (p.y - 22) + '" text-anchor="middle" font-family="IBM Plex Mono,Consolas,monospace" font-size="12" fill="#8a8a86" letter-spacing="1">N\u00ba ' + p.num + '</text>');
+    });
+    svg.push('</svg>');
+    s.innerHTML = svg.join("") + '<div class="tip" id="startip"></div>';
+    var tip = s.querySelector("#startip");
+    var circles = [].slice.call(s.querySelectorAll("circle"));
+    s.addEventListener("mousemove", function (e) {
+      var t = e.target; if (t.tagName !== "CIRCLE") { tip.classList.remove("on"); return; }
+      var idx = circles.indexOf(t); if (idx < 0) return;
+      var p = pts[idx];
+      tip.innerHTML = '<b>N\u00ba ' + p.num + ' \u00b7 ' + p.cat + '</b>' + p.title + '<br><span class="en">' + p.en + '</span>';
+      var rect = s.getBoundingClientRect();
+      tip.style.left = Math.min(rect.width - 270, e.clientX - rect.left + 12) + "px";
+      tip.style.top = (e.clientY - rect.top + 12) + "px";
+      tip.classList.add("on");
+    });
+    s.addEventListener("mouseleave", function () { tip.classList.remove("on"); });
+    s.dataset.built = "1";
+  }
+
+  function getActiveCat() { var c = document.querySelector(".chip.on"); return c ? (c.getAttribute("data-cat") || "*") : "*"; }
+  function getActiveQ() { var q = document.getElementById("q"); return q ? q.value.trim().toLowerCase() : ""; }
+  function matches(d, cat, q) {
+    var okc = (cat === "*" || d.cat === cat);
+    var okq = !q || ((d.title + " " + d.en + " " + d.desc + " " + d.arx).toLowerCase().indexOf(q) !== -1);
+    return okc && okq;
+  }
+  function applyFilterToViews() {
+    var cat = getActiveCat(), q = getActiveQ();
+    var shown = 0;
+    DATA.forEach(function (d, i) {
+      var ok = matches(d, cat, q);
+      if (current === "list") cards[i].style.display = ok ? "" : "none";
+      else if (current === "gallery") {
+        var a = views.gallery.querySelector('a[data-arx="' + d.arx + '"]');
+        if (a) a.style.display = ok ? "" : "none";
+      } else if (current === "star") {
+        var anchors = [].slice.call(views.star.querySelectorAll("a[data-arx]"));
+        if (anchors[i]) anchors[i].style.opacity = ok ? 1 : 0.18;
+      }
+      if (ok) shown++;
+    });
+    var stat = document.getElementById("fltstat");
+    if (stat) stat.textContent = "SHOWING " + shown + " / " + DATA.length;
+    var none = document.getElementById("fltnone");
+    if (none) none.hidden = shown !== 0;
+  }
+  function syncURL() {
+    var p = new URLSearchParams();
+    var c = getActiveCat(); if (c !== "*") p.set("cat", c);
+    var q = getActiveQ(); if (q) p.set("q", q);
+    if (current !== "list") p.set("view", current);
+    var qs = p.toString();
+    if (qs) history.replaceState(null, "", "?" + qs);
+    else history.replaceState(null, "", location.pathname);
+  }
+  function setView(v) {
+    current = v;
+    vbtns.forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-view") === v); });
+    if (hint) hint.textContent = "展示模式 · " + ({ list: "列表", gallery: "画廊", star: "星图" }[v] || v);
+    if (v === "list") { views.gallery.hidden = true; views.star.hidden = true; cards.forEach(function (c) { c.style.display = ""; }); }
+    else { cards.forEach(function (c) { c.style.display = "none"; }); }
+    if (v === "gallery") { buildGallery(); views.gallery.hidden = false; views.star.hidden = true; }
+    else if (v === "star") { buildStar(); views.star.hidden = false; views.gallery.hidden = true; }
+    applyFilterToViews(); syncURL();
+  }
+  vbtns.forEach(function (b) { b.addEventListener("click", function () { setView(b.getAttribute("data-view")); }); });
+  var bar = document.getElementById("fltbar");
+  if (bar) bar.addEventListener("click", function (e) { if (e.target.classList && e.target.classList.contains("chip")) { setTimeout(function () { applyFilterToViews(); syncURL(); }, 0); } }, true);
+  var q = document.getElementById("q"); if (q) q.addEventListener("input", function () { applyFilterToViews(); syncURL(); }, true);
+
+  function paintRead() {
+    var o = getRead();
+    cards.forEach(function (c) { var arx = arxOfCard(c); if (o[arx]) c.classList.add("read"); });
+    var n = Object.keys(o).length;
+    if (fread) fread.textContent = "已读 " + n + " / " + DATA.length;
+  }
+  paintRead();
+
+  var up = new URLSearchParams(location.search);
+  var initCat = up.get("cat"); if (initCat) { var ch = document.querySelector('.chip[data-cat="' + initCat + '"]'); if (ch) ch.click(); }
+  var initQ = up.get("q"); if (initQ) { var qi = document.getElementById("q"); if (qi) { qi.value = initQ; qi.dispatchEvent(new Event("input")); } }
+  var initView = up.get("view"); if (initView && initView !== "list") setView(initView);
+})();
+</script>
+
+
+<section class="giscwrap" id="giscus" data-repo="1parado/multi-agent-article" data-repo-id="R_kgDOUK42-A" data-category="General" data-category-id="DIC_kwDOUK42-M4DExUU" data-mapping="og:title" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="zh-CN" aria-label="评论与批注">
+  <div class="gistitle"><span class="gt">DISCUSSION</span><span class="gs">选中正文任意文字 → 点「✎ 批注」即可带原文引用发言 · 需 GitHub 登录</span></div>
+  <div class="gismount"></div>
+</section>
+
+
+<script>
+/* ---- page enhancements v6 (spec: AGENT.md): giscus comments + text annotate ---- */
+(function () {
+  "use strict";
+  /* ===== giscus 懒加载 ===== */
+  var gwrap = document.getElementById("giscus");
+  if (gwrap) {
+    var gLoaded = false;
+    function loadGiscus() {
+      if (gLoaded) return; gLoaded = true;
+      var box = gwrap.querySelector(".gismount"); if (!box) return;
+      var s = document.createElement("script");
+      ["repo","repo-id","category","category-id","mapping","strict","reactions-enabled","emit-metadata","input-position","theme","lang"].forEach(function (k) {
+        var v = gwrap.getAttribute("data-" + k); if (v != null) s.setAttribute("data-" + k, v);
+      });
+      s.src = "https://giscus.app/client.js"; s.crossOrigin = "anonymous"; s.async = true;
+      box.appendChild(s);
+    }
+    if ("IntersectionObserver" in window) {
+      var gio = new IntersectionObserver(function (en) {
+        if (en.some(function (e) { return e.isIntersecting; })) { loadGiscus(); gio.disconnect(); }
+      }, { rootMargin: "1400px 0px" });
+      gio.observe(gwrap);
+    } else {
+      window.addEventListener("load", function () { setTimeout(loadGiscus, 700); });
+    }
+  }
+
+  /* ===== 选中批注（WPS 式：引原文 → 评论） ===== */
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var bar = null, mask = null, toast = null, annQuote = "", annHead = "";
+
+  function clean(s) { return s.replace(/\s+/g, " ").replace(/^[\s\u00a0]+|[\s\u00a0]+$/g, ""); }
+  function cap(s, n) { n = n || 300; return s.length > n ? s.slice(0, n - 1) + "…" : s; }
+  function copyTxt(txt, ok) {
+    function fb() {
+      var ta = document.createElement("textarea");
+      ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      var done = false;
+      try { done = document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta); if (ok) ok(done);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(function () { ok && ok(true); }, fb);
+    else fb();
+  }
+  function toastMsg(html, ms) {
+    if (!toast) return;
+    toast.innerHTML = html; toast.classList.add("on");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { toast.classList.remove("on"); }, ms || 4200);
+  }
+  function jumpGiscus() {
+    if (!gwrap) return;
+    gwrap.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    gwrap.classList.remove("hit"); void gwrap.offsetWidth; gwrap.classList.add("hit");
+    setTimeout(function () { gwrap.classList.remove("hit"); }, 1300);
+  }
+  function buildUI() {
+    if (bar) return;
+    bar = document.createElement("div"); bar.className = "annbar"; bar.setAttribute("role", "toolbar"); bar.setAttribute("aria-label", "批注工具");
+    var b1 = document.createElement("button"); b1.type = "button"; b1.innerHTML = "✎ 写批注"; b1.className = "pri";
+    var b2 = document.createElement("button"); b2.type = "button"; b2.textContent = "复制引用";
+    var sp = document.createElement("span"); sp.className = "sp";
+    bar.appendChild(b1); bar.appendChild(sp); bar.appendChild(b2);
+    b1.addEventListener("click", openModal); b2.addEventListener("click", function () {
+      if (!annQuote) return;
+      copyTxt(annQuote, function (okc) {
+        toastMsg(okc ? "引用已复制 ✓" : "复制失败，请手动选择复制");
+      });
+      hideBar();
+    });
+    document.body.appendChild(bar);
+
+    mask = document.createElement("div"); mask.className = "annmask"; mask.setAttribute("role", "dialog"); mask.setAttribute("aria-modal", "true"); mask.setAttribute("aria-label", "写批注");
+    mask.innerHTML =
+      '<div class="anncard">' +
+      '<h4>WRITE AN ANNOTATION · 写批注</h4>' +
+      '<div class="pos"></div>' +
+      '<div class="annq"></div>' +
+      '<textarea placeholder="写下你的看法、疑问或补充……（发布到下方评论区，所有人可见）"></textarea>' +
+      '<div class="annacts"><span class="hint">提交后复制到剪贴板 → 粘贴到评论区即可发布</span>' +
+      '<button type="button" class="abtn" data-act="cancel">取消</button>' +
+      '<button type="button" class="abtn ok" data-act="go">复制批注 · 去评论区</button></div>' +
+      '</div>';
+    document.body.appendChild(mask);
+    mask.addEventListener("click", function (e) {
+      if (e.target === mask) closeModal();
+      var btn = e.target.closest("[data-act]");
+      if (!btn) return;
+      if (btn.getAttribute("data-act") === "cancel") closeModal();
+      else submitAnno();
+    });
+    var kd = function (e) {
+      if (!mask.classList.contains("on")) return;
+      if (e.key === "Escape") { e.stopPropagation(); closeModal(); }
+      if ((e.key === "ArrowLeft" || e.key === "ArrowRight")) { e.preventDefault(); e.stopPropagation(); }
+    };
+    document.addEventListener("keydown", kd, true);
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+      var t = e.target; if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+      var s = window.getSelection();
+      if ((s && !s.isCollapsed) || (bar.classList.contains("on"))) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+
+    toast = document.createElement("div"); toast.className = "anntoast"; toast.setAttribute("role", "status");
+    document.body.appendChild(toast);
+  }
+  function hideBar() { if (bar) bar.classList.remove("on"); }
+  function openModal() {
+    if (!annQuote) return;
+    buildUI(); hideBar();
+    var head = annHead || nearestHead();
+    mask.querySelector(".pos").textContent = (head ? "章节 · " + head + "　·　" : "") + "摘自《" + pageTitle() + "》";
+    var q = mask.querySelector(".annq");
+    q.textContent = annQuote;
+    mask.classList.add("on");
+    var ta = mask.querySelector("textarea");
+    ta.value = ""; setTimeout(function () { ta.focus(); }, 30);
+  }
+  function closeModal() { if (mask) mask.classList.remove("on"); }
+  function pageTitle() {
+    var og = document.querySelector('meta[property="og:title"]');
+    return og ? og.getAttribute("content") : document.title;
+  }
+  function nearestHead() {
+    var s = window.getSelection(); if (!s || s.rangeCount === 0) return "";
+    var r = s.getRangeAt(0);
+    var node = r.commonAncestorContainer; var el = node.nodeType === 1 ? node : node.parentElement;
+    var n = el, depth = 0;
+    while (n && n.nodeType === 1 && depth < 14) {
+      if (/^H[1-3]$/.test(n.tagName)) {
+        var txt = clean(n.textContent || "");
+        return txt ? cap(txt, 40) : "";
+      }
+      n = n.parentNode; depth++;
+    }
+    return "";
+  }
+  document.addEventListener("mouseup", function (e) {
+    buildUI();
+    if (e.target && e.target.closest && e.target.closest(".giscwrap, .annmask, .annbar")) { hideBar(); return; }
+    setTimeout(function () {
+      var s = window.getSelection();
+      if (!s || s.isCollapsed || !s.toString().trim()) { hideBar(); return; }
+      var txt = clean(s.toString());
+      if (txt.length < 4) { hideBar(); return; }
+      var r = s.getRangeAt(0);
+      var rc = r.commonAncestorContainer;
+      var el = rc.nodeType === 1 ? rc : (rc.parentElement || null);
+      if (!el || !el.closest(".wrap")) { hideBar(); return; }
+      var rect = r.getBoundingClientRect();
+      if ((rect.width < 4 && rect.height < 4) && s.anchorNode && s.anchorNode.parentElement) {
+        rect = s.anchorNode.parentElement.getBoundingClientRect();
+      }
+      annQuote = cap(txt);
+      annHead = nearestHead();
+      var w = Math.min(bar.offsetWidth, 240);
+      bar.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, rect.left + rect.width / 2 - w / 2)) + "px";
+      bar.style.top = Math.max(6, rect.top - 54) + "px";
+      bar.classList.add("on");
+    }, 10);
+  });
+  document.addEventListener("selectionchange", function () {
+    var s = window.getSelection(); if (!s || s.isCollapsed) hideBar();
+  });
+  window.addEventListener("scroll", hideBar, { passive: true });
+  window.addEventListener("resize", hideBar);
+  function submitAnno() {
+    var ta = mask.querySelector("textarea");
+    var body = clean(ta.value);
+    if (!body) { ta.focus(); return; }
+    var head = annHead || nearestHead();
+    var md = "> " + annQuote.split("\n").join("\n> ") +
+      "\n>\n> —— 摘自《" + pageTitle() + "》" + (head ? " · " + head : "") +
+      "\n\n" + body +
+      "\n\n<sub>via 「选中文字 → ✎ 批注」</sub>";
+    copyTxt(md, function (okc) {
+      closeModal();
+      toastMsg(okc
+        ? "批注已复制 ✓ 点击下方评论区输入框粘贴提交（需 GitHub 登录）"
+        : "复制失败，请重试");
+      jumpGiscus();
+    });
   }
 })();
 </script>
