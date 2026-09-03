@@ -315,7 +315,7 @@ footer a:hover { color:var(--red); text-decoration:underline; }
 
 - **`.pubmeta`**：紧跟在 `.meta` 之后的一行（`.meta` 的 `</p>` 后）：`arXiv <号> · 投稿 <年-月> [· venue] · 中文版收录 2026-09-03`；
 - **`.epigraph`**：`.tldr` 之前的一条 `blockquote` 引语（红左边线、斜体），内容为 beautify_v5.py 中 `EPIGRAPH` 字典按 arXiv 号配置的「一句话导读」，`cite` 落款「— 本站导读」；
-- **`.mnotes`**：4 张 `.mnote` 卡片——馆藏信息（arXiv/投稿/收录日）、分类（类别色点 + 链到 glossary 分组锚点 `glossary.html#<cat>`）、核心术语（取 `TERM_LINKS` 首个 + 计数）、阅读顺序（上/本篇 Nº/下，红字本篇）；
+- **`.mnotes`**：**3 张** `.mnote` 卡片——分类（类别色点 + 链到 glossary 分组锚点 `glossary.html#<cat>`）、核心术语（取 `TERM_LINKS` 首个 + 计数）、阅读顺序（上/本篇 Nº/下，红字本篇）；**最早 v5 曾有第 4 张「馆藏信息」（arXiv/投稿/收录日），因与 `.pubmeta` 行完全重复已应用户反馈移除**（父 v5 源码已同步，勿再加回）；
 - 正文 h2 之前的头部信息区也可视情况补充收录时间戳。
 
 ### 4.10 v5 index 三视图 + 已读藏书章（index + 论文页共用脚本）
@@ -394,6 +394,7 @@ glossary / about 两页与普通页同构（含 §3 样式块 A/B、§4.3 C、�
 | beautify_v5.py | v5 全站注入（head meta 块/JSON-LD/论文页 pubmeta·epigraph·mnotes·双栏/样式块 D/v5 脚本），内含 ORDER_ARX（阅读顺序）与 EPIGRAPH 字典；**新增论文时在此登记 arXiv 号并补引语，重跑后自带全站自检与 og:image 唯一性断言** |
 | gen_covers.py | 程序化期刊封面生成器（arXiv 号为随机种子 → 确定性拓扑点线），输出 covers/ 14 张 1200×630 PNG + apple-touch-icon.png 180×180；**新增论文时在此 ORDER 登记并重跑** |
 | v4_scan.py / v4_fix_straydiv.py | 术语扫描 / 游离 `</div>` 修复（历史问题保留，勿重犯） |
+| patches/rm_archive_card.py | 移除「馆藏信息」旁注卡片的一次性补丁（与 .pubmeta 重复）；仅历史记录，库里已无该卡片 |
 | beautify_v2.py / v3.py / patch / remove_dropcap / fix_nav.py | 历史批次，仅存档 |
 
 批量修改一律：先断言对应版本标记不存在再注入（防重复）；改完全站用 §8 清单 grep 自检；保持 LF 换行、UTF-8 无 BOM。
@@ -409,7 +410,7 @@ glossary / about 两页与普通页同构（含 §3 样式块 A/B、§4.3 C、�
 - [ ] 论文页 eyebrow 带 `--cat` 与 `.dot`；正文含 3–5 个 `class="gloss"` 且锚点 id 存在于 glossary.html；index 每个 `.paper` 带 `data-cat`，`#fltbar` 含 8 个 chip（全部+7 类）；
 - [ ] index footer 为 `.sitefoot` 两行结构；论文页 footer 含术语表/关于链接；
 - [ ] 每页恰好一条 `og:image` 且紧跟 `og:image:width(1200)/height(630)` 三连对、指向本页 `covers/` PNG；每页恰好一条 `canonical`/`apple-touch-icon`/`theme-color`/`application/ld+json`（论文 `ScholarlyArticle`、index `WebSite`、glossary/about `WebPage`）；
-- [ ] 论文页含 `page-paper`/`paper-main`/`.mnotes`（4 张 `.mnote`）/`.pubmeta`/`.epigraph` 各一，`.mnotes` 在 `.paper-main` 闭合后、`<footer>` 前；
+- [ ] 论文页含 `page-paper`/`paper-main`/`.mnotes`（**恰好 3 张** `.mnote`：分类/核心术语/阅读顺序，**不得含「馆藏信息」卡片**——与 `.pubmeta` 重复，已移除）/`.pubmeta`/`.epigraph` 各一，`.mnotes` 在 `.paper-main` 闭合后、`<footer>` 前；
 - [ ] index 含 `#viewbar`+`#gallery`+`#star`；`covers/` 每张 1200×630 与引用一致；新论文已进 `sitemap.xml`；
 - [ ] 浏览器实测：目录筛选 chip 过滤、检索框过滤、空态提示；论文页点 BibTeX/APA 复制成功；Ctrl+P 打印预览无悬浮控件、条形图高度完整、旁注栏隐藏；术语点状下划线可跳到 glossary 对应词条；分享链接在微信/浏览器显示本页专属封面与标题；列表/画廊/星图切换、URL 带 `?view=` 刷新后保持视图、读完一篇后 index 出现红色藏书章；
 - [ ] 全站点一遍：index → 论文页 → 上一篇/下一篇 → 术语表 → 关于 → 404，全部可达。

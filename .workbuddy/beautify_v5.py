@@ -5,7 +5,8 @@
 
 注入清单（idempotent，重复运行会被 assertion 拦截）：
   - 全部页 head：theme-color / apple-touch-icon / canonical / JSON-LD / og:image→covers/*.png
-  - 论文页 body.class="page-paper"；正文包 .paper-main，末尾加 .mnotes 旁注栏；
+  - 论文页 body.class="page-paper"；正文包 .paper-main，末尾加 .mnotes 旁注栏
+    （分类 / 核心术语 / 阅读顺序 三张卡片；馆藏信息已因与 .pubmeta 重复而移除）；
     在 .meta 后加 .pubmeta（arXiv 编号 / 投稿月份 / 收录日），在 .tldr 上加 .epigraph 引语；
     v5 脚本记录已读到 LS。
   - index：插入 .viewbar + #gallery + #star 容器；v5 脚本：视图切换、URL 同步、
@@ -371,9 +372,8 @@ def paper_extras(arx, p):
 
     notes_html = (
         '<aside class="mnotes" aria-label="\u7f16\u8005\u65c1\u6ce8">'
-        '<div class="mnote"><h4>\u9986\u85cf\u4fe1\u606f</h4>'
-        '<p>arXiv <b>' + arx + '</b><br>\u6295\u7a3f <b>' + date + '</b><br>'
-        '\u4e2d\u6587\u7248\u6536\u5f55 <b>' + CITE_DATE + '</b></p></div>'
+        # v5 后续调整：馆藏信息卡片与正文 .pubmeta 完全重复（arXiv/投稿/收录三行），
+        # 已按用户反馈移除，只保留 分类 / 核心术语 / 阅读顺序 三张卡片（见 AGENT.md §4.9）。
         '<div class="mnote"><h4>\u5206\u7c7b</h4>'
         '<p><span class="dotc" style="color:' + cat_color + '">\u25cf</span> <a href="glossary.html#' + p["cat"] + '">' + cat_cn + '</a></p></div>'
         '<div class="mnote"><h4>\u6838\u5fc3\u672f\u8bed</h4>' + term_html + '</div>'
