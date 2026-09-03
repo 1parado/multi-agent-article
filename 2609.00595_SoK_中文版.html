@@ -149,55 +149,7 @@
 </style>
 <style>
   /* ---- v5 enhancements (spec: AGENT.md): covers/views/marginalia/epigraph ---- */
-  body.page-paper .wrap { display:grid; grid-template-columns:minmax(0,1fr) 232px; gap:48px; }
-  body.page-paper .wrap > .paper-main { min-width:0; }
-  body.page-paper .mnotes { display:flex; flex-direction:column; gap:14px; align-self:start; position:sticky; top:36px; }
-  body.page-paper .mnotes h4 { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; color:var(--red); margin:0 0 6px; font-weight:600; }
-  body.page-paper .mnote { border:1px solid var(--line); border-radius:8px; padding:12px 14px; background:#fdfcfa; font-size:13.5px; color:var(--gray); }
-  body.page-paper .mnote p { margin:0; line-height:1.65; font-size:13.5px; }
-  body.page-paper .mnote a { color:var(--red); text-decoration:none; }
-  body.page-paper .mnote a:hover { text-decoration:underline; }
-  body.page-paper .mnote .dotc { color:var(--cat,var(--red)); }
-  @media (max-width:1240px) {
-    body.page-paper .wrap { display:block; }
-    body.page-paper .mnotes { position:static; margin-top:42px; padding-top:22px; border-top:1px solid var(--line); flex-direction:column; }
-  }
-  .pubmeta { font-family:"IBM Plex Mono",Consolas,monospace; font-size:12px; letter-spacing:1.2px; color:var(--soft); margin:8px 0 0; }
-  .pubmeta b { color:var(--ink); font-weight:500; }
-  .epigraph { margin:0 0 28px; padding:18px 22px 16px; border-left:3px solid var(--red); background:#fdfaf7; border-radius:0 8px 8px 0; }
-  .epigraph p { margin:0 0 6px; font-size:15.5px; color:var(--ink); font-style:italic; line-height:1.85; }
-  .epigraph cite { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; color:var(--soft); font-style:normal; }
-  /* index views */
-  .viewbar { display:flex; align-items:center; gap:6px; margin:0 0 26px; flex-wrap:wrap; }
-  .vbtn { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11.5px; letter-spacing:1.5px; color:var(--gray); background:#fff; border:1px solid var(--line); border-radius:99px; padding:4px 14px; cursor:pointer; transition:color .2s,border-color .2s,background .2s; }
-  .vbtn:hover { color:var(--red); border-color:var(--red); }
-  .vbtn.on { color:var(--red); border-color:var(--red); background:#fdfaf7; }
-  .vhint { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; color:var(--soft); margin-left:8px; }
-  #vhint-r { margin-left:auto; color:var(--red); }
-  .gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:18px; margin:0 0 36px; }
-  .gallery a { display:block; position:relative; border:1px solid var(--line); border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; transition:transform .25s ease, box-shadow .25s ease; background:#fff; }
-  .gallery a:hover { transform:translateY(-3px); box-shadow:0 6px 22px rgba(0,0,0,.10); }
-  .gallery img { display:block; width:100%; height:auto; }
-  .gallery .ov { padding:10px 12px 12px; background:#fdfaf7; border-left:3px solid var(--red); }
-  .gallery .ov .id { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:var(--red); }
-  .gallery .ov .ti { font-size:14.5px; font-weight:600; margin-top:2px; color:var(--ink); }
-  .gallery .ov .en { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; color:var(--soft); margin-top:4px; }
-  #star { position:relative; height:380px; border:1px solid var(--line); border-radius:12px; background:linear-gradient(180deg,#fdfaf7 0%,#fff 100%); padding:18px 22px; margin:0 0 36px; }
-  #star svg { width:100%; height:100%; display:block; overflow:visible; }
-  #star .tip { position:absolute; pointer-events:none; padding:8px 12px; background:#fff; border:1px solid var(--line); border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,.08); font-size:12.5px; max-width:260px; opacity:0; transition:opacity .15s; }
-  #star .tip.on { opacity:1; }
-  #star .tip b { color:var(--red); font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; display:block; margin-bottom:4px; }
-  #star .tip .en { color:var(--soft); font-size:11px; }
-  /* 藏书章 */
-  .readmark { position:absolute; top:14px; right:14px; transform:rotate(-8deg); font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:2px; color:#fff; background:var(--red); border:2px solid #fff; padding:3px 9px; border-radius:4px; box-shadow:0 0 0 1px var(--red); display:none; z-index:2; }
-  .paper { position:relative; }
-  .paper.read .readmark { display:inline-block; }
-  @media print {
-    .viewbar, #gallery, #star, .mnotes, .pubmeta, .readmark { display:none !important; }
-    .epigraph { background:#fff !important; border-left-color:#A02C2C !important; }
-    body.page-paper .wrap { display:block; }
-  }
-</style>
+  </style>
 <meta name="theme-color" content="#A02C2C">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="canonical" href="https://1parado.github.io/multi-agent-article/2609.00595_SoK_%E4%B8%AD%E6%96%87%E7%89%88.html">
@@ -257,9 +209,7 @@
 <!-- v6-style-injected -->
 </head>
 <body class="page-paper">
-<div class="wrap">
-<div class="paper-main">
-<div class="wm">arXiv 2609.00595</div>
+<div class="wrap"><div class="wm">arXiv 2609.00595</div>
 
 <div class="eyebrow" style="--cat:#2E7D74"><span class="dot"></span>MULTI-AGENT · SECURITY SoK</div>
 <h1>SoK: When Safe Agents Fail Together</h1>
@@ -322,10 +272,7 @@
 <div class="nav">
   <a href="2608.27338_MoRe_中文版.html">← 上一篇：MoRe</a>
   <a href="2509.24323_MAS2_中文版.html">下一篇：MAS² →</a>
-</div>
-</div>
-<aside class="mnotes" aria-label="编者旁注"><div class="mnote"><h4>分类</h4><p><span class="dotc" style="color:#2E7D74">●</span> <a href="glossary.html#SECURITY">安全</a></p></div><div class="mnote"><h4>核心术语</h4><p>核心术语：<a href="glossary.html#mas">多智能体系统（MAS）</a> 等 3 个</p></div><div class="mnote"><h4>阅读顺序</h4><p>上一篇：<a href="MoRe_中文版.html">MoRe</a><br><span style="color:var(--red);">本篇 Nº 7</span><br>下一篇：<a href="MAS²_中文版.html">MAS²</a></p></div></aside>
-<footer>SoK · arXiv 2609.00595
+</div><footer>SoK · arXiv 2609.00595
   <a href="glossary.html">术语表</a> · <a href="about.html">关于</a></footer>
 </div>
 <script>

@@ -5,10 +5,8 @@
 
 注入清单（idempotent，重复运行会被 assertion 拦截）：
   - 全部页 head：theme-color / apple-touch-icon / canonical / JSON-LD / og:image→covers/*.png
-  - 论文页 body.class="page-paper"；正文包 .paper-main，末尾加 .mnotes 旁注栏
-    （分类 / 核心术语 / 阅读顺序 三张卡片；馆藏信息已因与 .pubmeta 重复而移除）；
-    在 .meta 后加 .pubmeta（arXiv 编号 / 投稿月份 / 收录日），在 .tldr 上加 .epigraph 引语；
-    v5 脚本记录已读到 LS。
+  - 论文页 body.class="page-paper"；在 .meta 后加 .pubmeta（arXiv 编号 / 投稿月份 / 收录日），在 .tldr 上加 .epigraph 引语；
+    **后续调整**：馆藏信息卡片与 .pubmeta 重复已删；侧旁注栏（.mnotes）与 .paper-main 双栏包裹已移除（保留分类 meta + 全文对比表的呈现路径）。
   - index：插入 .viewbar + #gallery + #star 容器；v5 脚本：视图切换、URL 同步、
     已读印章、画廊渲染、星图渲染。
   - glossary / about：只加 head 元数据（canonical / theme-color / apple-touch-icon / JSON-LD）。
@@ -98,20 +96,9 @@ def ld_static(name, desc, url):
 
 
 V5_CSS = """
-  /* ---- v5 enhancements (spec: AGENT.md): covers/views/marginalia/epigraph ---- */
-  body.page-paper .wrap { display:grid; grid-template-columns:minmax(0,1fr) 232px; gap:48px; }
-  body.page-paper .wrap > .paper-main { min-width:0; }
-  body.page-paper .mnotes { display:flex; flex-direction:column; gap:14px; align-self:start; position:sticky; top:36px; }
-  body.page-paper .mnotes h4 { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; color:var(--red); margin:0 0 6px; font-weight:600; }
-  body.page-paper .mnote { border:1px solid var(--line); border-radius:8px; padding:12px 14px; background:#fdfcfa; font-size:13.5px; color:var(--gray); }
-  body.page-paper .mnote p { margin:0; line-height:1.65; font-size:13.5px; }
-  body.page-paper .mnote a { color:var(--red); text-decoration:none; }
-  body.page-paper .mnote a:hover { text-decoration:underline; }
-  body.page-paper .mnote .dotc { color:var(--cat,var(--red)); }
-  @media (max-width:1240px) {
-    body.page-paper .wrap { display:block; }
-    body.page-paper .mnotes { position:static; margin-top:42px; padding-top:22px; border-top:1px solid var(--line); flex-direction:column; }
-  }
+  /* ---- v5 enhancements (spec: AGENT.md): covers/views/pubmeta/epigraph ---- */
+  /* v5 后续：.mnotes 与 .paper-main 双栏均已移除，论文页回到单栏正文布局 */
+  .pubmeta { font-family:"IBM Plex Mono",Consolas,monospace; font-size:12px; letter-spacing:1.2px; color:var(--soft); margin:8px 0 0; }
   .pubmeta { font-family:"IBM Plex Mono",Consolas,monospace; font-size:12px; letter-spacing:1.2px; color:var(--soft); margin:8px 0 0; }
   .pubmeta b { color:var(--ink); font-weight:500; }
   .epigraph { margin:0 0 28px; padding:18px 22px 16px; border-left:3px solid var(--red); background:#fdfaf7; border-radius:0 8px 8px 0; }
@@ -143,9 +130,8 @@ V5_CSS = """
   .paper { position:relative; }
   .paper.read .readmark { display:inline-block; }
   @media print {
-    .viewbar, #gallery, #star, .mnotes, .pubmeta, .readmark { display:none !important; }
+    .viewbar, #gallery, #star, .pubmeta, .readmark { display:none !important; }
     .epigraph { background:#fff !important; border-left-color:#A02C2C !important; }
-    body.page-paper .wrap { display:block; }
   }
 """
 
@@ -370,17 +356,10 @@ def paper_extras(arx, p):
         order_html += '下一篇：<a href="' + V4.PAPER[next_arx]["name"] + '_中文版.html">' + next_n + '</a>'
     order_html += "</p>"
 
-    notes_html = (
-        '<aside class="mnotes" aria-label="\u7f16\u8005\u65c1\u6ce8">'
-        # v5 后续调整：馆藏信息卡片与正文 .pubmeta 完全重复（arXiv/投稿/收录三行），
-        # 已按用户反馈移除，只保留 分类 / 核心术语 / 阅读顺序 三张卡片（见 AGENT.md §4.9）。
-        '<div class="mnote"><h4>\u5206\u7c7b</h4>'
-        '<p><span class="dotc" style="color:' + cat_color + '">\u25cf</span> <a href="glossary.html#' + p["cat"] + '">' + cat_cn + '</a></p></div>'
-        '<div class="mnote"><h4>\u6838\u5fc3\u672f\u8bed</h4>' + term_html + '</div>'
-        '<div class="mnote"><h4>\u9605\u8bfb\u987a\u5e8f</h4>' + order_html + '</div>'
-        '</aside>'
-    )
-    return pubmeta, epi, notes_html
+    # v5 后续调整：旁注栏（aside.mnotes + .paper-main 双栏）已按用户反馈整段移除——分类
+    # 已在正文 meta 行可见、核心术语用 .gloss 在正文中已点线引用、阅读顺序在 index 横向对比表
+    # 与 footer 的 ←/→ 翻页里均有体现，不再需要右侧 sidebar（见 AGENT.md §4.9）。
+    return pubmeta, epi, ""
 
 
 def main():
@@ -424,9 +403,8 @@ def main():
                 tldrm = re.search(r'(\n\n<div class="tldr">)', txt)
                 if tldrm:
                     txt = txt[:tldrm.start()] + n + epi_html + n + txt[tldrm.start():]
-            if 'class="paper-main"' not in txt:
-                txt = txt.replace('<div class="wrap">', '<div class="wrap">' + n + '<div class="paper-main">', 1)
-                txt = txt.replace('\n<footer>', n + '</div>' + n + notes_html + n + '<footer>', 1)
+            # v5 后续调整：.paper-main 双栏包裹已移除（旁注栏删后无意义），此处跳过；如需回滚，
+            # 恢复成 'txt = txt.replace(\"<div class=\\\"wrap\\\">\", \"<div class=\\\"wrap\\\">\" + n + \"<div class=\\\"paper-main\\\">\", 1)' 即可。
 
         if is_index and 'id="viewbar"' not in txt:
             viewbar = (
@@ -460,8 +438,6 @@ def main():
             "og-cover": txt.count('/covers/'),
             "pubmeta": txt.count('class="pubmeta"'),
             "epigraph": txt.count('class="epigraph"'),
-            "paper-main": txt.count('class="paper-main"'),
-            "mnotes": txt.count('class="mnotes"'),
             "viewbar": txt.count('id="viewbar"'),
             "v5-script": txt.count("page enhancements v5"),
         }

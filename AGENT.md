@@ -9,7 +9,7 @@
 | 页面 | 类型 | 说明 |
 |------|------|------|
 | index.html | 目录页 | 论文列表（每项带 `data-cat`）+ 横向对比表 + 趋势 + 阅读顺序 + `#fltbar` 筛选检索 + v5 三视图（`.viewbar`：列表/画廊/星图）与已读藏书章 |
-| `<arXiv号>_<短名>_中文版.html`（11 篇） | 论文页 | 属于导航链（见 §2）；v5 起带 `.paper-main`+`.mnotes` 双栏、`.pubmeta`、`.epigraph`、`body.page-paper` |
+| `<arXiv号>_<短名>_中文版.html`（11 篇） | 论文页 | 属于导航链（见 §2）；v5 起带 `.pubmeta`、`.epigraph`、`body.page-paper`；**v5 后续：`.mnotes` 旁注栏与 `.paper-main` 双栏均已移除，回到单栏正文** |
 | glossary.html | 术语表 | 不属于导航链；词条 `id` 供各页 `.gloss` 链接（见 §4.6） |
 | about.html | 关于 | 不属于导航链；维护信息、收录标准、更新记录、许可措辞 |
 | covers/ | 期刊封面 | 14 张 1200×630 PNG（11 论文 + index/glossary/about），每页 `og:image` 指向自己的那张；由 `.workbuddy/gen_covers.py` 生成 |
@@ -84,14 +84,14 @@ PDF 链接规则：本目录存在对应 PDF 文件的用相对路径（当前�
 1. 在 `index.html` 论文列表末尾追加条目（并补 `data-cat` 属性，见 §5 色表映射）；
 2. 新页面 `.nav` 指向 `index.html`，并回写当前末篇页面的「下一篇」；
 3. 更新本文件的顺序表、色表、`README` 表格、`about.html` 收录说明与篇数文案；
-4. 在 `.workbuddy/beautify_v5.py` 的 `ORDER_ARX` 中登记 arXiv 号并补 `EPIGRAPH` 引语，重跑注入脚本 → 得到 `.pubmeta`/`.epigraph`/`.mnotes`/JSON-LD；
+4. 在 `.workbuddy/beautify_v5.py` 的 `ORDER_ARX` 中登记 arXiv 号并补 `EPIGRAPH` 引语，重跑注入脚本 → 得到 `.pubmeta`/`.epigraph`/JSON-LD；**v5 后续：脚本不再生成 `.mnotes` 与 `.paper-main` 双栏**，分类/核心术语/阅读顺序分别由正文 meta + `.gloss` 点线引用 + footer 的 ←/→ 翻页与 index 横向对比表承载；
 5. 在 `.workbuddy/gen_covers.py` 的 `ORDER` 中登记并重跑 → 生成 `covers/<arXiv号>.png`（新页 og:image 自动指向它）；
 6. 在 `sitemap.xml` 末尾追加该页 `<url>`；
 7. 页面内所有站内链接逐条自检（见 §8）。
 
 ## 3. 页面增强组件 v1–v3 — 论文页与 index 必须包含
 
-**实现方式：固定的代码块，原样复制，不做改写。** 组件历史：v1 TOC / v2（进度条、色签、reveal、水印、Hero）/ v3（返回顶部、章节编号、锚点复制、键盘翻页、对比表升级、移动端）/ v5（旁注栏、封面、三视图、站身份）。全部页面已内置，逐项核验标准：
+**实现方式：固定的代码块，原样复制，不做改写。** 组件历史：v1 TOC / v2（进度条、色签、reveal、水印、Hero）/ v3（返回顶部、章节编号、锚点复制、键盘翻页、对比表升级、移动端）/ v5（封面、pubmeta/epigraph、JSON-LD、三视图、站身份；**后续：旁注栏 + 双栏均移除**）。全部页面已内置，逐项核验标准：
 
 - `<head>` 含 **v4 字体异步块**（见 §4.1）；
 - `</head>` 前依次为：样式块 A（TOC widget + v2 增强）、样式块 B（v3 增强）、样式块 C（v4 增强，见 §4.3）、样式块 D（v5 增强，搜索 `v5 enhancements`）；
@@ -311,12 +311,22 @@ footer a:hover { color:var(--red); text-decoration:underline; }
 
 ### 4.9 v5 论文页增强（仅 11 篇论文页）
 
-论文页 `<body class="page-paper">`，正文包在 `<div class="wrap"><div class="paper-main">…</div>` 内，`.paper-main` 之后、`<footer>` 之前放 `<aside class="mnotes">` 旁注栏（桌面 ≥1241px 时右栏 sticky 双栏网格，窄屏/打印自动降为单列）。由 beautify_v5.py 注入的四个元素：
+论文页 `<body class="page-paper">`，正文包在 `<div class="wrap">…</div>` 内（**v5 后续：已不再生成 `.paper-main` 双栏包裹，回到单栏正文**）。由 beautify_v5.py 注入的两个元素：
 
 - **`.pubmeta`**：紧跟在 `.meta` 之后的一行（`.meta` 的 `</p>` 后）：`arXiv <号> · 投稿 <年-月> [· venue] · 中文版收录 2026-09-03`；
-- **`.epigraph`**：`.tldr` 之前的一条 `blockquote` 引语（红左边线、斜体），内容为 beautify_v5.py 中 `EPIGRAPH` 字典按 arXiv 号配置的「一句话导读」，`cite` 落款「— 本站导读」；
-- **`.mnotes`**：**3 张** `.mnote` 卡片——分类（类别色点 + 链到 glossary 分组锚点 `glossary.html#<cat>`）、核心术语（取 `TERM_LINKS` 首个 + 计数）、阅读顺序（上/本篇 Nº/下，红字本篇）；**最早 v5 曾有第 4 张「馆藏信息」（arXiv/投稿/收录日），因与 `.pubmeta` 行完全重复已应用户反馈移除**（父 v5 源码已同步，勿再加回）；
-- 正文 h2 之前的头部信息区也可视情况补充收录时间戳。
+- **`.epigraph`**：`.tldr` 之前的一条 `blockquote` 引语（红左边线、斜体），内容为 beautify_v5.py 中 `EPIGRAPH` 字典按 arXiv 号配置的「一句话导读」，`cite` 落款「— 本站导读」。
+
+**v5 后续调整（按用户反馈）**：
+
+- 「馆藏信息」旁注卡片（arXiv/投稿/收录日）与 `.pubmeta` 行完全重复，已移除（patches/rm_archive_card.py）。
+- 进一步移除整个 `<aside class="mnotes">` 旁注栏（分类 / 核心术语 / 阅读顺序）与 `.paper-main` 双栏包裹：
+  - **分类**——已直接在正文 `.meta` 行中给出，并可由 index 横向对比表跳转；
+  - **核心术语**——已用 `.gloss` 点线样式在正文中给出，悬停即跳 glossary；
+  - **阅读顺序**——footer 的 ←/→ 键盘翻页链接 + index 横向对比表已经承载；
+  - 因此 sidebar 没有额外价值，回退到单栏正文让版心更舒展；
+  - 实施 patches/rm_mnotes.py（幂等），脚本与规范同步更新。
+
+正文 h2 之前的头部信息区也可视情况补充收录时间戳。
 
 ### 4.10 v5 index 三视图 + 已读藏书章（index + 论文页共用脚本）
 
@@ -391,10 +401,12 @@ glossary / about 两页与普通页同构（含 §3 样式块 A/B、§4.3 C、�
 | 脚本 | 用途 |
 |------|------|
 | beautify_v4.py | v4 全站注入（字体异步/OG/样式/脚本/引用/术语链/筛选/页脚/文案修正），内含 PAPER 元数据表与 TERM_LINKS 术语映射，**新增论文时在此登记** |
-| beautify_v5.py | v5 全站注入（head meta 块/JSON-LD/论文页 pubmeta·epigraph·mnotes·双栏/样式块 D/v5 脚本），内含 ORDER_ARX（阅读顺序）与 EPIGRAPH 字典；**新增论文时在此登记 arXiv 号并补引语，重跑后自带全站自检与 og:image 唯一性断言** |
+| beautify_v5.py | v5 全站注入（head meta 块/JSON-LD/论文页 pubmeta·epigraph/样式块 D/v5 脚本），内含 ORDER_ARX（阅读顺序）与 EPIGRAPH 字典；**新增论文时在此登记 arXiv 号并补引语，重跑后自带全站自检与 og:image 唯一性断言**；**v5 后续：已不再生成 `.paper-main` 双栏与 `.mnotes` 旁注栏** |
 | gen_covers.py | 程序化期刊封面生成器（arXiv 号为随机种子 → 确定性拓扑点线），输出 covers/ 14 张 1200×630 PNG + apple-touch-icon.png 180×180；**新增论文时在此 ORDER 登记并重跑** |
 | v4_scan.py / v4_fix_straydiv.py | 术语扫描 / 游离 `</div>` 修复（历史问题保留，勿重犯） |
 | patches/rm_archive_card.py | 移除「馆藏信息」旁注卡片的一次性补丁（与 .pubmeta 重复）；仅历史记录，库里已无该卡片 |
+| patches/rm_mnotes.py | 整段移除 `.mnotes` 旁注栏与 `.paper-main` 双栏包裹的一次性补丁（按用户反馈回退到单栏正文）；幂等，再次运行会被断言拦截 |
+| patches/rm_mnotes.py | 整段移除 `.mnotes` 旁注栏与 `.paper-main` 双栏包裹的一次性补丁（按用户反馈回退到单栏正文）；幂等，再次运行会被断言拦截 |
 | beautify_v2.py / v3.py / patch / remove_dropcap / fix_nav.py | 历史批次，仅存档 |
 
 批量修改一律：先断言对应版本标记不存在再注入（防重复）；改完全站用 §8 清单 grep 自检；保持 LF 换行、UTF-8 无 BOM。
@@ -410,9 +422,9 @@ glossary / about 两页与普通页同构（含 §3 样式块 A/B、§4.3 C、�
 - [ ] 论文页 eyebrow 带 `--cat` 与 `.dot`；正文含 3–5 个 `class="gloss"` 且锚点 id 存在于 glossary.html；index 每个 `.paper` 带 `data-cat`，`#fltbar` 含 8 个 chip（全部+7 类）；
 - [ ] index footer 为 `.sitefoot` 两行结构；论文页 footer 含术语表/关于链接；
 - [ ] 每页恰好一条 `og:image` 且紧跟 `og:image:width(1200)/height(630)` 三连对、指向本页 `covers/` PNG；每页恰好一条 `canonical`/`apple-touch-icon`/`theme-color`/`application/ld+json`（论文 `ScholarlyArticle`、index `WebSite`、glossary/about `WebPage`）；
-- [ ] 论文页含 `page-paper`/`paper-main`/`.mnotes`（**恰好 3 张** `.mnote`：分类/核心术语/阅读顺序，**不得含「馆藏信息」卡片**——与 `.pubmeta` 重复，已移除）/`.pubmeta`/`.epigraph` 各一，`.mnotes` 在 `.paper-main` 闭合后、`<footer>` 前；
+- [ ] 论文页含 `page-paper`/`.pubmeta`/`.epigraph` 各一；**不得含 `.mnotes`/`.paper-main`（v5 后续已移除）**；
 - [ ] index 含 `#viewbar`+`#gallery`+`#star`；`covers/` 每张 1200×630 与引用一致；新论文已进 `sitemap.xml`；
-- [ ] 浏览器实测：目录筛选 chip 过滤、检索框过滤、空态提示；论文页点 BibTeX/APA 复制成功；Ctrl+P 打印预览无悬浮控件、条形图高度完整、旁注栏隐藏；术语点状下划线可跳到 glossary 对应词条；分享链接在微信/浏览器显示本页专属封面与标题；列表/画廊/星图切换、URL 带 `?view=` 刷新后保持视图、读完一篇后 index 出现红色藏书章；
+- [ ] 浏览器实测：目录筛选 chip 过滤、检索框过滤、空态提示；论文页点 BibTeX/APA 复制成功；Ctrl+P 打印预览无悬浮控件、条形图高度完整；术语点状下划线可跳到 glossary 对应词条；分享链接在微信/浏览器显示本页专属封面与标题；列表/画廊/星图切换、URL 带 `?view=` 刷新后保持视图、读完一篇后 index 出现红色藏书章；**论文页正文回到单栏，无右侧 sidebar**；
 - [ ] 全站点一遍：index → 论文页 → 上一篇/下一篇 → 术语表 → 关于 → 404，全部可达。
 
 ## 9. 其他约定
