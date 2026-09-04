@@ -20,15 +20,15 @@
 
 <title>Multi-Agent Framework / Harness Papers 2026</title>
 <style>
-  :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#3d3d3d; --soft:#8a8a86; --line:#e6e4e0; }
+  :root { --red:#A02C2C; --sage:#C9CBC0; --ink:#1a1a1a; --gray:#333333; --soft:#5f5f5b; --line:#e6e4e0; --link:#8B3A3A; color-scheme:light; }
   * { box-sizing:border-box; }
-  body { font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fff; margin:0; line-height:2.0; font-size:15.5px; }
+  body { font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fff; margin:0; line-height:1.85; font-size:15.5px; }
   .mono { font-family:"IBM Plex Mono",Consolas,"Courier New",monospace; }
-  .wrap { max-width:780px; margin:0 auto; padding:72px 24px 90px; }
+  .wrap { max-width:720px; margin:0 auto; padding:72px 24px 90px; }
   .eyebrow { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:12px; letter-spacing:3px; }
   h1 { font-family:"IBM Plex Mono",Consolas,monospace; color:var(--red); font-size:29px; font-weight:600; margin:14px 0 6px; letter-spacing:-.3px; }
   .sub { font-size:19px; font-weight:700; margin-bottom:10px; }
-  .intro { color:var(--gray); margin:6px 0 0; }
+  .intro { color:var(--gray); margin:6px 0 0; line-height:1.85; }
   .tldr { font-size:16.5px; color:var(--ink); margin:36px 0 0; padding-bottom:34px; border-bottom:1px solid var(--line); }
   .tldr b { color:var(--red); }
   h2 { font-size:21px; font-weight:800; margin:56px 0 0; }
@@ -41,7 +41,7 @@
   .paper h3 a:hover { color:var(--red); }
   .paper .en { font-family:"IBM Plex Mono",Consolas,monospace; font-size:12px; color:var(--soft); }
   .paper p { color:var(--gray); font-size:14.5px; margin:10px 0 8px; }
-  .paper a { color:var(--red); text-decoration:none; font-size:13.5px; font-weight:600; margin-right:16px; }
+  .paper a { color:var(--link,var(--red)); text-decoration:none; font-size:13.5px; font-weight:600; margin-right:16px; }
   .paper a:hover { text-decoration:underline; }
   table.cmp { width:100%; border-collapse:collapse; font-size:14px; }
   table.cmp th { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11.5px; letter-spacing:1.5px; color:var(--red); text-align:left; border-bottom:2px solid var(--red); padding:10px 14px 10px 0; font-weight:600; }
@@ -59,11 +59,12 @@
   #toc-panel a.active { color:var(--red); background:#f6f5f3; font-weight:600; }
   .bar { transition:height .9s cubic-bezier(.22,.7,.3,1); }
   .barwrap:hover .bar { filter:brightness(1.1); }
-  .reveal { opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease; }
+  .reveal { opacity:1; transform:none; transition:opacity .45s ease, transform .45s ease; }
+  .reveal.js-animate { opacity:0; transform:translateY(12px); }
   .reveal.in { opacity:1; transform:none; }
   @media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } .bar { transition:none; } }
   .wrap { position:relative; }
-  .wm { position:absolute; top:56px; right:20px; font-family:"IBM Plex Mono",Consolas,monospace; font-size:58px; font-weight:700; letter-spacing:1px; color:var(--red); opacity:.06; user-select:none; pointer-events:none; white-space:nowrap; }
+  .wm { position:absolute; top:56px; right:20px; font-family:"IBM Plex Mono",Consolas,monospace; font-size:58px; font-weight:700; letter-spacing:1px; color:var(--red); opacity:.04; user-select:none; pointer-events:none; white-space:nowrap; }
   @media (max-width:700px) { .wm { display:none; } }
   /* ---- index enhancements (spec: AGENT.md) ---- */
   .hero { margin:36px 0 0; padding:20px 10px 8px; border:1px solid var(--line); border-radius:10px; background:#fdfcfa; }
@@ -72,7 +73,9 @@
   @keyframes dashmove { to { stroke-dashoffset:-24; } }
   @media (prefers-reduced-motion: reduce) { .fl { animation:none; } }
   .paper { transition:background .25s ease, border-color .25s ease; border-left:3px solid transparent; padding-left:18px; margin-left:-18px; border-radius:0 8px 8px 0; }
-  .paper:hover { background:#faf8f6; border-left-color:var(--cat,var(--red)); }
+  .paper:hover { background:#faf8f6; border-left-color:var(--cat,var(--red)); box-shadow:0 2px 12px rgba(0,0,0,.04); }
+  .paper.is-read { opacity:.72; }
+  .paper.is-read .idx::after { content:" · 已读"; font-size:10px; letter-spacing:1px; opacity:.7; }
   .paper .idx { color:var(--cat,var(--red)); }
 </style>
 <style>
@@ -154,7 +157,7 @@
   .fltnone { font-size:14px; color:var(--gray); }
   @media (max-width:640px) { .citecap { display:none; } .fltbar { gap:8px; } }
   @media print {
-    #pbar, #toc-btn, #toc-panel, #totop, .wm, .hlink, #fltbar, .fltnone, .fltstat, #q { display:none !important; }
+    #pbar, #toc-btn, #toc-panel, #totop, .wm, .hlink, #fltbar, .fltnone, .fltstat, #q, #imm-btn, #skip, #imm-chip { display:none !important; }
     .reveal { opacity:1 !important; transform:none !important; }
     body { font-size:12px; line-height:1.7; }
     .wrap { padding-top:24px; }
@@ -192,7 +195,7 @@
   #vhint-r { margin-left:auto; color:var(--red); }
   .gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:22px; margin:0 0 36px; }
   .gallery[hidden], #star[hidden] { display:none !important; }
-  .gallery a { display:flex; flex-direction:column; position:relative; border:1px solid var(--line); border-radius:12px; overflow:hidden; text-decoration:none; color:inherit; background:#fff; transition:transform .35s cubic-bezier(.22,.7,.3,1), box-shadow .35s ease, border-color .25s ease; box-shadow:0 1px 0 rgba(0,0,0,.02); }
+  .gallery a { display:flex; flex-direction:column; position:relative; border:1px solid var(--line); border-radius:12px; overflow:hidden; text-decoration:none; color:inherit; background:#fff; transition:transform .35s cubic-bezier(.22,.7,.3,1), box-shadow .35s ease, border-color .25s ease; box-shadow:0 2px 8px rgba(0,0,0,.04); }
   .gallery a:hover { transform:translateY(-4px); box-shadow:0 14px 32px rgba(0,0,0,.10); border-color:var(--cat,var(--line)); }
   .gallery .thumb { position:relative; aspect-ratio:1200/630; overflow:hidden; background:linear-gradient(135deg,#fdfaf7 0%,#f0eadf 100%); }
   .gallery .thumb::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(0,0,0,0) 55%,rgba(0,0,0,.22) 100%); pointer-events:none; }
@@ -292,11 +295,28 @@
   #imm-btn:hover { color:var(--red); border-color:var(--red); transform:translateY(-1px); }
   #imm-btn:focus-visible { outline:2px solid var(--red); outline-offset:2px; }
 
+  /* ---- ux-all: skip / layout / immersive chip / view groups ---- */
+  #skip { position:absolute; left:-999px; top:8px; z-index:2000; background:var(--red); color:#fff; padding:8px 14px; border-radius:8px; font-size:13px; text-decoration:none; font-weight:600; }
+  #skip:focus { left:12px; outline:2px solid var(--red); outline-offset:2px; }
+  .fltbar { margin-bottom:12px; }
+  .viewbar { margin-top:4px; padding-top:12px; border-top:1px solid var(--line); }
+  .viewbar .vsep { width:1px; height:16px; background:var(--line); margin:0 6px; }
+  #imm-chip { position:fixed; top:10px; left:50%; transform:translateX(-50%); z-index:1300; font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; color:var(--red); background:rgba(255,255,255,.92); border:1px solid var(--line); border-radius:99px; padding:4px 12px; box-shadow:0 2px 10px rgba(0,0,0,.08); display:none; max-width:80vw; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  body.immersive #imm-chip { display:block; }
+  body.immersive #imm-chip:hover { background:#fff; }
+  @media (prefers-reduced-motion: reduce) {
+    .chip:hover, .vbtn:hover, #imm-btn:hover { transform:none; }
+    .reveal.js-animate { opacity:1; transform:none; transition:none; }
+  }
+
+
 </style>
 <!-- v6-style-injected -->
 </head>
 <body>
-<div class="wrap">
+<div id="imm-chip" aria-live="polite">沉涎阅读 · 按 I 退出</div>
+<a id="skip" href="#sec-papers">跳到论文列表</a>
+<div class="wrap" id="top">
 
 <div class="eyebrow"><span class="dot"></span>PAPER DIGEST · 2026</div>
 <h1>Multi-Agent Framework / Harness</h1>
@@ -340,7 +360,7 @@
   2026 年的共同主题：模型能力趋同后，<b>模型之外的结构设计成为新的性能主战场</b>。
 </div>
 
-<h2>论文列表</h2>
+<h2 id="sec-papers">论文列表</h2>
 <div class="hline"></div>
 <div class="fltbar" id="fltbar">
   <div class="flt" role="group" aria-label="按类别筛选论文">
@@ -1086,6 +1106,110 @@
       apply(!document.body.classList.contains('immersive'));
     }
   });
+})();
+</script>
+
+
+<script>
+/* ---- ux-all: URL state / reveal / read marks / view hints / imm chip ---- */
+(function () {
+  var VIEW_HINTS = {
+    list: '\u5217\u8868\uff1a\u5feb\u901f\u626b\u8bfb\u6458\u8981',
+    gallery: '\u753b\u5eca\uff1a\u5c01\u9762\u6d4f\u89c8\u4e0e\u5bf9\u6bd4',
+    star: '\u661f\u56fe\uff1a\u4e3b\u9898\u5173\u7cfb\u4e00\u89c8'
+  };
+  function setParam(key, val) {
+    try {
+      var u = new URL(location.href);
+      if (val == null || val === '' || val === 'list' || val === 'all') u.searchParams.delete(key);
+      else u.searchParams.set(key, val);
+      history.replaceState(null, '', u.pathname + u.search + u.hash);
+    } catch (e) {}
+  }
+  var vhint = document.getElementById('vhint');
+  document.querySelectorAll('.vbtn[data-view]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var v = btn.getAttribute('data-view') || 'list';
+      if (vhint && VIEW_HINTS[v]) vhint.textContent = VIEW_HINTS[v];
+      setParam('view', v === 'list' ? null : v);
+    });
+  });
+  try {
+    var sp = new URLSearchParams(location.search);
+    var urlView = sp.get('view');
+    if (urlView && document.querySelector('.vbtn[data-view="' + urlView + '"]')) {
+      var vb = document.querySelector('.vbtn[data-view="' + urlView + '"]');
+      if (vb) vb.click();
+    }
+    if (sp.get('immersive') === '1') {
+      try { localStorage.setItem('ma-immersive', '1'); } catch (e) {}
+    }
+  } catch (e) {}
+  var immBtn = document.getElementById('imm-btn');
+  var immChip = document.getElementById('imm-chip');
+  if (immBtn) {
+    var obs = new MutationObserver(function () {
+      var on = document.body.classList.contains('immersive');
+      setParam('immersive', on ? '1' : null);
+      if (immChip) {
+        var active = document.querySelector('#toc-panel a.active');
+        immChip.textContent = on
+          ? ('\u6c89\u6d8e\u9605\u8bfb' + (active ? ' \u00b7 ' + active.textContent.trim() : '') + ' \u00b7 \u6309 I \u9000\u51fa')
+          : '\u6c89\u6d8e\u9605\u8bfb \u00b7 \u6309 I \u9000\u51fa';
+      }
+    });
+    obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    if (immChip) {
+      immChip.style.cursor = 'pointer';
+      immChip.addEventListener('click', function () { immBtn.click(); });
+    }
+  }
+  function markRead() {
+    try {
+      var raw = localStorage.getItem('ma-read') || localStorage.getItem('readPapers') || '[]';
+      var arr = JSON.parse(raw);
+      if (!Array.isArray(arr)) return;
+      document.querySelectorAll('.paper').forEach(function (el) {
+        var id = el.getAttribute('data-id') || el.getAttribute('data-slug') || '';
+        var link = el.querySelector('h3 a');
+        var href = link ? (link.getAttribute('href') || '') : '';
+        var hit = arr.some(function (x) {
+          return x === id || (href && (x === href || href.indexOf(String(x)) !== -1));
+        });
+        if (hit) el.classList.add('is-read');
+      });
+    } catch (e) {}
+  }
+  markRead();
+  window.addEventListener('storage', markRead);
+  function setupReveal() {
+    var nodes = document.querySelectorAll('.reveal');
+    if (!nodes.length) return;
+    var vh = window.innerHeight || 800;
+    nodes.forEach(function (el) {
+      var rect = el.getBoundingClientRect();
+      if (rect.top < vh * 0.92) el.classList.add('in');
+      else el.classList.add('js-animate');
+    });
+    if (!('IntersectionObserver' in window)) {
+      nodes.forEach(function (el) { el.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          en.target.classList.add('in');
+          en.target.classList.remove('js-animate');
+          io.unobserve(en.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    nodes.forEach(function (el) {
+      if (!el.classList.contains('in')) io.observe(el);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setupReveal);
+  else setupReveal();
 })();
 </script>
 
