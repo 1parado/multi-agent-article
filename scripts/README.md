@@ -1,21 +1,25 @@
 # Scripts
 
-## `apply-ux-immersion.py`
-Adds immersion mode + micro-feedback to `index.html` (already applied on main).
+## `apply-ux-all.py` (recommended)
 
-## `apply-ux-visual.py`
-Applies visual polish to `index.html`:
+One-shot reading & design polish for `index.html`:
 
-- higher text contrast (`--soft` / `--gray`)
-- intro line-height
-- paper / gallery shadows
-- softer watermark
-- reduced-motion safety
-- print: hide immersion button
+- contrast (`--soft` / `--gray`)
+- measure & line-height
+- first-screen reveal fix
+- skip link
+- immersion chip + URL state (`?view=` / `?immersive=1`)
+- view hints, read marks, shadows, watermark, print, reduced-motion
 
 ```bash
-python scripts/apply-ux-visual.py   # Windows
-python3 scripts/apply-ux-visual.py # macOS/Linux
+python scripts/apply-ux-all.py    # Windows
+python3 scripts/apply-ux-all.py  # macOS/Linux
+git add index.html && git commit -m "feat(ux): full reading/design polish" && git push
 ```
 
-Idempotent: safe to re-run.
+Idempotent.
+
+## Older scripts
+
+- `apply-ux-immersion.py` — immersion + micro-feedback (already on main)
+- `apply-ux-visual.py` — contrast/shadow subset (superseded by `apply-ux-all.py`)
