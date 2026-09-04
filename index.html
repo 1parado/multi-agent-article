@@ -143,9 +143,9 @@
   .sitefoot .fl2 a:hover { color:var(--red); text-decoration:underline; }
   .fltbar { display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; margin:2px 0 30px; }
   .flt { display:flex; flex-wrap:wrap; gap:8px; }
-  .chip { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.2px; color:var(--gray); background:#fff; border:1px solid var(--line); border-radius:99px; padding:4px 12px; cursor:pointer; transition:color .2s, border-color .2s, box-shadow .2s, background .2s; }
+  .chip { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.2px; color:var(--gray); background:#fff; border:1px solid var(--line); border-radius:99px; padding:4px 12px; cursor:pointer; transition:color .2s, border-color .2s, box-shadow .2s, background .2s, transform .15s; }
   .chip .dot { width:6px; height:6px; margin-right:7px; vertical-align:1px; }
-  .chip:hover { color:var(--ink); border-color:var(--cat,var(--red)); }
+  .chip:hover { color:var(--ink); border-color:var(--cat,var(--red)); transform:translateY(-1px); }
   .chip.on { color:var(--cat,var(--red)); border-color:var(--cat,var(--red)); box-shadow:0 0 0 1px var(--cat,var(--red)) inset; background:#fdfaf7; }
   .q { flex:1 1 200px; min-width:170px; font:14px -apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif; color:var(--ink); background:#fdfcfb; border:1px solid var(--line); border-radius:8px; padding:7px 12px; }
   .q:focus { outline:none; border-color:var(--red); background:#fff; }
@@ -185,8 +185,8 @@
   .epigraph cite { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; color:var(--soft); font-style:normal; }
   /* index views */
   .viewbar { display:flex; align-items:center; gap:6px; margin:0 0 26px; flex-wrap:wrap; }
-  .vbtn { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11.5px; letter-spacing:1.5px; color:var(--gray); background:#fff; border:1px solid var(--line); border-radius:99px; padding:4px 14px; cursor:pointer; transition:color .2s,border-color .2s,background .2s; }
-  .vbtn:hover { color:var(--red); border-color:var(--red); }
+  .vbtn { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11.5px; letter-spacing:1.5px; color:var(--gray); background:#fff; border:1px solid var(--line); border-radius:99px; padding:4px 14px; cursor:pointer; transition:color .2s,border-color .2s,background .2s, transform .15s; }
+  .vbtn:hover { color:var(--red); border-color:var(--red); transform:translateY(-1px); }
   .vbtn.on { color:var(--red); border-color:var(--red); background:#fdfaf7; }
   .vhint { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11px; letter-spacing:1.5px; color:var(--soft); margin-left:8px; }
   #vhint-r { margin-left:auto; color:var(--red); }
@@ -280,6 +280,18 @@
   @media print {
     .giscwrap, .annbar, .annmask, .anntoast { display:none !important; }
   }
+
+  /* ---- immersion mode (ux) ---- */
+  body.immersive #pbar,
+  body.immersive #toc-btn,
+  body.immersive #toc-panel,
+  body.immersive #totop,
+  body.immersive .wm { opacity:0 !important; pointer-events:none !important; visibility:hidden !important; }
+  body.immersive #imm-btn { background:var(--red); color:#fff; border-color:var(--red); }
+  #imm-btn { font-family:"IBM Plex Mono",Consolas,monospace; font-size:11.5px; letter-spacing:1.5px; color:var(--gray); background:#fff; border:1px solid var(--line); border-radius:99px; padding:4px 14px; cursor:pointer; transition:color .2s,border-color .2s,background .2s, transform .15s; margin-left:6px; }
+  #imm-btn:hover { color:var(--red); border-color:var(--red); transform:translateY(-1px); }
+  #imm-btn:focus-visible { outline:2px solid var(--red); outline-offset:2px; }
+
 </style>
 <!-- v6-style-injected -->
 </head>
@@ -346,7 +358,7 @@
   <p class="fltnone" id="fltnone" hidden>没有匹配的论文——换个关键词，或点「全部」清空筛选。</p>
 </div>
 
-<div class="viewbar" id="viewbar" role="group" aria-label="切换视图"><button type="button" class="vbtn on" data-view="list">列表</button><button type="button" class="vbtn" data-view="gallery">画廊</button><button type="button" class="vbtn" data-view="star">星图</button><span class="vhint" id="vhint">展示模式 · 列表</span><span class="vhint" id="vhint-r">已读 0 / 11</span></div><div id="gallery" class="gallery" hidden></div><div id="star" hidden></div>
+<div class="viewbar" id="viewbar" role="group" aria-label="切换视图"><button type="button" class="vbtn on" data-view="list">列表</button><button type="button" class="vbtn" data-view="gallery">画廊</button><button type="button" class="vbtn" data-view="star">星图</button><button type="button" id="imm-btn" title="隐藏浮动控件，专注阅读 (I)" aria-pressed="false">沉浸</button><span class="vhint" id="vhint">展示模式 · 列表</span><span class="vhint" id="vhint-r">已读 0 / 11</span></div><div id="gallery" class="gallery" hidden></div><div id="star" hidden></div>
 <div class="paper" data-cat="FRAMEWORK">
   <div class="idx" style="--cat:#A02C2C"><span class="dot"></span>01 · MULTI-AGENT FRAMEWORK</div>
   <h3><a href="2603.11445_VMAO_中文版.html">VMAO：验证式多智能体编排</a></h3>
@@ -1045,6 +1057,35 @@
       jumpGiscus();
     });
   }
+})();
+</script>
+
+
+<script>
+/* ---- immersion mode (ux) ---- */
+(function () {
+  var KEY = 'ma-immersive';
+  var btn = document.getElementById('imm-btn');
+  if (!btn) return;
+  function apply(on) {
+    document.body.classList.toggle('immersive', !!on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.textContent = on ? '退出沉涎' : '沉涎';
+    try { localStorage.setItem(KEY, on ? '1' : '0'); } catch (e) {}
+  }
+  var saved = false;
+  try { saved = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  apply(saved);
+  btn.addEventListener('click', function () {
+    apply(!document.body.classList.contains('immersive'));
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.target && (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || e.target.isContentEditable)) return;
+    if ((e.key === 'i' || e.key === 'I') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      e.preventDefault();
+      apply(!document.body.classList.contains('immersive'));
+    }
+  });
 })();
 </script>
 
