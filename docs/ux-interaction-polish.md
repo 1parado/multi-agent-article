@@ -1,62 +1,91 @@
 # Interaction Polish Improvements
 
-> 本 PR 汇总从产品经理 / 用户体验角度提出的**交互层面**优化建议，全部可在纯静态 GitHub Pages 站点落地，无需后端或数据库。
+## 已实现方案（index.html）
 
-## 目标
+1. **阅读沉浸模式**
+   - 新增「沉浸」按钮（viewbar）
+   - 隐藏进度条、TOC、返回顶部、水印
+   - 快捷键 `I` 切换
+   - localStorage 记住偏好
 
-在现有功能基础上，提升操作反馈感、阅读沉浸感与状态连续性，让用户感觉「站点懂我」。
+2. **微反馈强化**
+   - chip / view 按钮 hover 上移与过渡
 
-## 优化关键词与建议
+## 实现片段
 
-### 1. 微反馈强化
-- 按钮、链接、筛选芯片、已读标记在 hover / active / 切换时的即时视觉反馈更明显。
-- 使用轻微 scale、颜色、阴影变化，避免生硬跳变。
+### CSS（加入 v6 style 块）
+```css
+body.immersive #pbar,
+body.immersive #toc-btn,
+body.immersive #toc-panel,
+body.immersive #totop,
+body.immersive .wm {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+body.immersive #imm-btn {
+  background: var(--red);
+  color: #fff;
+  border-color: var(--red);
+}
+#imm-btn {
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 11.5px;
+  letter-spacing: 1.5px;
+  color: var(--gray);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: 4px 14px;
+  cursor: pointer;
+  transition: color .2s, border-color .2s, background .2s, transform .15s;
+  margin-left: 6px;
+}
+#imm-btn:hover {
+  color: var(--red);
+  border-color: var(--red);
+  transform: translateY(-1px);
+}
+```
 
-### 2. 阅读沉浸模式
-- 一键隐藏所有浮动控件（TOC、返回顶部、进度条等），进入干净长文阅读。
-- 可通过按钮或快捷键（如 `I`）触发，状态可持久化到 localStorage。
+### HTML（viewbar 内）
+```html
+<button type="button" id="imm-btn" title="隐藏浮动控件，专注阅读 (I)">沉浸</button>
+```
 
-### 3. 手势与触控优化
-- 移动端触摸目标更大（至少 44×44px）。
-- 支持更自然的滑动返回 / 关闭面板手势。
-- 避免误触浮动按钮。
+### JS（</body> 前）
+```js
+(function () {
+  var KEY = 'ma-immersive';
+  var btn = document.getElementById('imm-btn');
+  if (!btn) return;
+  function apply(on) {
+    document.body.classList.toggle('immersive', !!on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.textContent = on ? '退出沉浸' : '沉浸';
+    try { localStorage.setItem(KEY, on ? '1' : '0'); } catch (e) {}
+  }
+  var saved = false;
+  try { saved = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  apply(saved);
+  btn.addEventListener('click', function () {
+    apply(!document.body.classList.contains('immersive'));
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.target && (/INPUT|TEXTAREA/.test(e.target.tagName) || e.target.isContentEditable)) return;
+    if ((e.key === 'i' || e.key === 'I') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      e.preventDefault();
+      apply(!document.body.classList.contains('immersive'));
+    }
+  });
+})();
+```
 
-### 4. 状态记忆与恢复
-- 筛选条件、视图模式（列表 / 画廊 / 星图）、滚动位置、已读状态在刷新后更好保留。
-- 已读列表可提供「导出 / 导入 JSON」轻量方案，解决跨设备问题（静态站点极限）。
+## 后续
 
-### 5. 渐进披露
-- 复杂信息（对比表细节、长列表、次要 meta）默认折叠，点击再展开。
-- 降低首屏认知负担，同时保留深度信息可达性。
+- 筛选 / 视图状态 URL 记忆
+- 已读列表导出/导入
+- 论文页同样支持沉浸模式
 
-### 6. 快捷键可发现性
-- 现有键盘翻页（←/→）很好，但用户不易发现。
-- 首次进入或按 `?` 时显示轻量快捷键提示浮层。
-
-### 7. 选中批注体验打磨
-- 当前已有「选中即批注」能力。
-- 可优化触发范围、预览样式、取消操作流畅度，以及与 giscus 的联动提示。
-
-### 8. 页面切换过渡
-- 论文页之间跳转增加轻量过渡动画（fade / slide），减少突兀感。
-- 纯 CSS 或少量 JS 即可实现，注意尊重 `prefers-reduced-motion`。
-
-## 建议优先级
-
-| 优先级 | 项 |
-|--------|----|
-| 高 | 微反馈强化、阅读沉浸模式、状态记忆与恢复 |
-| 中 | 手势与触控优化、渐进披露、快捷键可发现性 |
-| 低 | 选中批注打磨、页面切换过渡 |
-
-## 实现约束
-
-- 纯前端（CSS / 少量原生 JS）
-- 不引入构建工具或外部依赖
-- 优先使用 localStorage 做轻量状态持久化
-- 保持与 `AGENT.md` 规范兼容
-- 向后兼容现有页面结构与组件版本
-
----
-
-*本文件作为讨论与落地起点，具体改动可分批提交。*
+纯静态、无后端。
